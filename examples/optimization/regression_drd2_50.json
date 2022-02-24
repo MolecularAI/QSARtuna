@@ -1,0 +1,104 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "test_dataset_file": "tests/data/DRD2/subset-50/test.csv"
+  },
+  "descriptors": [
+    {
+      "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048
+      }
+    },
+    {
+      "name": "MACCS_keys",
+      "parameters": {}
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 3,
+    "direction": "maximize",
+    "n_startup_trials": 30,
+    "n_trials": 100
+  },
+  "algorithms": [
+    {
+      "name": "SVR",
+      "parameters": {
+        "C": {
+          "low": 1E-10,
+          "high": 100.0
+        },
+        "gamma": {
+          "low": 0.0001,
+          "high": 100.0
+        }
+      }
+    },
+    {
+      "name": "RandomForest",
+      "parameters": {
+        "max_depth": {
+          "low": 2,
+          "high": 32
+        },
+        "n_estimators": {
+          "low": 10,
+          "high": 250
+        },
+        "max_features": [
+          "auto"
+        ]
+      }
+    },
+    {
+      "name": "Ridge",
+      "parameters": {
+        "alpha": {
+          "low": 0,
+          "high": 2
+        }
+      }
+    },
+    {
+      "name": "Lasso",
+      "parameters": {
+        "alpha": {
+          "low": 0,
+          "high": 2
+        }
+      }
+    },
+    {
+      "name": "PLSRegression",
+      "parameters": {
+        "n_components": {
+          "low": 2,
+          "high": 3
+        }
+      }
+    },
+    {
+      "name": "XGBRegressor",
+      "parameters": {
+        "max_depth": {
+          "low": 2,
+          "high": 32
+        },
+        "n_estimators": {
+          "low": 3,
+          "high": 100
+        },
+        "learning_rate": {
+          "low": 0.1,
+          "high": 0.1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "smiles",
+    "response_column": "Act_class",
+    "training_dataset_file": "train.csv",
+    "test_dataset_file": "test.csv"
+  },
+  "descriptors": [
+    { "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048
+      }
+    }
+  ],
+  "settings": {
+    "mode": "classification",
+    "cross_validation": 5,
+    "shuffle": true,
+    "direction": "maximize",
+    "n_trials": 200,
+    "n_jobs": 1
+  },
+  "algorithms":
+  [
+    { "name": "RandomForest",
+      "parameters": {
+        "max_depth": {
+          "low": 10,
+          "high": 20
+        },
+        "n_estimators": {
+          "low": 10,
+          "high": 100
+        },
+        "max_features": ["auto"]
+      }
+    },
+    { "name": "SVC",
+      "parameters": {
+        "C": {
+          "low": 1e-7,
+          "high": 1e7
+        },
+        "gamma": {
+          "low": 1e-9,
+          "high": 1000
+        }
+      }
+    },
+    { "name": "AdaBoostClassifier",
+      "parameters": {
+        "n_estimators": {
+          "low": 25,
+          "high": 150
+        },
+        "learning_rate": {
+          "low": 0.25,
+          "high": 2
+        }
+      }
+    },
+    { "name": "LogisticRegression",
+      "parameters": {
+        "solver": ["newton-cg", "lbfgs", "sag", "saga"],
+        "C": {
+          "low": 0.1,
+          "high": 1.5
+        }
+      }
+    }
+  ]
+}

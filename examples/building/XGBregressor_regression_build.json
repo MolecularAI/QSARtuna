@@ -1,0 +1,35 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "smiles",
+        "response_column": "activity",
+        "training_dataset_file": "train.csv",
+        "test_dataset_file": "test.csv"
+    },
+    "metadata": {
+        "cross_validation": 5,
+        "best_trial": 1,
+        "best_value": 0.5755090634684085,
+        "n_trials": 10
+    },
+    "descriptor":
+        { "name": "ECFP",
+            "parameters": {
+                "radius": 3,
+                "nBits": 2048
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "XGBregressor",
+        "parameters": {
+            "max_depth": 78,
+            "n_estimators": 66,
+            "learning_rate": 0.1121189518955848
+        }
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "smiles",
+        "response_column": "activity",
+        "training_dataset_file": "train.csv",
+        "test_dataset_file": "test.csv"
+    },
+    "metadata": {
+        "cross_validation": 5,
+        "best_trial": 13,
+        "best_value": 0.6597738294286679,
+        "n_trials": 20
+    },
+    "descriptor":
+        { "name": "ECFP",
+            "parameters": {
+                "radius": 3,
+                "nBits": 2048
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "RandomForestRegressor",
+        "parameters": {
+            "max_depth": 20,
+            "n_estimators": 38,
+            "max_features": "auto"
+        }
+    }
+}

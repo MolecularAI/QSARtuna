@@ -1,0 +1,33 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "smiles",
+        "response_column": "activity",
+        "training_dataset_file": "train.csv",
+        "test_dataset_file": null
+    },
+    "metadata": {
+        "cross_validation": 5,
+        "best_trial": 14,
+        "best_value": 0.6055386352764479,
+        "n_trials": 20
+    },
+    "descriptor":
+        { "name": "ECFP_counts",
+            "parameters": {
+                "radius": 4,
+                "useFeatures": true
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "Ridge",
+        "parameters": {
+            "alpha": 1.998469690009066
+        }
+    }
+}

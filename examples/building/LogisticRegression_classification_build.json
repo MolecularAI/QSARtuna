@@ -1,0 +1,34 @@
+{
+  "task": "building",
+  "data": {
+    "input_column": "smiles",
+    "response_column": "Act_class",
+    "training_dataset_file": "train.csv",
+    "test_dataset_file": "test.csv"
+  },
+  "metadata": {
+    "cross_validation": 3,
+    "best_trial": 9,
+    "best_value": 0.9564626174351525,
+    "n_trials": 10
+  },
+  "descriptor":
+    { "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048
+      }
+    }
+  ,
+  "settings": {
+    "mode": "classification",
+    "direction": "maximize"
+  },
+  "algorithm": {
+    "name": "LogisticRegression",
+    "parameters": {
+      "solver": "lbfgs",
+      "C": 0.18535275752278413
+    }
+  }
+}

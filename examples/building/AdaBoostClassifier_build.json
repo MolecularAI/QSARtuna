@@ -1,0 +1,30 @@
+{
+  "task": "building",
+  "data": {
+    "input_column": "smiles",
+    "response_column": "Act_class",
+    "training_dataset_file": "train.csv",
+    "test_dataset_file": "test.csv"},
+  "metadata": {
+    "cross_validation": 5,
+    "best_trial": 0,
+    "best_value": 0.9259801095317168,
+    "n_trials": 3},
+  "descriptor":
+    { "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048}
+    }
+  ,
+  "settings": {
+    "mode": "classification",
+    "direction": "maximize"},
+  "algorithm": {
+    "name": "AdaBoostClassifier",
+    "parameters": {
+      "n_estimators": 142,
+      "learning_rate": 1.9391419957234313
+    }
+  }
+}
