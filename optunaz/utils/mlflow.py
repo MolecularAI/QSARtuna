@@ -17,7 +17,7 @@ from optunaz.utils.enums import MlflowLogParams
 
 def add_ellipsis(name: str, max_length=100) -> str:
     if len(name) > max_length - 3:
-        return name[0:(max_length - 3)] + "..."
+        return name[0 : (max_length - 3)] + "..."
     else:
         return name
 
@@ -37,6 +37,7 @@ class MLflowCallback:
     MLflow runs will be named after Optuna trial numbers.
     """
 
+    trial_number_offset: int
     tracking_uri: Optional[str] = None
     """
     The URI of the MLflow tracking server.
@@ -54,11 +55,20 @@ class MLflowCallback:
 
         mlflow.set_experiment(study.study_name)
 
-        trial_value = trial.value if trial.value is not None else float("nan")
+        if hasattr(trial, "values") and trial.values is not None:
+            trial_value = round(trial.values[0], ndigits=3)
+        elif hasattr(trial, "value") and trial.value is not None:
+            trial_value = round(trial.value, ndigits=3)
+        else:
+            trial_value = float("nan")
 
-        with mlflow.start_run(run_name=str(trial.number)) as run:
+        with mlflow.start_run(
+            run_name=str(trial.number + self.trial_number_offset)
+        ) as run:
 
-            metric_name = f"optimization_objective_cvmean_{self.optconfig.settings.scoring}"
+            metric_name = (
+                f"optimization_objective_cvmean_{self.optconfig.settings.scoring}"
+            )
             mlflow.log_metric(metric_name, trial_value)
 
             # Log individual scores from cross-validation iterations.
@@ -70,23 +80,29 @@ class MLflowCallback:
                 for iteration, value in enumerate(vals):
                     run_id = run.info.run_id
                     timestamp = int(trial.datetime_complete.timestamp() * 1000)
-                    MlflowClient().log_metric(run_id, metric_name, value, timestamp, iteration)
+                    MlflowClient().log_metric(
+                        run_id, metric_name, value, timestamp, iteration
+                    )
                     # mlflow.log_metric(key=metric_name, value=v, step=i)
 
             mlflow.log_params(shorten_names(trial.params))
             # Log trial number as parameter, to use it in MLflow Compare Runs UI.
-            mlflow.log_param(MlflowLogParams.TRIAL_NUMBER, trial.number)
+            mlflow.log_param(
+                MlflowLogParams.TRIAL_NUMBER, trial.number + self.trial_number_offset
+            )
             mlflow.set_tags(self.prepare_tags(study, trial))
 
             fname = self.tmp_buildconfig(study, trial)
             mlflow.log_artifact(fname)
             os.unlink(fname)
 
-    def prepare_tags(self, study: optuna.study.Study, trial: FrozenTrial) -> Dict[str, str]:
+    def prepare_tags(
+        self, study: optuna.study.Study, trial: FrozenTrial
+    ) -> Dict[str, str]:
         """Sets the tags for MLflow."""
 
         tags: Dict[str, str] = {
-            "number": str(trial.number),
+            "number": str(trial.number + self.trial_number_offset),
             "datetime_start": str(trial.datetime_start),
             "datetime_complete": str(trial.datetime_complete),
         }

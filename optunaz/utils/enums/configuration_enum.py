@@ -1,7 +1,6 @@
-
 class ConfigurationEnum:
     """This "Enum" serves to store all the strings used in parsing all configurations. Note, that validity
-       checks are not performed, but referred to JSON Schema validations."""
+    checks are not performed, but referred to JSON Schema validations."""
 
     # all that are general keywords
     GENERAL_DISABLED = "disabled"
@@ -25,6 +24,10 @@ class ConfigurationEnum:
     # ---------
     DESCRIPTORS = "descriptors"
 
+    # Avalon
+    DESCRIPTORS_AVALON = "Avalon"
+    DESCRIPTORS_AVALON_NBITS = "nBits"
+
     # ECFP
     DESCRIPTORS_ECFP = "ECFP"
     DESCRIPTORS_ECFP_RADIUS = "radius"
@@ -35,12 +38,39 @@ class ConfigurationEnum:
     DESCRIPTORS_ECFPCOUNTS_RADIUS = "radius"
     DESCRIPTORS_ECFPCOUNTS_USEFEATURES = "useFeatures"
 
-    # Avalon
-    DESCRIPTORS_AVALON = "Avalon"
-    DESCRIPTORS_AVALON_NBITS = "nBits"
-
     # MACCS_keys
     DESCRIPTORS_MACCSKEYS = "MACCS_keys"
+
+    # Physchem
+    DESCRIPTORS_UNSC_PHYSCHEM = "UnscaledPhyschemDescriptors"
+    DESCRIPTORS_PHYSCHEM = "PhyschemDescriptors"
+    DESCRIPTORS_PHYSCHEM_RDKITNAMES = "rdkit_names"
+
+    # Jazzy
+    DESCRIPTORS_UNSC_JAZZY = "UnscaledJazzyDescriptors"
+    DESCRIPTORS_JAZZY = "JazzyDescriptors"
+    DESCRIPTORS_JAZZY_JAZZYNAMES = "jazzy_names"
+
+    # Precomputed
+    DESCRIPTORS_PRECOMPUTED = "PrecomputedDescriptorFromFile"
+    DESCRIPTORS_PRECOMPUTED_FILE = "file"
+    DESCRIPTORS_PRECOMPUTED_INPUT_COLUMNN = "input_column"
+    DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN = "response_column"
+
+    # Smiles
+    DESCRIPTORS_SMILES = "SmilesFromFile"
+    DESCRIPTORS_SMILES_AND_SI = "SmilesAndSideInfoFromFile"
+    DESCRIPTORS_SMILES_AND_SI_FILE = "file"
+    DESCRIPTORS_SMILES_AND_SI_INPUT_COLUMN = "input_column"
+    DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC = "aux_weight_pc"
+
+    # Scaled
+    DESCRIPTORS_SCALED = "ScaledDescriptor"
+    DESCRIPTORS_SCALED_DESCRIPTOR = "descriptor"
+    DESCRIPTORS_SCALED_DESCRIPTOR_PARAMETERS = "parameters"
+
+    # Composite
+    DESCRIPTORS_COMPOSITE = "CompositeDescriptor"
 
     # all that has to do with general optimization parameters
     # ---------
@@ -59,13 +89,15 @@ class ConfigurationEnum:
     ALGORITHMS = "algorithms"
     ALGORITHMS_LOW = "low"
     ALGORITHMS_HIGH = "high"
+    ALGORITHMS_Q = "q"
 
     # different interfaces available
     ALGORITHMS_INTERFACE_SKLEARN = "sklearn"
     ALGORITHMS_INTERFACE_XGBOOST = "xgboost"
 
     # algorithm: RandomForest specific
-    ALGORITHMS_RF = "RandomForest"
+    ALGORITHMS_RFREGRESSOR = "RandomForestRegressor"
+    ALGORITHMS_RFCLASSIFIER = "RandomForestClassifier"
     ALGORITHMS_RF_MAX_FEATURES = "max_features"
     ALGORITHMS_RF_MAX_DEPTH = "max_depth"
     ALGORITHMS_RF_N_ESTIMATORS = "n_estimators"
@@ -88,9 +120,9 @@ class ConfigurationEnum:
     ALGORITHMS_RIDGE = "Ridge"
     ALGORITHMS_RIDGE_ALPHA = "alpha"
 
-    # algorithm: PLS
-    ALGORITHMS_PLS = "PLS"
-    ALGORITHMS_PLS_N_COMPONENTS = "n_components"
+    # algorithm: PLSRegression
+    ALGORITHMS_PLSREGRESSION = "PLSRegression"
+    ALGORITHMS_PLSREGRESSION_N_COMPONENTS = "n_components"
 
     # algorithm: LogisticRegression
     ALGORITHMS_LOGISTICREGRESSION = "LogisticRegression"
@@ -108,6 +140,53 @@ class ConfigurationEnum:
     ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS = "n_estimators"
     ALGORITHMS_XGBREGRESSOR_LEARNING_RATE = "learning_rate"
 
+    # algorithm: ProbabilisticRandomForest specific
+    ALGORITHMS_PRF = "PRFClassifier"
+    ALGORITHMS_PRF_MAX_FEATURES = "max_features"
+    ALGORITHMS_PRF_MAX_DEPTH = "max_depth"
+    ALGORITHMS_PRF_N_ESTIMATORS = "n_estimators"
+    ALGORITHMS_PRF_MINPYSUMLEAF = "min_py_sum_leaf"
+    ALGORITHMS_PRF_USE_PY_GINI = "use_py_gini"
+    ALGORITHMS_PRF_USE_PY_LEAFS = "use_py_leafs"
+
+    # algorithm: ChemProp specific
+    ALGORITHMS_CHEMPROP = "BaseChemProp"
+    ALGORITHMS_CHEMPROP_REGRESSOR = "ChemPropRegressor"
+    ALGORITHMS_CHEMPROP_HYPEROPT_REGRESSOR = "ChemPropHyperoptRegressor"
+    ALGORITHMS_CHEMPROP_CLASSIFIER = "ChemPropClassifier"
+    ALGORITHMS_CHEMPROP_HYPEROPT_CLASSIFIER = "ChemPropHyperoptClassifier"
+    ALGORITHMS_CHEMPROP_ACTIVATION = "activation"
+    ALGORITHMS_CHEMPROP_AGGREGATION = "aggregation"
+    ALGORITHMS_CHEMPROP_AGGREGATION_NORM = "aggregation_norm"
+    ALGORITHMS_CHEMPROP_BATCH_SIZE = "batch_size"
+    ALGORITHMS_CHEMPROP_DEPTH = "depth"
+    ALGORITHMS_CHEMPROP_DROPOUT = "dropout"
+    ALGORITHMS_CHEMPROP_EPOCHS = "epochs"
+    ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE = "ensemble_size"
+    ALGORITHMS_CHEMPROP_FEATURES_GENERATOR = "features_generator"
+    ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE = "ffn_hidden_size"
+    ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS = "ffn_num_layers"
+    ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP = "final_lr_ratio_exp"
+    ALGORITHMS_CHEMPROP_HIDDEN_SIZE = "hidden_size"
+    ALGORITHMS_CHEMPROP_NUM_ITERS = "num_iters"
+    ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP = "init_lr_ratio_exp"
+    ALGORITHMS_CHEMPROP_MAX_LR_EXP = "max_lr_exp"
+    ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL = "search_parameter_level"
+    ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS = "startup_random_iters"
+    ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO = "warmup_epochs_ratio"
+
+    # algorithm: CalibratedClassifierCV specific
+    ALGORITHMS_CALIBRATEDCLASSIFIERCV = "CalibratedClassifierCVWithVA"
+    ALGORITHMS_CALIBRATEDCLASSIFIERCV_ENSEMBLE = "ensemble"
+    ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR = "estimator"
+    ALGORITHMS_CALIBRATEDCLASSIFIERCV_METHOD = "method"
+    ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS = "n_folds"
+    ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS = "calibrated_params"
+
+    # algorithm: Mapie specific
+    ALGORITHMS_MAPIE = "Mapie"
+    ALGORITHMS_MAPIE_ALPHA = "alpha"
+
     # try to find the internal value and return
     def __getattr__(self, name):
         if name in self:
@@ -117,5 +196,3 @@ class ConfigurationEnum:
     # prohibit any attempt to set any values
     def __setattr__(self, key, value):
         raise ValueError("No changes allowed.")
-
-

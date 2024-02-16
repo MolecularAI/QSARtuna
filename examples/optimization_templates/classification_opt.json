@@ -3,8 +3,8 @@
   "data": {
     "input_column": "smiles",
     "response_column": "Act_class",
-    "training_dataset_file": "train.csv",
-    "test_dataset_file": "test.csv"
+    "training_dataset_file": "/projects/mai/users/cmargreitter/classification/MAT2A_no_duplicates.train.csv",
+    "test_dataset_file": "/projects/mai/users/cmargreitter/classification/MAT2A_no_duplicates.test.csv"
   },
   "descriptors": [
     { "name": "ECFP",
@@ -19,12 +19,22 @@
     "cross_validation": 5,
     "shuffle": true,
     "direction": "maximize",
-    "n_trials": 200,
+    "n_trials": 15,
     "n_jobs": 1
+  },
+  "visualization": {
+    "output_folder": "/projects/mai/users/cmargreitter/classification/plots",
+    "file_format": "png",
+    "plots": {
+      "plot_history": true,
+      "plot_contour": true,
+      "plot_parallel_coordinate": true,
+      "plot_slice": true
+    }
   },
   "algorithms":
   [
-    { "name": "RandomForest",
+    { "name": "RandomForestClassifier",
       "parameters": {
         "max_depth": {
           "low": 10,

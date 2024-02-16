@@ -1,10 +1,10 @@
 {
   "task": "optimization",
   "data": {
-    "input_column": "smiles",
+    "input_column": "canonical",
     "response_column": "activity",
-    "training_dataset_file": "train.csv",
-    "test_dataset_file": "test.csv"
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "test_dataset_file": "tests/data/DRD2/subset-50/test.csv"
   },
   "descriptors": [
     { "name": "ECFP",
@@ -24,7 +24,7 @@
   },
   "algorithms":
   [
-    { "name": "XGBregressor",
+    { "name": "XGBRegressor",
       "parameters": {
         "max_depth": {
           "low": 3,

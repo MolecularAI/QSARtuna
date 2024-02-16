@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'QPTUNA'
-copyright = '2021, AstraZeneca'
-author = 'Alexey Voronov, Christian Margreitter, Jon Paul Janet, Kostas Papadopoulos, Atanas Patronov'
+copyright = '2023, AstraZeneca'
+author = 'MAI'
 
 # The full version, including alpha/beta/rc tags
-release = '2.4.0'
+release = '2.7.11'
 
 
 # -- General configuration ---------------------------------------------------
@@ -34,7 +34,8 @@ extensions = [
     'recommonmark',
     'nbsphinx',  # Jupyter Notebooks
     'sphinxcontrib.autodoc_pydantic',
-    # 'sphinx-pydantic',  # Throws error.
+    'sphinx-pydantic',  # Throws error.
+    'sphinxcontrib.autodoc_pydantic',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.doctest',
@@ -81,6 +82,9 @@ autodoc_pydantic_model_show_config_summary = False
 autodoc_pydantic_settings_show_json = False
 autodoc_pydantic_model_show_config_member = False
 autodoc_pydantic_model_show_validator_summary = False
+autodoc_pydantic_model_hide_paramlist = True
 
 autodoc_pydantic_field_show_constraints = False
 autodoc_pydantic_model_signature_prefix = "class"
+python_use_unqualified_type_names = True
+autodoc_typehints = "none"

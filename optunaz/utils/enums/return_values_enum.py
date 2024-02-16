@@ -1,4 +1,3 @@
-
 class SklearnReturnValueEnum:
     """This "Enum" serves as storage for the return value keys using "sklearn"."""
 

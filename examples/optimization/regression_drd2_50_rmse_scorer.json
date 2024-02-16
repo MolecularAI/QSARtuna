@@ -31,7 +31,7 @@
     "mode": "regression",
     "cross_validation": 3,
     "scoring": "neg_mean_squared_error",
-    "n_trials": 100
+    "n_trials": 15
   },
   "visualization": null,
   "algorithms": [
@@ -49,7 +49,7 @@
       }
     },
     {
-      "name": "RandomForest",
+      "name": "RandomForestRegressor",
       "parameters": {
         "max_depth": {
           "low": 2,
@@ -83,7 +83,7 @@
       }
     },
     {
-      "name": "PLS",
+      "name": "PLSRegression",
       "parameters": {
         "n_components": {
           "low": 2,
@@ -92,7 +92,7 @@
       }
     },
     {
-      "name": "XGBregressor",
+      "name": "XGBRegressor",
       "parameters": {
         "max_depth": {
           "low": 2,

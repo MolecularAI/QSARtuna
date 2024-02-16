@@ -3,7 +3,7 @@ from optunaz.utils.enums.configuration_enum import ConfigurationEnum
 
 class BuildingConfigurationEnum(ConfigurationEnum):
     """This "Enum" serves to store all the strings used in parsing the building configurations. Note, that validity
-       checks are not performed, but referred to JSON Schema validations."""
+    checks are not performed, but referred to JSON Schema validations."""
 
     # all that are general keywords
     GENERAL_HYPERPARAMETERS = "hyper_parameters"
@@ -26,5 +26,3 @@ class BuildingConfigurationEnum(ConfigurationEnum):
     # prohibit any attempt to set any values
     def __setattr__(self, key, value):
         raise ValueError("No changes allowed.")
-
-

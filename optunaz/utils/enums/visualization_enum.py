@@ -1,7 +1,6 @@
-
 class VisualizationEnum:
     """This "Enum" serves to store all the strings used to specify optional visualizations. Note, that validity
-       checks are not performed, but referred to JSON Schema validations."""
+    checks are not performed, but referred to JSON Schema validations."""
 
     # general keywords
     # ---------

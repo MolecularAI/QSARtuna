@@ -1,10 +1,10 @@
 {
   "task": "optimization",
   "data": {
-    "input_column": "smiles",
-    "response_column": "Act_class",
-    "training_dataset_file": "train.csv",
-    "test_dataset_file": "test.csv"
+    "input_column": "canonical",
+    "response_column": "molwt_gt_330",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "test_dataset_file": "tests/data/DRD2/subset-50/test.csv"
   },
   "descriptors": [
     { "name": "ECFP",

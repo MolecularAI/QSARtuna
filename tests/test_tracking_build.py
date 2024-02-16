@@ -8,7 +8,6 @@ from optunaz.config import ModelMode
 from optunaz.config.buildconfig import BuildConfig, Lasso
 from optunaz.datareader import Dataset
 from optunaz.descriptors import ECFP
-from optunaz.model_writer import ModelPersistenceMode
 from optunaz.utils.preprocessing.splitter import Random
 
 
@@ -190,6 +189,26 @@ def test_4(shared_datadir):
         shared_datadir / "DRD2" / "subset-50" / "train.csv"
     )
     with tempfile.NamedTemporaryFile() as f:
-        optunaz.three_step_opt_build_merge.build_best(
-            buildconfig, f.name, persist_as=ModelPersistenceMode.PLAIN_SKLEARN
-        )
+        optunaz.three_step_opt_build_merge.build_best(buildconfig, f.name)
+
+
+def test_build_notestset(shared_datadir):
+    buildconfig = BuildConfig(
+        data=Dataset(
+            input_column="canonical",
+            response_column="molwt",
+            training_dataset_file=str(
+                shared_datadir / "DRD2" / "subset-50" / "train.csv"
+            ),
+        ),
+        metadata=None,
+        descriptor=ECFP.new(),
+        algorithm=Lasso.new(),
+        settings=BuildConfig.Settings(
+            mode=ModelMode.REGRESSION,
+            tracking_rest_endpoint="http://localhost:8891",  # To listen: nc -l -k 8891
+        ),
+    )
+
+    with tempfile.NamedTemporaryFile() as f:
+        optunaz.three_step_opt_build_merge.build_best(buildconfig, f.name)

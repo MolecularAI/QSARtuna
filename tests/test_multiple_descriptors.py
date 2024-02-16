@@ -41,7 +41,7 @@ def conf(shared_datadir):
 
 def test_multiple_descriptors(conf):
     config = deserialize(OptimizationConfig, conf)
-    train_smiles, train_y, test_smoiles, test_y = config.data.get_sets()
+    train_smiles, train_y, _, test_smiles, test_y, _ = config.data.get_sets()
     obj1 = Objective(optconfig=config, train_smiles=train_smiles, train_y=train_y)
     sampler = TPESampler(seed=42)  # Make the sampler behave in a deterministic way.
     study = optuna.create_study(sampler=sampler, direction=config.settings.direction)

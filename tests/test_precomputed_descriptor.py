@@ -9,6 +9,7 @@ from apischema import deserialize
 import optunaz.three_step_opt_build_merge
 from optunaz.config.optconfig import OptimizationConfig
 from optunaz.descriptors import PrecomputedDescriptorFromFile, ECFP
+from optunaz.utils.preprocessing.transform import VectorFromColumn
 
 import numpy as np
 import pandas as pd
@@ -68,7 +69,7 @@ def test_3(shared_datadir):
     ori_molfile = shared_datadir / "DRD2" / "subset-50" / "train.csv"
     df = pd.read_csv(ori_molfile)
     df["fp"] = df["canonical"].apply(smi2fp)
-    with tempfile.NamedTemporaryFile(mode="w+t", delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w+t", suffix=".csv", delete=False) as f:
         df.to_csv(f.name, index=False)
 
     data = json.load(
@@ -92,6 +93,12 @@ def test_3(shared_datadir):
 
 
 def test_4(shared_datadir):
+    ori_molfile = shared_datadir / "DRD2" / "subset-50" / "train.csv"
+    df = pd.read_csv(ori_molfile)
+    df["fp"] = df["canonical"].apply(smi2fp)
+    df["aux"] = df["canonical"].apply(smi2fp)
+    with tempfile.NamedTemporaryFile(mode="w+t", suffix=".csv", delete=False) as f:
+        df.to_csv(f.name, index=False)
 
     data = json.load(
         open(
@@ -101,12 +108,42 @@ def test_4(shared_datadir):
             "rt",
         )
     )
-    config = deserialize(OptimizationConfig, data)
 
-    molfile = str(shared_datadir / "precomputed_descriptor" / "train_with_fp.csv")
-    config.data.training_dataset_file = molfile
-    config.descriptors[0].parameters.file = molfile
+    config = deserialize(OptimizationConfig, data)
+    config.data.training_dataset_file = f.name
+    config.descriptors[0].parameters.file = f.name
+    config.data.aux_column = "aux"
+    config.data.aux_transform = VectorFromColumn.new()
 
     optunaz.three_step_opt_build_merge.optimize(
-        config, "test_regression_precomputed_descriptor"
+        config, "test_precomputed_descriptor_auxcol"
     )
+
+    os.unlink(f.name)
+
+
+def test_5(shared_datadir):
+    ori_molfile = shared_datadir / "DRD2" / "subset-50" / "train.csv"
+    df = pd.read_csv(ori_molfile)
+    df["aux"] = df["canonical"].apply(smi2fp)
+    with tempfile.NamedTemporaryFile(mode="w+t", suffix=".csv", delete=False) as f:
+        df.to_csv(f.name, index=False)
+
+    data = json.load(
+        open(
+            attach_root_path("examples/optimization/ChemProp_drd2_50.json"),
+            "rt",
+        )
+    )
+
+    config = deserialize(OptimizationConfig, data)
+    config.data.training_dataset_file = f.name
+    config.descriptors[0].parameters.file = f.name
+    config.data.aux_column = "aux"
+    config.data.aux_transform = VectorFromColumn.new()
+
+    optunaz.three_step_opt_build_merge.optimize(
+        config, "test_precomputed_descriptor_auxcol_chemprop"
+    )
+
+    os.unlink(f.name)

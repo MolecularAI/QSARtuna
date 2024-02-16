@@ -1,9 +1,9 @@
-from optunaz.utils import ConfigurationEnum
+from optunaz.utils.enums.configuration_enum import ConfigurationEnum
 
 
 class PredictionConfigurationEnum(ConfigurationEnum):
     """This "Enum" serves to store all the strings used in parsing the prediction configurations. Note, that validity
-       checks are not performed, but referred to JSON Schema validations."""
+    checks are not performed, but referred to JSON Schema validations."""
 
     DATA_DATASET = "dataset"
 

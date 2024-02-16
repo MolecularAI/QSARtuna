@@ -1,15 +1,15 @@
 {
     "task": "building",
     "data": {
-        "input_column": "smiles",
-        "response_column": "activity",
-        "training_dataset_file": "train.csv",
-        "test_dataset_file": "test.csv"
+        "input_column": "canonical",
+        "response_column": "molwt",
+        "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+        "test_dataset_file": "tests/data/DRD2/subset-50/test.csv"
     },
     "metadata": {
         "cross_validation": 5,
-        "best_trial": 1,
-        "best_value": 0.5755090634684085,
+        "best_trial": null,
+        "best_value": null,
         "n_trials": 10
     },
     "descriptor":
@@ -25,7 +25,7 @@
         "direction": "maximize"
     },
     "algorithm": {
-        "name": "XGBregressor",
+        "name": "XGBRegressor",
         "parameters": {
             "max_depth": 78,
             "n_estimators": 66,

@@ -15,12 +15,17 @@ Build QSAR models with hyperparameters optimized by `Optuna <https://optuna.org/
    :caption: Documentation:
 
    Intro and Quick Start <README.md>
-   Jupyter Notebook Tutorial <notebooks/QPTUNA_Tutorial.ipynb>
+   Jupyter Notebook: Preprocessing Data for Qptuna <notebooks/preprocess_data.ipynb>
+   Jupyter Notebook: Qptuna CLI Tutorial <notebooks/QPTUNA_Tutorial.ipynb>
    List of available ML algorithms <algorithms.rst>
    List of available molecular descriptors <descriptors.rst>
+   List of available evaluation splits <splitters.rst>
 
 
 Development
 -----------
 * `Test report <_static/pytest/pytest/index.html>`_
 * `Test coverage <_static/pytest/coverage/index.html>`_
+* `Source code (GitHub) <https://github.com/AZU-RDIT/optuna_az/>`_
+* `Issues (Jira) <https://jira.rd.astrazeneca.net/browse/OPTUNA/>`_
+* `Public release (3.0.0)  <https://github.com/MolecularAI/Qptuna/>`_

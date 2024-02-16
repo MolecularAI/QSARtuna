@@ -21,7 +21,6 @@ class OptimizationDirection(str, Enum):
 
     MINIMIZATION = "minimize"
     MAXIMIZATION = "maximize"
-    NOT_SET = "not_set"
 
 
 class Task(str, Enum):

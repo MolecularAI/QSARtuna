@@ -3,8 +3,8 @@
   "data": {
     "input_column": "smiles",
     "response_column": "activity",
-    "training_dataset_file": "train.csv",
-    "test_dataset_file": "test.csv"
+    "training_dataset_file": "/projects/mai/users/cmargreitter/GRK2/optuna/train.csv",
+    "test_dataset_file": "/projects/mai/users/cmargreitter/GRK2/optuna/test.csv"
   },
   "descriptors": [
     {
@@ -23,12 +23,12 @@
     "cross_validation": 5,
     "shuffle": true,
     "direction": "maximize",
-    "n_trials": 20,
+    "n_trials": 15,
     "n_jobs": 1
   },
   "algorithms":
   [
-    { "name": "RandomForest",
+    { "name": "RandomForestRegressor",
       "parameters": {
         "max_depth": {
           "low": 10,

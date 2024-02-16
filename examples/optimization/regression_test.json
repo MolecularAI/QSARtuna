@@ -29,12 +29,12 @@
     "cross_validation": 5,
     "shuffle": true,
     "direction": "maximize",
-    "n_trials": 200,
+    "n_trials": 15,
     "n_jobs": 4
   },
   "algorithms":
   [
-    { "name": "RandomForest",
+    { "name": "RandomForestRegressor",
       "parameters": {
         "max_depth": {
           "low": 10,

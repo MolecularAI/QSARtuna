@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(
         description="optbuild: Optimize hyper-parameters and build (train) the best model."
     )
@@ -55,13 +55,23 @@ def main():
     parser.add_argument(
         "--model-persistence-mode",
         help="Model persistence mode: "
-        "plain scikit-learn model, "
         "model with OptunaAZ, "
         "or AZ PIP "
         "(default: %(default)s).",
         type=ModelPersistenceMode,
         choices=[e.value for e in ModelPersistenceMode],
         default=ModelPersistenceMode.SKLEARN_WITH_OPTUNAZ.value,
+    )
+    parser.add_argument(
+        "--no-cache",
+        help="Turn off descriptor generation caching ",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--inference_uncert",
+        help="Path for uncertainty inference and thresholding.",
+        type=pathlib.Path,
+        default="/projects/db-mirror/MLDatasets/PLS/pls.csv",
     )
     args = parser.parse_args()
 
@@ -71,10 +81,20 @@ def main():
 
     if isinstance(config, OptimizationConfig):
         study_name = str(pathlib.Path(args.config).absolute())
+        if not args.no_cache:
+            config.set_cache()
+            cache = config._cache
+            cache_dir = config._cache_dir
+        else:
+            cache = None
+            cache_dir = None
         study = optimize(config, study_name=study_name)
-        buildconfig = buildconfig_best(study)
+        if args.best_model_outpath or args.merged_model_outpath:
+            buildconfig = buildconfig_best(study)
     elif isinstance(config, BuildConfig):
         buildconfig = config
+        cache = None
+        cache_dir = None
     else:
         raise ValueError(f"Unrecognized config type: {type(config)}.")
 
@@ -83,8 +103,18 @@ def main():
         with open(args.best_buildconfig_outpath, "wt") as fp:
             json.dump(serialize(buildconfig), fp, indent="  ")
     if args.best_model_outpath:
-        build_best(buildconfig, args.best_model_outpath, args.model_persistence_mode)
+        build_best(
+            buildconfig,
+            args.best_model_outpath,
+            args.model_persistence_mode,
+            cache=cache,
+        )
     if args.merged_model_outpath:
         build_merged(
-            buildconfig, args.merged_model_outpath, args.model_persistence_mode
+            buildconfig,
+            args.merged_model_outpath,
+            args.model_persistence_mode,
+            cache=cache,
         )
+    if cache_dir is not None:
+        cache_dir.cleanup()

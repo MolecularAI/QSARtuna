@@ -12,7 +12,7 @@ from optunaz.config.build_from_opt import buildconfig_from_trial
 from optunaz.config.buildconfig import BuildConfig
 from optunaz.config.optconfig import OptimizationConfig
 from optunaz.evaluate import get_train_test_scores
-from optunaz.model_writer import predict
+from optunaz.model_writer import wrap_model
 
 logger = logging.getLogger(__name__)
 
@@ -49,16 +49,23 @@ class InternalTrackingCallback:
     """Callback to track (log) progress using internal tracking format"""
 
     optconfig: OptimizationConfig
+    trial_number_offset: int
 
     def __call__(self, study: Study, trial: FrozenTrial) -> None:
 
         buildconfig = buildconfig_from_trial(study, trial)
         buildconfig.metadata = None  # Metadata is not essential - drop.
         buildconfig.settings.n_trials = None  # Drop.
+        if hasattr(trial, "values") and trial.values is not None:
+            trial_value = round(trial.values[0], ndigits=3)
+        elif hasattr(trial, "value") and trial.value is not None:
+            trial_value = round(trial.value, ndigits=3)
+        else:
+            trial_value = float("nan")
 
         data = TrackingData(
-            trial_number=trial.number,
-            trial_value=round(trial.value, ndigits=3),
+            trial_number=trial.number + self.trial_number_offset,
+            trial_value=trial_value,
             scoring=self.optconfig.settings.scoring,
             trial_state=trial.state.name,
             all_cv_test_scores=round_scores(trial.user_attrs["test_scores"]),
@@ -100,17 +107,23 @@ def track_build(model, buildconfig: BuildConfig):
 
     train_scores, test_scores = get_train_test_scores(model, buildconfig)
 
-    rounded_test_scores = {k: round(v, ndigits=3) for k, v in test_scores.items()}
+    rounded_test_scores = (
+        {k: round(v, ndigits=3) for k, v in test_scores.items()}
+        if test_scores is not None
+        else None
+    )
 
-    _, _, smiles, expected = buildconfig.data.get_sets()
+    _, _, _, smiles, expected, _ = buildconfig.data.get_sets()
 
     if smiles is None or len(smiles) < 1:
         logger.warning("No test set.")
         return
 
-    predicted = predict(
-        model, buildconfig.settings.mode, buildconfig.descriptor, smiles
-    )
+    mode = buildconfig.settings.mode
+    descriptor = buildconfig.descriptor
+    qptuna_model = wrap_model(model, descriptor=descriptor, mode=mode)
+
+    predicted = qptuna_model.predict_from_smiles(smiles)
 
     test_points = [
         Datapoint(

@@ -1,4 +1,3 @@
-
 class ObjectiveEnum:
     """This "Enum" serves to store all the strings appearing in the objective function (and its return values)."""
 
@@ -19,5 +18,3 @@ class ObjectiveEnum:
     # prohibit any attempt to set any values
     def __setattr__(self, key, value):
         raise ValueError("No changes allowed.")
-
-

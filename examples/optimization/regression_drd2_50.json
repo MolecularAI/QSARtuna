@@ -24,7 +24,7 @@
     "cross_validation": 3,
     "direction": "maximize",
     "n_startup_trials": 30,
-    "n_trials": 100
+    "n_trials": 15
   },
   "algorithms": [
     {
@@ -41,7 +41,7 @@
       }
     },
     {
-      "name": "RandomForest",
+      "name": "RandomForestRegressor",
       "parameters": {
         "max_depth": {
           "low": 2,

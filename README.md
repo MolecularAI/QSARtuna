@@ -1,6 +1,8 @@
-# QPTUNA: QSAR using Optimization for Hyper-parameter Tuning
+# QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)
 
-Build predictive models for CompChem with hyper-parameters optimized by [Optuna](https://optuna.org/).
+Build predictive models for CompChem with hyperparameters optimized by [Optuna](https://optuna.org/).
+
+Developed with Uncertainty Quantification and model explainability in mind.
 
 ## Background
 
@@ -12,11 +14,16 @@ for the given data.
 The search itself 
 is done using [Optuna](https://optuna.org/).
 
+Devloped models employ
+the latest state-of-the-art
+uncertinaty estimation and
+explainability python packages
+
 ### The three-step process
 
 QPTUNA is structured around three steps:
 
-1. *Hyper-parameter Optimization:*
+1. *Hyperparameter Optimization:* 
     Train many models with different parameters using Optuna.
     Only the training dataset is used here. 
     Training is usually done with cross-validation.
@@ -29,6 +36,7 @@ QPTUNA is structured around three steps:
     Re-train the best-performing model on the merged training and test datasets. 
     This step has a drawback that there is no data left to evaluate the resulting model, 
     but it has a big benefit that this final model is trained on the all available data.   
+
 
 ## JSON-based Command-line interface
 
@@ -44,8 +52,7 @@ It contains four main sections:
 * **descriptors** - which molecular descriptors to use.
 * **algorithms** - which ML algorithms to use.
 
-Below is the example of such file 
-(it is also available in the source code repository).:
+Below is the example of such a file 
 
 ```json
 {
@@ -109,8 +116,8 @@ Below is the example of such file
 ```
 
 Data section specifies location of the dataset file.
-In this example it specifies a relative path to the `tests/data` folder
-in the source code repository.
+In this example it specifies a relative path to the `tests/data` folder.
+
 
 Settings section specifies that:
 * we are building a regression model,
@@ -124,29 +131,19 @@ and optimization is free to pair any specified descriptor with any of the algori
 
 When we have our data and our configuration, it is time to start the optimization.
 
-### Running from the command line
+### Running via singulartity
 
-QPTUNA can be deployed on a cluster using [Singularity](https://sylabs.io/guides/3.7/user-guide/index.html) container.
-
-The commands below assume the use of Singularity container.
-If QPTUNA is installed locally, without containerization, 
-just skip the container part.
+QPTUNA can be deployed using [Singularity](https://sylabs.io/guides/3.7/user-guide/index.html) container.
 
 To run commands inside the container, Singularity uses the following syntax:
 ```shell
 singularity exec <container.sif> <command>
 ```
 
-We can create environmental variable to hold path to our container.
-Using Bash syntax:
-```bash
-export QPTUNA_CONTAINER=/path/to/qptuna.sif
-```
-
 We can run three-step-process from command line with the following command:
 
 ```shell
-singularity exec ${QPTUNA_CONTAINER} \
+singularity exec /projects/cc/mai/containers/Qptuna_latest.sif \
   /opt/qptuna/.venv/bin/qptuna-optimize \
   --config examples/optimization/regression_drd2_50.json \
   --best-buildconfig-outpath ~/qptuna-target/best.json \
@@ -156,7 +153,8 @@ singularity exec ${QPTUNA_CONTAINER} \
 
 Since optimization can be a long process,
 we should avoid running it on the login node, 
-and we should submit it to the SLURM queue instead.
+and we should submit it to the SLURM queue instead. 
+
 
 ### Submitting to SLURM
 
@@ -169,17 +167,18 @@ We can submit our script to the queue by giving `sbatch` the following script:
 #SBATCH --cpus-per-task=5
 #SBATCH --mem-per-cpu=4G
 #SBATCH --time=100:0:0
+#SBATCH --partition core
 
 # This script illustrates how to run one configuration from Qptuna examples.
 # The example we use is in examples/optimization/regression_drd2_50.json.
 
 # The example we chose uses relative paths to data files, change directory.
-cd /path/to/qptuna/examples/and/data
+cd /{project_folder}/OptunaAZ-versions/OptunaAZ_latest
 
 singularity exec \
-   ${QPTUNA_CONTAINER} \
+  /{project_folder}/containers/Qptuna_latest.sif \
   /opt/qptuna/.venv/bin/qptuna-optimize \
-  --config examples/optimization/regression_drd2_50.json \
+  --config{project_folder}/examples/optimization/regression_drd2_50.json \
   --best-buildconfig-outpath ~/qptuna-target/best.json \
   --best-model-outpath ~/qptuna-target/best.pkl \
   --merged-model-outpath ~/qptuna-target/merged.pkl
@@ -187,11 +186,12 @@ singularity exec \
 
 When the script is complete, it will create pickled model files inside your home directory under `~/qptuna-target/`.
 
+
 ### Using the model
 
 When the model is built, run inference:
 ```shell
-singularity exec  ${QPTUNA_CONTAINER} \
+singularity exec /{project_folder}/containers/Qptuna_latest.sif \
   /opt/qptuna/.venv/bin/qptuna-predict \
   --model-file target/merged.pkl \
   --input-smiles-csv-file tests/data/DRD2/subset-50/test.csv \
@@ -199,12 +199,72 @@ singularity exec  ${QPTUNA_CONTAINER} \
   --output-prediction-csv-file target/prediction.csv
 ```
 
+Note that Qptuna_latest.sif points to the most recent version of Qptuna.
+
+Legacy models require the inference with the same Qptuna version used to train the model.
+This can be specified by modifying the above command and supplying 
+`/projects/cc/mai/containers/Qptuna_<version>.sif` (replace <version> with the version of Qptuna).
+
+E.g:
+```shell
+singularity exec /{project_folder}/containers/Qptuna_2.5.1.sif \
+  /opt/qptuna/.venv/bin/qptuna-predict \
+  --model-file 2.5.1_model.pkl \
+  --input-smiles-csv-file tests/data/DRD2/subset-50/test.csv \
+  --input-smiles-csv-column "canonical" \
+  --output-prediction-csv-file target/prediction.csv
+```
+
+would generate predictions for a model trained with Qptuna 2.5.1.
+
+### Optional: inspect
+To inspect performance of different models tried during optimization,
+use [MLFlow Tracking UI](https://www.mlflow.org/docs/latest/tracking.html):
+```bash
+module load mlflow
+mlflow ui
+```
+
+Then open mlflow link your browser.
+
+![mlflow select experiment](docs/images/mlflow-select-experiment.png)
+
+If you run `mlflow ui` on SCP, 
+you can forward your mlflow port 
+with a separate SSH session started on your local ("non-SCP") machine:
+```bash
+ssh -N -L localhost:5000:localhost:5000 user@login.intranet.net
+```
+("-L" forwards ports, and "-N" just to not execute any commands).
+
+In the MLFlow Tracking UI, select experiment to the left, 
+it is named after the input file path.
+Then select all runs/trials in the experiment, and choose "Compare". 
+You will get a comparison page for selected runs/trials in the experiment.
+
+![mlflow inspecting trials](docs/images/mlflow-inspecting-trials.png)
+
+Comparison page will show MLFlow Runs (called Trials in Optuna), 
+as well as their Parameters and Metrics.
+At the bottom there are plots. 
+For X-axis, select "trial_number".
+For Y-axis, start with "optimization_objective_cvmean_r2".
+
+You can get more details by clicking individual runs. 
+There you can access run/trial build (training) configuration.
+
+
 ## Run from Python/Jupyter Notebook
 
 Create conda environment with Jupyter and Install Qptuna there:
 ```shell
-poetry build
-python -m pip install dist/qptuna-2.4.2.tar.gz
+module purge
+module load Miniconda3
+conda create --name my_env_with_qptuna python=3.10.10 jupyter pip
+conda activate my_env_with_qptuna
+module purge  # Just in case.
+which python  # Check. Should output path that contains "my_env_with_qptuna".
+python -m pip install http://pages.scp.astrazeneca.net/mai/qptuna/releases/Qptuna_latest.tar.gz
 ```
 
 Then you can use Qptuna inside your Notebook:
@@ -272,28 +332,3 @@ build_best(buildconfig, "target/best.pkl")
 # Build (Train) and save the model on the merged train+test data.
 build_merged(buildconfig, "target/merged.pkl")
 ```
-
-### Generating plain Scikit-learn models (models compatible with current Reinvent)
-
-Script `optbuild.py` has option `--model-persistence-mode` 
-that you can set to `plain_sklearn`
-to get models that has no dependency on OptunaAZ,
-and that are compatible with current Reinvent GUI.
-
-```shell
-singularity exec  ${QPTUNA_CONTAINER} \
-  /opt/qptuna/.venv/bin/qptuna-optimize \
-  --config examples/optimization/regression_drd2_50.json \
-  --best-model-outpath target/best-plain.pkl \
-  --best-buildconfig-outpath target/best-plain.json \
-  --model-persistence-mode plain_sklearn 
-```
-
-In Python, 
-you can send `persist_as=ModelPersistenceMode.PLAIN_SKLEARN`
-to `build_best()` and `build_merged()`.
-
-## Contributors
-- Alexey Voronov [@alexvoronov](https://github.com/AlexVoronov)
-- Christian Margreitter [@cmargreitter](https://github.com/CMargreitter)
-- Atanas Patronov [@patronov](https://github.com/Patronov)

@@ -1,9 +1,9 @@
-from optunaz.descriptors import CompositeDescriptor, ECFP, PhyschemDescriptors
+from optunaz.descriptors import CompositeDescriptor, ECFP, UnscaledPhyschemDescriptors
 
 
 def test_composite():
     d1 = ECFP.new(nBits=1024)
-    d2 = PhyschemDescriptors.new()
+    d2 = UnscaledPhyschemDescriptors.new()
     d_comp = CompositeDescriptor.new(descriptors=[d1, d2])
 
     smi = "CCC"
@@ -15,3 +15,15 @@ def test_composite():
     assert len(fp1) == 1024
     assert len(fp2) == 208
     assert len(fp_comp) == 1232
+
+
+def test_bad_smiles():
+    d1 = ECFP.new()
+    d2 = UnscaledPhyschemDescriptors.new()
+    d_comp = CompositeDescriptor.new(descriptors=[d1, d2])
+
+    smi = "xyz"
+
+    fp = d_comp.calculate_from_smi(smi)
+
+    assert fp is None

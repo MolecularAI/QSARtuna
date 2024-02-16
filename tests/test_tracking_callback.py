@@ -6,7 +6,7 @@ from optunaz.config.optconfig import (
     OptimizationConfig,
     Ridge,
     Lasso,
-    PLS,
+    PLSRegression,
     RandomForestRegressor,
 )
 from optunaz.datareader import Dataset
@@ -36,7 +36,7 @@ def optconfig_regression(file_drd2_50):
             RandomForestRegressor.new(),
             Ridge.new(),
             Lasso.new(),
-            PLS.new(),
+            PLSRegression.new(),
         ],
         settings=OptimizationConfig.Settings(
             mode=ModelMode.REGRESSION,
@@ -44,7 +44,7 @@ def optconfig_regression(file_drd2_50):
             n_trials=30,
             n_startup_trials=10,
             direction=OptimizationDirection.MAXIMIZATION,
-            tracking_rest_endpoint="http://localhost:8891"  # To listen: nc -l -k 8891
+            tracking_rest_endpoint="http://localhost:8891",  # To listen: nc -l -k 8891
         ),
     )
 

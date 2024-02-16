@@ -1,4 +1,5 @@
 import collections
+from collections.abc import Mapping
 import copy
 from typing import Union, Dict, List, Any
 
@@ -45,51 +46,51 @@ def add_boolean_guards_for_schema_properties(
     schema["properties"] = new_props
 
 
-def replacekey(input: Union[Dict, List, object]) -> Any:
+def replacekey(input_: Union[Dict, List, object]) -> Any:
     replacements = {"anyOf": "oneOf"}
-    if isinstance(input, dict):
+    if isinstance(input_, dict):
         # For every key in the dict, get either a replacement, or the key itself.
         # Call this function recursively for values.
-        return {replacements.get(k, k): replacekey(v) for k, v in input.items()}
-    elif isinstance(input, list):
-        return [replacekey(item) for item in input]
+        return {replacements.get(k, k): replacekey(v) for k, v in input_.items()}
+    elif isinstance(input_, list):
+        return [replacekey(item) for item in input_]
     else:
-        return input
+        return input_
 
 
-def replacevalue(input: Union[Dict, List, object]) -> Any:
-    if isinstance(input, dict):
-        return {k: replacevalue(input[k]) for k in input}
-    elif isinstance(input, list):
-        return [replacevalue(item) for item in input]
+def replacevalue(input_: Union[Dict, List, object]) -> Any:
+    if isinstance(input_, dict):
+        return {k: replacevalue(input_[k]) for k in input_}
+    elif isinstance(input_, list):
+        return [replacevalue(item) for item in input_]
     else:
         replacements = {"integer": "number"}
-        return replacements.get(input, input)
+        return replacements.get(input_, input_)
 
 
-def addsibling(input: Union[Dict, List, object]) -> Any:
-    if isinstance(input, dict):
-        d = {k: addsibling(input[k]) for k in input}
-        if "oneOf" in input:
+def addsibling(input_: Union[Dict, List, object]) -> Any:
+    if isinstance(input_, dict):
+        d = {k: addsibling(input_[k]) for k in input_}
+        if "oneOf" in input_:
             d["type"] = "object"
         return d
-    elif isinstance(input, list):
-        return [addsibling(item) for item in input]
+    elif isinstance(input_, list):
+        return [addsibling(item) for item in input_]
     else:
-        return input
+        return input_
 
 
-def delsibling(input: Union[Dict, List, object], siblings: Dict[str, str]) -> Any:
-    if isinstance(input, dict):
-        d = {k: delsibling(input[k], siblings) for k in input}
+def delsibling(input_: Union[Dict, List, object], siblings: Dict[str, str]) -> Any:
+    if isinstance(input_, dict):
+        d = {k: delsibling(input_[k], siblings) for k in input_}
         for key, value in siblings.items():
-            if key in input:
+            if key in input_:
                 d.pop(value, None)
         return d
-    elif isinstance(input, list):
-        return [delsibling(item, siblings) for item in input]
+    elif isinstance(input_, list):
+        return [delsibling(item, siblings) for item in input_]
     else:
-        return input
+        return input_
 
 
 def getref(path: str, context: Dict):
@@ -108,13 +109,13 @@ def getref(path: str, context: Dict):
     return recursive_get(items, context)
 
 
-def copytitle(input, context):
+def copytitle(input_, context):
     """Copies "title" from "$ref" into oneOf."""
-    if isinstance(input, dict):
+    if isinstance(input_, dict):
         output = {}
-        for key in input:
+        for key in input_:
             if key == "oneOf":
-                initems = input[key]
+                initems = input_[key]
                 outitems = []
                 for initem in initems:
                     outitem = copy.deepcopy(initem)
@@ -125,39 +126,41 @@ def copytitle(input, context):
                     outitems.append(outitem)
                 output[key] = outitems
             else:
-                output[key] = copytitle(input[key], context)
+                output[key] = copytitle(input_[key], context)
 
         return output
-    elif isinstance(input, list):
-        return [copytitle(item, context) for item in input]
+    elif isinstance(input_, list):
+        return [copytitle(item, context) for item in input_]
     else:
-        return input
+        return input_
 
 
-def replaceenum(input: Union[Dict, List, object]) -> Any:
+def replaceenum(input_: Union[Dict, List, object]) -> Any:
     """Replace singleton enums with const."""
-    if isinstance(input, collections.Mapping):
+    if isinstance(input_, Mapping):
         d1 = {
             k: replaceenum(v)
-            for k, v in input.items()
+            for k, v in input_.items()
             if not (k == "enum" and isinstance(v, list) and len(v) == 1)
         }
         d2 = {
             "const": v[0]
-            for k, v in input.items()
+            for k, v in input_.items()
             if (k == "enum" and isinstance(v, list) and len(v) == 1)
         }
         return {**d1, **d2}  # Merge two dicts: https://stackoverflow.com/a/26853961
-    elif isinstance(input, list):
-        return [replaceenum(item) for item in input]
+    elif isinstance(input_, list):
+        return [replaceenum(item) for item in input_]
     else:
-        return input
+        return input_
 
 
 def addtitles(schema):
     if isinstance(schema, dict):
         for name, prop in schema.get("properties", {}).items():
-            prop["title"] = prop.get("title", name.capitalize())  # or whatever
+            # Skip adding titles to "Parameters", so that GUI can hide extra boxes.
+            if name.capitalize() != "Parameters":
+                prop["title"] = prop.get("title", name.capitalize())
         for value in schema.values():
             addtitles(value)
     elif isinstance(schema, list):

@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "qptuna"
-version = "2.4.1"
-description = "QPTUNA: QSAR using Optimization for Hyper-parameter Tuning"
-authors = ["Molecular AI, AstraZeneca <alexey.voronov1@astrazeneca.com>"]
+version = "3.0.0"
+description = "QPTUNA: QSAR using Optimization for Hyperparameter Tuning"
+authors = ["Molecular AI, AstraZeneca"]
 license = "Apache-2.0"
 readme = "README.md"
 packages = [
@@ -11,30 +11,44 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "~3.7"
-dill = "^0.3"
+python = "3.10.10"
+numpy = "1.23.5"
+scipy = "1.9.2"
+pandas = "^1.5.3"
 jsonpickle = "^2.0"
-mlflow = "^1.19"
-numpy = "<1.20"
-optuna = "^2.9"
-pandas = "^1.0"
-xgboost = "<1.4"
-rdkit-pypi = "^2021.03"
-scikit-learn = "~0.21"
-typing-extensions = "^3.10"
+xgboost = "^1.3"
+rdkit = "^2022.3"
+scikit-learn = "1.4.0"
+typing-extensions = ">=3.10, <5.0"
 apischema = "^0.17"
+chemprop = "1.5.2"
+descriptastorus = "^2.4"  # Chemprop dependency, but chemprop does not install it itself.
+prf = {git = "https://github.com/ireis/PRF.git", rev = "7ed097c26bbe9af0df0e724ac3b720f534cdc510"}  # There are no releases or tags, let's take the latest commit.
+jazzy = "0.0.11"
+shap = "0.41.0"
+MAPIE = "0.6.4"
 
-[tool.poetry.dev-dependencies]
-coverage = "^5.5"
+[tool.poetry.group.optimization.dependencies]
+mlflow = "^1.19"
+sqlalchemy = "1.4.46"
+optuna = "^3.1.1"
+
+[tool.poetry.group.dev.dependencies]
+coverage = ">5.1, <7.0"
+matplotlib = "3.7.1"
 nbsphinx = "^0.8"
 notebook = "^6.4"
-pytest = "^6.2"
+pytest = ">=6.2, <8.0"
 pytest-datadir = "^1.3"
 recommonmark = "^0.7"
 seaborn = "^0.11"
-sphinx = "^4.1"
+sphinx = "5.0.2"
 sphinx-apischema = "^0.1"
 sphinx-rtd-theme = "^1.0.0"
+autodoc-pydantic = "^1.8.0"
+sphinx-pydantic = "^0.1.1"
+pandoc = "^2.3"
+plotly = "5.15.0"
 
 [tool.poetry.scripts]
 qptuna-optimize = "qptuna.optbuild:main"
@@ -43,5 +57,5 @@ qptuna-predict = "qptuna.predict:main"
 qptuna-schemagen = "qptuna.schemagen:main"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.5.2"]
 build-backend = "poetry.core.masonry.api"

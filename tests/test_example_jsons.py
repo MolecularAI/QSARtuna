@@ -29,6 +29,16 @@ def test_optimization_templ_json(filename):
 
 
 @pytest.mark.parametrize(
+    "filename",
+    glob.glob(f"{attach_root_path('examples/optimization_splitters')}/*.json"),
+)
+def test_optimization_templ_json(filename):
+    with open(filename, "rt") as f:
+        data = json.load(f)
+    deserialize(OptimizationConfig, data)
+
+
+@pytest.mark.parametrize(
     "filename", glob.glob(f"{attach_root_path('examples/building')}/*.json")
 )
 def test_build_json(filename):

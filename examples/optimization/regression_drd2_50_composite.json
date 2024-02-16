@@ -27,15 +27,8 @@
             }
           },
           {
-            "name": "ScaledDescriptor",
-            "parameters": {
-              "descriptor": {
-                "name": "PhyschemDescriptors"
-              },
-              "scaler": {
-                "name": "UnfittedSklearnScaler"
-              }
-            }
+            "name": "PhyschemDescriptors",
+            "parameters": {}
           }
         ]
       }

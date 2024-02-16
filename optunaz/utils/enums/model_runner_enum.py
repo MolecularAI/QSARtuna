@@ -1,4 +1,3 @@
-
 class ModelRunnerDataframeEnum:
     """This "Enum" serves as storage for the column names used in the dataframe construction in the ModelRunner."""
 
