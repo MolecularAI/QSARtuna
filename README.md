@@ -19,6 +19,8 @@ the latest state-of-the-art
 uncertinaty estimation and
 explainability python packages
 
+Further documentation in the GitHub pages [here](https://molecularai.github.io/Qptuna/).
+
 ### The three-step process
 
 QPTUNA is structured around three steps:
