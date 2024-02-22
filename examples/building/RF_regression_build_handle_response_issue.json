@@ -1,0 +1,36 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "canonical",
+        "response_column": "molwt",
+        "response_type": "regression",
+        "training_dataset_file": "tests/data/DRD2/subset-50/train_response_col_issue_test.csv",
+        "test_dataset_file": "tests/data/DRD2/subset-50/test.csv"
+    },
+    "metadata": {
+        "cross_validation": 5,
+        "best_trial": null,
+        "best_value": null,
+        "n_trials": 15
+    },
+    "descriptor":
+        { "name": "ECFP",
+            "parameters": {
+                "radius": 3,
+                "nBits": 2048
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "RandomForestRegressor",
+        "parameters": {
+            "max_depth": 20,
+            "n_estimators": 38,
+            "max_features": "auto"
+        }
+    }
+}

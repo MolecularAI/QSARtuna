@@ -1,0 +1,47 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "Smiles",
+    "response_column": "Measurement",
+    "training_dataset_file": "tests/data/pxc50/P24863.csv",
+    "probabilistic_threshold_representation" : true,
+    "probabilistic_threshold_representation_threshold" : 8.0,
+    "probabilistic_threshold_representation_std" : 0.6
+  },
+  "descriptors": [
+    {
+      "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048
+      }
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 2,
+    "direction": "maximize",
+    "n_startup_trials": 1,
+    "n_trials": 1
+  },
+  "algorithms": [
+    {
+      "name": "PRFClassifier",
+      "parameters": {
+        "max_depth": {
+          "low": 10,
+          "high": 20
+        },
+        "n_estimators": {
+          "low": 5,
+          "high": 10
+        },
+        "min_py_sum_leaf": {
+          "low": 1,
+          "high": 5
+        },
+        "max_features": ["auto", "sqrt", "log2"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "task": "building",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt_gt_330",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "test_dataset_file": "tests/data/DRD2/subset-50/test.csv"},
+  "metadata": {
+    "cross_validation": 2,
+    "best_trial": null,
+    "best_value": null,
+    "n_trials": 1},
+  "descriptor":
+    { "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048}
+    }
+  ,
+  "settings": {
+    "mode": "classification",
+    "direction": "maximize"},
+  "algorithm": {
+    "name": "PRFClassifier",
+    "parameters": {
+        "max_depth" : 10,
+        "n_estimators" : 10,
+        "max_features" : "AUTO",
+        "use_py_gini" : 1,
+        "use_py_leafs" : 1,
+        "bootstrap" : 1,
+        "new_syn_data_frac" : 0.0,
+        "min_py_sum_leaf" : 1
+    }
+  }
+}

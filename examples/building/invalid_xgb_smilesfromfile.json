@@ -1,0 +1,33 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "canonical",
+        "response_column": "molwt",
+        "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+        "test_dataset_file": "tests/data/DRD2/subset-50/test.csv"
+    },
+    "metadata": {
+        "cross_validation": 5,
+        "best_trial": null,
+        "best_value": null,
+        "n_trials": 10
+    },
+    "descriptor":
+        { "name": "SmilesFromFile",
+            "parameters": {
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "XGBRegressor",
+        "parameters": {
+            "max_depth": 78,
+            "n_estimators": 66,
+            "learning_rate": 0.1121189518955848
+        }
+    }
+}

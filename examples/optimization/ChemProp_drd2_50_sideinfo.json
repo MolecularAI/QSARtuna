@@ -1,0 +1,80 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv"
+  },
+  "descriptors": [
+    {
+      "name": "SmilesAndSideInfoFromFile",
+      "parameters": {
+        "file": "tests/data/DRD2/subset-50/train_side_info.csv",
+        "input_column": "canonical"
+      }
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 2,
+    "direction": "maximize",
+    "n_startup_trials": 1,
+    "n_trials": 3
+  },
+  "algorithms": [
+    {
+      "name": "ChemPropRegressor",
+      "parameters": {
+        "aggregation_norm": {
+          "low": 100,
+          "high": 100
+        },
+        "batch_size": {
+          "low": 50,
+          "high": 50
+        },
+        "ensemble_size": 1,
+        "epochs": 4,
+        "depth": {
+          "low": 2,
+          "high": 6
+        },
+        "dropout": {
+          "low": 0,
+          "high": 0.4
+        },
+        "ffn_hidden_size": {
+          "low": 300,
+          "high": 2400
+        },
+        "ffn_num_layers": {
+          "low": 1,
+          "high": 3
+        },
+        "final_lr_ratio_exp": {
+          "low": 0,
+          "high": 0
+        },
+        "hidden_size": {
+          "low": 300,
+          "high": 2400
+        },
+        "init_lr_ratio_exp": {
+          "low": 0,
+          "high": 0
+        },
+        "max_lr_exp": {
+          "low": -3,
+          "high": -3
+        },
+        "warmup_epochs_ratio": {
+          "low": 0.1,
+          "high": 0.1
+        },
+        "activation": ["ReLU"],
+        "aggregation": ["mean"],
+        "features_generator": ["none"]
+      }
+    }
+  ]
+}

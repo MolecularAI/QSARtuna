@@ -1,0 +1,35 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "canonical",
+        "response_column": "molwt",
+        "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+        "test_dataset_file": null
+    },
+    "metadata": {
+        "cross_validation": 2,
+        "best_trial": null,
+        "best_value": null,
+        "n_trials": 1
+    },
+    "descriptor":
+        { "name": "SmilesFromFile",
+            "parameters": {
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "ChemPropHyperoptRegressor",
+        "parameters": {
+            "ensemble_size": 1,
+            "epochs": 4,
+            "features_generator": "none",
+            "num_iters": 1,
+            "search_parameter_level": "auto"
+        }
+    }
+}
