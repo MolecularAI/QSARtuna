@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">optunaz</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="optunaz">
+<h1>optunaz<a class="headerlink" href="#optunaz" title="Permalink to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="optunaz.html">optunaz package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optunaz.config.html">optunaz.config package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.config.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.config.html#module-optunaz.config.build_from_opt">optunaz.config.build_from_opt module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.config.html#module-optunaz.config.buildconfig">optunaz.config.buildconfig module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.config.html#module-optunaz.config.optconfig">optunaz.config.optconfig module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.config.html#module-optunaz.config">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="optunaz.utils.html">optunaz.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.files_paths">optunaz.utils.files_paths module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.load_json">optunaz.utils.load_json module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.mlflow">optunaz.utils.mlflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.schema">optunaz.utils.schema module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.tracking">optunaz.utils.tracking module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.builder">optunaz.builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.datareader">optunaz.datareader module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.descriptors">optunaz.descriptors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.evaluate">optunaz.evaluate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.explainability">optunaz.explainability module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.metircs">optunaz.metircs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.model_writer">optunaz.model_writer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.objective">optunaz.objective module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.optbuild">optunaz.optbuild module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.predict">optunaz.predict module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.schemagen">optunaz.schemagen module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.three_step_opt_build_merge">optunaz.three_step_opt_build_merge module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz.visualizer">optunaz.visualizer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.html#module-optunaz">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

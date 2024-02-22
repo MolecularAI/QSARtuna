@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to QPTUNA Documentation! &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" href="README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to QPTUNA Documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="welcome-to-qptuna-documentation">
+<h1>Welcome to QPTUNA Documentation!<a class="headerlink" href="#welcome-to-qptuna-documentation" title="Permalink to this heading"></a></h1>
+<p>Welcome to QPTUNA: QSAR using Optimization for Hyperparameter Tuning.</p>
+<p>Build QSAR models with hyperparameters optimized by <a class="reference external" href="https://optuna.org/">Optuna</a>.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="README.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#json-based-command-line-interface">JSON-based Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#run-from-python-jupyter-notebook">Run from Python/Jupyter Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Translate-from-SDF-to-CSV-(if-needed)">Translate from SDF to CSV (if needed)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Deal-with-duplicates-(Deduplication)">Deal with duplicates (Deduplication)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Splitting-the-data">Splitting the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Transform-of-data-inputs">Transform of data inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Log-transform-of-user-input-data">Log transform of user input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Probabilistic-Threshold-Representation-(PTR)-and-experimental-error">Probabilistic Threshold Representation (PTR) and experimental error</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#This-tutorial">This tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Preparation">Preparation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Preprocessing:-splitting-data-into-train-and-test-sets,-and-removing-duplicates">Preprocessing: splitting data into train and test sets, and removing duplicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Choosing-scoring-function">Choosing scoring function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Advanced-functoinaility:-algorithms-&amp;-runs">Advanced functoinaility: algorithms &amp; runs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Probabilistic-Random-Forest-(PRF)">Probabilistic Random Forest (PRF)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#ChemProp">ChemProp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Probability-calibration-(classification)">Probability calibration (classification)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Uncertainty-estimation">Uncertainty estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Explainability">Explainability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#ChemProp-fingerprints-(encode-latent-representation-as-descriptors)">ChemProp fingerprints (encode latent representation as descriptors)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Log-transformation">Log transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html#Advanced-options-for-Qptuna-runs">Advanced options for Qptuna runs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#adaboostclassifier">AdaBoostClassifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#lasso">Lasso</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#logisticregression">LogisticRegression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#plsregression">PLSRegression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#randomforestclassifier">RandomForestClassifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#randomforestregressor">RandomForestRegressor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#ridge">Ridge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#svc">SVC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#svr">SVR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#xgbregressor">XGBRegressor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#prfclassifier">PRFClassifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#chempropregressor">ChemPropRegressor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#chempropclassifier">ChemPropClassifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#chemprophyperoptclassifier">ChemPropHyperoptClassifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#chemprophyperoptregressor">ChemPropHyperoptRegressor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#calibratedclassifiercvwithva">CalibratedClassifierCVWithVA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#mapie">Mapie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#avalon">Avalon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#ecfp">ECFP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#ecfp-counts">ECFP_counts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#maccs-keys">MACCS_keys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#unscaledphyschemdescriptors">UnscaledPhyschemDescriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#unscaledjazzydescriptors">UnscaledJazzyDescriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#physchemdescriptors">PhyschemDescriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#jazzydescriptors">JazzyDescriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#precomputeddescriptorfromfile">PrecomputedDescriptorFromFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#smilesfromfile">SmilesFromFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#smilesandsideinfofromfile">SmilesAndSideInfoFromFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#scaleddescriptor">ScaledDescriptor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="descriptors.html#compositedescriptor">CompositeDescriptor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="splitters.html#random">Random</a></li>
+<li class="toctree-l2"><a class="reference internal" href="splitters.html#temporal">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="splitters.html#stratified">Stratified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="splitters.html#predefined">Predefined</a></li>
+<li class="toctree-l2"><a class="reference internal" href="splitters.html#scaffoldsplit">ScaffoldSplit</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="_static/pytest/pytest/index.html">Test report</a></p></li>
+<li><p><a class="reference external" href="_static/pytest/coverage/index.html">Test coverage</a></p></li>
+<li><p><a class="reference external" href="https://github.com/AZU-RDIT/optuna_az/">Source code (GitHub)</a></p></li>
+<li><p><a class="reference external" href="https://jira.rd.astrazeneca.net/browse/OPTUNA/">Issues (Jira)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/MolecularAI/Qptuna/">Public release (3.0.0)</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="README.html" class="btn btn-neutral float-right" title="QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

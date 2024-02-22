@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.config.buildconfig &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../config.html">optunaz.config</a></li>
+      <li class="breadcrumb-item active">optunaz.config.buildconfig</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for optunaz.config.buildconfig</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">sklearn</span>
+<span class="kn">import</span> <span class="nn">sklearn.cross_decomposition</span>
+<span class="kn">import</span> <span class="nn">sklearn.ensemble</span>
+<span class="kn">import</span> <span class="nn">sklearn.linear_model</span>
+<span class="kn">import</span> <span class="nn">sklearn.svm</span>
+<span class="kn">import</span> <span class="nn">xgboost</span>
+<span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">optunaz</span>
+<span class="kn">from</span> <span class="nn">optunaz</span> <span class="kn">import</span> <span class="n">algorithms</span>
+<span class="kn">from</span> <span class="nn">optunaz.algorithms</span> <span class="kn">import</span> <span class="n">chem_prop</span>
+<span class="kn">from</span> <span class="nn">optunaz.algorithms</span> <span class="kn">import</span> <span class="n">chem_prop_hyperopt</span>
+<span class="kn">from</span> <span class="nn">optunaz.algorithms</span> <span class="kn">import</span> <span class="n">probabilistic_random_forest</span>
+<span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ModelMode</span><span class="p">,</span>
+    <span class="n">OptimizationDirection</span><span class="p">,</span>
+    <span class="n">Algorithm</span> <span class="k">as</span> <span class="n">GenericAlg</span><span class="p">,</span>
+    <span class="n">Visualization</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">optunaz.config.optconfig</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RegressionScore</span><span class="p">,</span>
+    <span class="n">ClassificationScore</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">optunaz.datareader</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">optunaz.descriptors</span> <span class="kn">import</span> <span class="n">AnyDescriptor</span>
+
+
+<div class="viewcode-block" id="Algorithm"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Algorithm">[docs]</a><span class="k">class</span> <span class="nc">Algorithm</span><span class="p">(</span><span class="n">GenericAlg</span><span class="p">):</span>
+<div class="viewcode-block" id="Algorithm.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Algorithm.estimator">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseEstimator</span><span class="p">:</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="AdaBoostClassifier"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.AdaBoostClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AdaBoostClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="AdaBoostClassifier.AdaBoostClassifierParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.AdaBoostClassifier.AdaBoostClassifierParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">AdaBoostClassifierParameters</span><span class="p">:</span>
+        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;AdaBoostClassifier&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">AdaBoostClassifierParameters</span>
+
+<div class="viewcode-block" id="AdaBoostClassifier.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.AdaBoostClassifier.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">AdaBoostClassifier</span><span class="p">(</span>
+            <span class="n">estimator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;SAMME&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Lasso"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Lasso">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Lasso</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="Lasso.LassoParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Lasso.LassoParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">LassoParameters</span><span class="p">:</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Lasso&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">LassoParameters</span>
+
+<div class="viewcode-block" id="Lasso.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Lasso.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">linear_model</span><span class="o">.</span><span class="n">Lasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="LogisticRegression"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.LogisticRegression">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="LogisticRegression.LogisticRegressionParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.LogisticRegression.LogisticRegressionParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">LogisticRegressionParameters</span><span class="p">:</span>
+        <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">C</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;LogisticRegression&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">LogisticRegressionParameters</span>
+
+<div class="viewcode-block" id="LogisticRegression.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.LogisticRegression.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(</span>
+            <span class="n">penalty</span><span class="o">=</span><span class="s2">&quot;l2&quot;</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+            <span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+            <span class="n">solver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">solver</span><span class="p">,</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PLSRegression"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.PLSRegression">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PLSRegression</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="PLSRegression.PLSParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.PLSRegression.PLSParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">PLSParameters</span><span class="p">:</span>
+        <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;PLSRegression&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">PLSParameters</span>
+
+<div class="viewcode-block" id="PLSRegression.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.PLSRegression.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">cross_decomposition</span><span class="o">.</span><span class="n">PLSRegression</span><span class="p">(</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_components</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RandomForestClassifier"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.RandomForestClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RandomForestClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomForestClassifier.RandomForestParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.RandomForestClassifier.RandomForestParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">RandomForestParameters</span><span class="p">:</span>
+        <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">max_features</span><span class="p">:</span> <span class="nb">str</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;RandomForestClassifier&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">RandomForestParameters</span>
+
+<div class="viewcode-block" id="RandomForestClassifier.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.RandomForestClassifier.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_features</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="n">max_features</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_features</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">RandomForestClassifier</span><span class="p">(</span>
+            <span class="n">max_depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_depth</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RandomForestRegressor"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.RandomForestRegressor">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RandomForestRegressor</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomForestRegressor.RandomForestParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.RandomForestRegressor.RandomForestParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">RandomForestParameters</span><span class="p">:</span>
+        <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">max_features</span><span class="p">:</span> <span class="nb">str</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;RandomForestRegressor&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">RandomForestParameters</span>
+
+<div class="viewcode-block" id="RandomForestRegressor.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.RandomForestRegressor.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_features</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="n">max_features</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_features</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">RandomForestRegressor</span><span class="p">(</span>
+            <span class="n">max_depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_depth</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Ridge"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Ridge">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Ridge</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="Ridge.RidgeParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Ridge.RidgeParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">RidgeParameters</span><span class="p">:</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Ridge&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">RidgeParameters</span>
+
+<div class="viewcode-block" id="Ridge.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Ridge.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">linear_model</span><span class="o">.</span><span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SVC"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.SVC">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SVC</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="SVC.SVCParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.SVC.SVCParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">SVCParameters</span><span class="p">:</span>
+        <span class="n">C</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-30</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">1e10</span><span class="p">))</span>
+        <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">1e3</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SVC&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">SVCParameters</span>
+
+<div class="viewcode-block" id="SVC.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.SVC.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">(</span>
+            <span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+            <span class="n">gamma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span>
+            <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
+            <span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SVR"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.SVR">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SVR</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="SVR.SVRParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.SVR.SVRParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">SVRParameters</span><span class="p">:</span>
+        <span class="n">C</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-30</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">1e10</span><span class="p">))</span>
+        <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">1e3</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;SVR&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">SVRParameters</span>
+
+<div class="viewcode-block" id="SVR.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.SVR.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">svm</span><span class="o">.</span><span class="n">SVR</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="XGBRegressor"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.XGBRegressor">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">XGBRegressor</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="XGBRegressor.XGBRegressorParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.XGBRegressor.XGBRegressorParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">XGBRegressorParameters</span><span class="p">:</span>
+        <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;XGBRegressor&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">XGBRegressorParameters</span>
+
+<div class="viewcode-block" id="XGBRegressor.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.XGBRegressor.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">xgboost</span><span class="o">.</span><span class="n">XGBRegressor</span><span class="p">(</span>
+            <span class="n">max_depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_depth</span><span class="p">,</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+            <span class="n">reg_lambda</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;reg:squarederror&quot;</span><span class="p">,</span>
+            <span class="n">subsample</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">booster</span><span class="o">=</span><span class="s2">&quot;gbtree&quot;</span><span class="p">,</span>
+            <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">gamma</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PRFClassifier"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.PRFClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PRFClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="PRFClassifier.PRFClassifierParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">PRFClassifierParameters</span><span class="p">:</span>
+        <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">max_features</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">use_py_gini</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">use_py_leafs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">bootstrap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">new_syn_data_frac</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">min_py_sum_leaf</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;PRFClassifier&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">PRFClassifierParameters</span>
+
+<div class="viewcode-block" id="PRFClassifier.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.PRFClassifier.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">probabilistic_random_forest</span><span class="o">.</span><span class="n">PRFClassifier</span><span class="p">(</span>
+            <span class="n">max_depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_depth</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_features</span><span class="p">,</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">use_py_gini</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">use_py_gini</span><span class="p">,</span>
+            <span class="n">use_py_leafs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">use_py_leafs</span><span class="p">,</span>
+            <span class="n">bootstrap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">bootstrap</span><span class="p">,</span>
+            <span class="n">new_syn_data_frac</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">new_syn_data_frac</span><span class="p">,</span>
+            <span class="n">min_py_sum_leaf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">min_py_sum_leaf</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ChemPropRegressor"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressor">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ChemPropRegressor</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="ChemPropRegressor.ChemPropRegressorParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressor.ChemPropRegressorParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">ChemPropRegressorParameters</span><span class="p">:</span>
+        <span class="n">activation</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">aggregation</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">aggregation_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">ensemble_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+        <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span>
+        <span class="n">features_generator</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">ffn_hidden_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">ffn_num_layers</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">final_lr_ratio_exp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">init_lr_ratio_exp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">max_lr_exp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">6</span><span class="p">))</span>
+        <span class="n">warmup_epochs_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="n">aux_weight_pc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ChemPropRegressor&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">ChemPropRegressorParameters</span>
+
+<div class="viewcode-block" id="ChemPropRegressor.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressor.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">chem_prop</span><span class="o">.</span><span class="n">ChemPropRegressor</span><span class="p">(</span>
+            <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
+            <span class="n">aggregation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aggregation</span><span class="p">,</span>
+            <span class="n">aggregation_norm</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="p">),</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">batch_size</span><span class="p">),</span>
+            <span class="n">depth</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">depth</span><span class="p">),</span>
+            <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="n">ensemble_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">features_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
+            <span class="n">ffn_hidden_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="p">),</span>
+            <span class="n">ffn_num_layers</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="p">),</span>
+            <span class="n">final_lr_ratio_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">final_lr_ratio_exp</span><span class="p">,</span>
+            <span class="n">hidden_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">),</span>
+            <span class="n">init_lr_ratio_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">init_lr_ratio_exp</span><span class="p">,</span>
+            <span class="n">max_lr_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_lr_exp</span><span class="p">,</span>
+            <span class="n">warmup_epochs_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="p">,</span>
+            <span class="n">aux_weight_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aux_weight_pc</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ChemPropClassifier"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ChemPropClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="ChemPropClassifier.ChemPropClassifierParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropClassifier.ChemPropClassifierParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">ChemPropClassifierParameters</span><span class="p">:</span>
+        <span class="n">activation</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">aggregation</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">aggregation_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">ensemble_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+        <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span>
+        <span class="n">features_generator</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">ffn_hidden_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">ffn_num_layers</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">final_lr_ratio_exp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># float: suggest_discrete_uniform fix</span>
+        <span class="n">init_lr_ratio_exp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">max_lr_exp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">6</span><span class="p">))</span>
+        <span class="n">warmup_epochs_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="n">aux_weight_pc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ChemPropClassifier&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">ChemPropClassifierParameters</span>
+
+<div class="viewcode-block" id="ChemPropClassifier.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropClassifier.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">chem_prop</span><span class="o">.</span><span class="n">ChemPropClassifier</span><span class="p">(</span>
+            <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
+            <span class="n">aggregation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aggregation</span><span class="p">,</span>
+            <span class="n">aggregation_norm</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="p">),</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">batch_size</span><span class="p">),</span>
+            <span class="n">depth</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">depth</span><span class="p">),</span>
+            <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="n">ensemble_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">features_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
+            <span class="n">ffn_hidden_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="p">),</span>
+            <span class="n">ffn_num_layers</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="p">),</span>
+            <span class="n">final_lr_ratio_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">final_lr_ratio_exp</span><span class="p">,</span>
+            <span class="n">hidden_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">),</span>
+            <span class="n">init_lr_ratio_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">init_lr_ratio_exp</span><span class="p">,</span>
+            <span class="n">max_lr_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">max_lr_exp</span><span class="p">,</span>
+            <span class="n">warmup_epochs_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="p">,</span>
+            <span class="n">aux_weight_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aux_weight_pc</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ChemPropHyperoptClassifier"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ChemPropHyperoptClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="ChemPropHyperoptClassifier.ChemPropHyperoptClassifierParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptClassifier.ChemPropHyperoptClassifierParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">ChemPropHyperoptClassifierParameters</span><span class="p">:</span>
+        <span class="n">ensemble_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+        <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span>
+        <span class="n">features_generator</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">num_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
+        <span class="n">search_parameter_level</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">aux_weight_pc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ChemPropHyperoptClassifier&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">ChemPropHyperoptClassifierParameters</span>
+
+<div class="viewcode-block" id="ChemPropHyperoptClassifier.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptClassifier.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">chem_prop_hyperopt</span><span class="o">.</span><span class="n">ChemPropHyperoptClassifier</span><span class="p">(</span>
+            <span class="n">ensemble_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">features_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
+            <span class="n">num_iters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">num_iters</span><span class="p">,</span>
+            <span class="n">search_parameter_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">search_parameter_level</span><span class="p">,</span>
+            <span class="n">aux_weight_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aux_weight_pc</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ChemPropHyperoptRegressor"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptRegressor">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ChemPropHyperoptRegressor</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="ChemPropHyperoptRegressor.ChemPropHyperoptRegressorParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptRegressor.ChemPropHyperoptRegressorParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">ChemPropHyperoptRegressorParameters</span><span class="p">:</span>
+        <span class="n">ensemble_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+        <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span>
+        <span class="n">features_generator</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">num_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
+        <span class="n">search_parameter_level</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">aux_weight_pc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ChemPropHyperoptRegressor&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">ChemPropHyperoptRegressorParameters</span>
+
+<div class="viewcode-block" id="ChemPropHyperoptRegressor.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptRegressor.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">chem_prop_hyperopt</span><span class="o">.</span><span class="n">ChemPropHyperoptRegressor</span><span class="p">(</span>
+            <span class="n">ensemble_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">features_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
+            <span class="n">num_iters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">num_iters</span><span class="p">,</span>
+            <span class="n">search_parameter_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">search_parameter_level</span><span class="p">,</span>
+            <span class="n">aux_weight_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">aux_weight_pc</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="n">AnyUncalibratedClassifier</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">AdaBoostClassifier</span><span class="p">,</span>
+    <span class="n">LogisticRegression</span><span class="p">,</span>
+    <span class="n">RandomForestClassifier</span><span class="p">,</span>
+    <span class="n">SVC</span><span class="p">,</span>
+    <span class="n">ChemPropClassifier</span><span class="p">,</span>
+    <span class="n">ChemPropRegressor</span><span class="p">,</span>
+    <span class="n">ChemPropHyperoptClassifier</span><span class="p">,</span>
+    <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="CalibratedClassifierCVWithVA"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CalibratedClassifierCVWithVA">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CalibratedClassifierCVWithVA</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">CalibratedClassifierCVParameters</span><span class="p">:</span>
+        <span class="n">n_folds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">ensemble</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">estimator</span><span class="p">:</span> <span class="n">AnyUncalibratedClassifier</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;CalibratedClassifierCVWithVA&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">CalibratedClassifierCVParameters</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># pop sys calibration cache for monkey patch</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sklearn.calibration&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">optunaz.algorithms.calibrated_cv</span>
+
+<div class="viewcode-block" id="CalibratedClassifierCVWithVA.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># pop sys calibration cache for monkey patch</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sklearn.calibration&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">optunaz.algorithms.calibrated_cv</span>
+
+        <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">calibrated_cv</span><span class="o">.</span><span class="n">CalibratedClassifierCVWithVA</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">estimator</span><span class="p">(),</span>
+            <span class="n">n_folds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_folds</span><span class="p">,</span>
+            <span class="n">ensemble</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ensemble</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="n">AnyRegression</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">Lasso</span><span class="p">,</span>
+    <span class="n">PLSRegression</span><span class="p">,</span>
+    <span class="n">RandomForestRegressor</span><span class="p">,</span>
+    <span class="n">Ridge</span><span class="p">,</span>
+    <span class="n">SVR</span><span class="p">,</span>
+    <span class="n">XGBRegressor</span><span class="p">,</span>
+    <span class="n">PRFClassifier</span><span class="p">,</span>
+    <span class="n">ChemPropRegressor</span><span class="p">,</span>
+    <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">MapieCompatible</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">Lasso</span><span class="p">,</span>
+    <span class="n">PLSRegression</span><span class="p">,</span>
+    <span class="n">RandomForestRegressor</span><span class="p">,</span>
+    <span class="n">Ridge</span><span class="p">,</span>
+    <span class="n">SVR</span><span class="p">,</span>
+    <span class="n">XGBRegressor</span><span class="p">,</span>
+    <span class="n">PRFClassifier</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="Mapie"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Mapie">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Mapie</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="Mapie.MapieParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Mapie.MapieParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">MapieParameters</span><span class="p">:</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.99</span><span class="p">))</span>
+        <span class="n">estimator</span><span class="p">:</span> <span class="n">MapieCompatible</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Mapie&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">MapieParameters</span>
+
+<div class="viewcode-block" id="Mapie.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Mapie.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">optunaz.algorithms.mapie_uncertainty</span> <span class="kn">import</span> <span class="n">MapieWithUncertainty</span>
+
+        <span class="k">return</span> <span class="n">MapieWithUncertainty</span><span class="p">(</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">estimator</span><span class="p">(),</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="n">AnyAlgorithm</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">AnyUncalibratedClassifier</span><span class="p">,</span>
+    <span class="n">AnyRegression</span><span class="p">,</span>
+    <span class="n">CalibratedClassifierCVWithVA</span><span class="p">,</span>
+    <span class="n">Mapie</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">AnyChemPropAlgorithm</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ChemPropClassifier</span><span class="p">,</span>
+    <span class="n">ChemPropRegressor</span><span class="p">,</span>
+    <span class="n">ChemPropHyperoptClassifier</span><span class="p">,</span>
+    <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="BuildConfig"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.BuildConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BuildConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build configuration.</span>
+
+<span class="sd">    This is the configuration to train a model,</span>
+<span class="sd">    i.e. optimize parameters of a model,</span>
+<span class="sd">    given fixed hyperparameters.</span>
+<span class="sd">    It roughly corresponds to Optuna Trial.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BuildConfig.Metadata"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.BuildConfig.Metadata">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Metadata</span><span class="p">:</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cross_validation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">shuffle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_trial</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">best_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_trials</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">visualization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Visualization</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="BuildConfig.Settings"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.BuildConfig.Settings">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelMode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">scoring</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">RegressionScore</span><span class="p">,</span> <span class="n">ClassificationScore</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">direction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OptimizationDirection</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_trials</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">tracking_rest_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;URL to track build results using internal format&quot;</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+    <span class="n">data</span><span class="p">:</span> <span class="n">Dataset</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span>
+    <span class="n">descriptor</span><span class="p">:</span> <span class="n">AnyDescriptor</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Settings</span><span class="p">]</span>
+    <span class="n">algorithm</span><span class="p">:</span> <span class="n">AnyAlgorithm</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;building&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;building&quot;</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

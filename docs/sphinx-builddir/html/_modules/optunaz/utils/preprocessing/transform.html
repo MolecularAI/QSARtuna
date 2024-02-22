@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.utils.preprocessing.transform &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../utils.html">optunaz.utils</a></li>
+      <li class="breadcrumb-item active">optunaz.utils.preprocessing.transform</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for optunaz.utils.preprocessing.transform</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">apischema</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">schema</span><span class="p">,</span> <span class="n">deserializer</span><span class="p">,</span> <span class="n">serializer</span><span class="p">,</span> <span class="n">identity</span>
+<span class="kn">from</span> <span class="nn">apischema.conversions</span> <span class="kn">import</span> <span class="n">Conversion</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">NameParameterDataclass</span>
+
+
+<div class="viewcode-block" id="DataTransform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.DataTransform">[docs]</a><span class="k">class</span> <span class="nc">DataTransform</span><span class="p">(</span><span class="n">NameParameterDataclass</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for auxiliary transformers.</span>
+
+<span class="sd">    Each data transformer should provide method `transform`,</span>
+<span class="sd">    which takes raw input data, and returns numpy arrays with</span>
+<span class="sd">    transformed output data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_union</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># You can use __init_subclass__ to register new subclass automatically</span>
+    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isabstract</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span>  <span class="c1"># Do not register abstract classes, like RDKitDescriptor.</span>
+        <span class="c1"># Deserializers stack directly as a Union</span>
+        <span class="n">deserializer</span><span class="p">(</span><span class="n">Conversion</span><span class="p">(</span><span class="n">identity</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">DataTransform</span><span class="p">))</span>
+        <span class="c1"># Only Base serializer must be registered (and updated for each subclass) as</span>
+        <span class="c1"># a Union, and not be inherited</span>
+        <span class="n">DataTransform</span><span class="o">.</span><span class="n">_union</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">cls</span> <span class="k">if</span> <span class="n">DataTransform</span><span class="o">.</span><span class="n">_union</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataTransform</span><span class="o">.</span><span class="n">_union</span><span class="p">,</span> <span class="bp">cls</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">serializer</span><span class="p">(</span>
+            <span class="n">Conversion</span><span class="p">(</span>
+                <span class="n">identity</span><span class="p">,</span>
+                <span class="n">source</span><span class="o">=</span><span class="n">DataTransform</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">DataTransform</span><span class="o">.</span><span class="n">_union</span><span class="p">,</span>
+                <span class="n">inherited</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DataTransform.transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.DataTransform.transform">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="PTRTransform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PTRTransform</span><span class="p">(</span><span class="n">DataTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform model input/output with PTR&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PTRTransform.Parameters"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;PTRTransformParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">float</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PTR Threshold&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The decision boundary for discretising active or inactive classes used by PTR.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">std</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">float</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PTR standard deviation&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The standard deviation used by PTR, e.g. experimental reproducibility/uncertainty&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;PTRTransform&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
+
+<div class="viewcode-block" id="PTRTransform.transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Must define a PTR threshold&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Must define a PTR Std. Dev.&quot;</span>
+        <span class="k">return</span> <span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">y_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">std</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PTRTransform.reverse_transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform.reverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Must define a PTR threshold&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Must define a PTR Std. Dev.&quot;</span>
+        <span class="k">return</span> <span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span>
+            <span class="n">y_</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mf">0.0000000000000001</span><span class="p">,</span> <span class="mf">0.9999999999999999</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">std</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="LogBase"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.LogBase">[docs]</a><span class="k">class</span> <span class="nc">LogBase</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base for Numpy transform in ModelDataTransform&quot;&quot;&quot;</span>
+
+    <span class="n">LOG2</span> <span class="o">=</span> <span class="s2">&quot;log2&quot;</span>
+    <span class="n">LOG10</span> <span class="o">=</span> <span class="s2">&quot;log10&quot;</span>
+    <span class="n">LOG</span> <span class="o">=</span> <span class="s2">&quot;log&quot;</span></div>
+
+
+<div class="viewcode-block" id="LogNegative"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.LogNegative">[docs]</a><span class="k">class</span> <span class="nc">LogNegative</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base for Numpy negated&quot;&quot;&quot;</span>
+
+    <span class="n">TRUE</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+    <span class="n">FALSE</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span></div>
+
+
+<div class="viewcode-block" id="ModelDataTransform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ModelDataTransform</span><span class="p">(</span><span class="n">DataTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data transformer that applies and reverses logarithmic functions to user data&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ModelDataTransform.Parameters"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;ModelDataTransformParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="n">base</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">LogBase</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Base&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The log, log2 or log10 base to use in log transformation&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">negation</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">LogNegative</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Negation&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether or not to make the log transform performed negated (-)&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">conversion</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Conversion power&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The conversion power applied in the log transformation&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ModelDataTransform&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
+
+    <span class="n">base_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">LogBase</span><span class="o">.</span><span class="n">LOG2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">,</span>
+        <span class="n">LogBase</span><span class="o">.</span><span class="n">LOG10</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span>
+        <span class="n">LogBase</span><span class="o">.</span><span class="n">LOG</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">base_negation</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">LogNegative</span><span class="o">.</span><span class="n">TRUE</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">LogNegative</span><span class="o">.</span><span class="n">FALSE</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">reverse_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">LogBase</span><span class="o">.</span><span class="n">LOG2</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">2</span><span class="o">**</span><span class="n">x</span><span class="p">,</span>
+        <span class="n">LogBase</span><span class="o">.</span><span class="n">LOG10</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="n">x</span><span class="p">,</span>
+        <span class="n">LogBase</span><span class="o">.</span><span class="n">LOG</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="ModelDataTransform.transform_df"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.transform_df">[docs]</a>    <span class="k">def</span> <span class="nf">transform_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">base</span><span class="p">](</span><span class="n">df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelDataTransform.transform_one"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.transform_one">[docs]</a>    <span class="k">def</span> <span class="nf">transform_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">base</span><span class="p">](</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelDataTransform.reverse_transform_df"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform_df">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_transform_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">base</span><span class="p">](</span><span class="n">df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelDataTransform.reverse_transform_one"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform_one">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_transform_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">base</span><span class="p">](</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelDataTransform.transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">conversion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_</span> <span class="o">=</span> <span class="n">y_</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">conversion</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_df</span><span class="p">(</span><span class="n">y_</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">y_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_negation</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">negation</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">transformed</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">transformed</span></div>
+
+<div class="viewcode-block" id="ModelDataTransform.reverse_transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_negation</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">negation</span><span class="p">]:</span>
+            <span class="n">y_</span> <span class="o">=</span> <span class="o">-</span><span class="n">y_</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse_transform_df</span><span class="p">(</span><span class="n">y_</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse_transform_one</span><span class="p">(</span><span class="n">y_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">conversion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="n">transformed</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">conversion</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">transformed</span></div></div>
+
+
+<div class="viewcode-block" id="AuxTransformer"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.AuxTransformer">[docs]</a><span class="k">class</span> <span class="nc">AuxTransformer</span><span class="p">(</span><span class="n">DataTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Auxiliary transformation classes</span>
+
+<span class="sd">    Each auxiliary data transforation provides the method `transform`,</span>
+<span class="sd">    which takes raw auxiliary data, and returns numpy arrays with</span>
+<span class="sd">    transformed auxiliary data.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AuxTransformer.transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.AuxTransformer.transform">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auxiliary_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="VectorFromColumn"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">VectorFromColumn</span><span class="p">(</span><span class="n">AuxTransformer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Vector from column</span>
+
+<span class="sd">    Splits delimited values from in inputs into usable vectors&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VectorFromColumn.Parameters"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;VectorFromColumnParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="n">delimiter</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Delimiter&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;String used to split the auxiliary column into a vector&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;VectorFromColumn&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
+
+<div class="viewcode-block" id="VectorFromColumn.transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auxiliary_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">delimiter</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">auxiliary_data</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ZScales"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ZScales</span><span class="p">(</span><span class="n">AuxTransformer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Z-scales from column</span>
+
+<span class="sd">    Calculates Z-scores for sequences or a predefined list of protein targets&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ZScales.Parameters"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;ZScalesParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="n">delimiter</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Delimiter&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;String used to split the auxiliary column into a vector&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ZScales&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
+
+<div class="viewcode-block" id="ZScales.transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auxiliary_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">delimiter</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">auxiliary_data</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="n">AnyAuxTransformer</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">VectorFromColumn</span><span class="p">,</span> <span class="n">ZScales</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

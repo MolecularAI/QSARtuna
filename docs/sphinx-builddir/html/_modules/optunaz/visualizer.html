@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.visualizer &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">optunaz.visualizer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for optunaz.visualizer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">optuna</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">optuna</span> <span class="kn">import</span> <span class="n">storages</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">optuna.trial</span> <span class="kn">import</span> <span class="n">TrialState</span><span class="p">,</span> <span class="n">FrozenTrial</span>
+
+<span class="kn">from</span> <span class="nn">optunaz.config.optconfig</span> <span class="kn">import</span> <span class="n">OptimizationConfig</span>
+<span class="kn">from</span> <span class="nn">optunaz.utils</span> <span class="kn">import</span> <span class="n">mkdict</span>
+<span class="kn">from</span> <span class="nn">optunaz.utils.enums.optimization_configuration_enum</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OptimizationConfigurationEnum</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">optunaz.utils.enums.visualization_enum</span> <span class="kn">import</span> <span class="n">VisualizationEnum</span>
+
+
+<div class="viewcode-block" id="Visualizer"><a class="viewcode-back" href="../../optunaz.html#optunaz.visualizer.Visualizer">[docs]</a><span class="k">class</span> <span class="nc">Visualizer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to visualize various aspects of the optimization / building process.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># initialize Enums</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OE</span> <span class="o">=</span> <span class="n">OptimizationConfigurationEnum</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span> <span class="o">=</span> <span class="n">VisualizationEnum</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Visualizer.plot_by_configuration"><a class="viewcode-back" href="../../optunaz.html#optunaz.visualizer.Visualizer.plot_by_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">plot_by_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="n">OptimizationConfig</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">):</span>
+        <span class="n">vis_dict</span> <span class="o">=</span> <span class="n">mkdict</span><span class="p">(</span><span class="n">conf</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION</span><span class="p">]</span>
+
+        <span class="n">output_folder</span> <span class="o">=</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_OUTPUT_FOLDER</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_make_folder</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_HISTORY</span>
+            <span class="ow">in</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">][</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_HISTORY</span>
+            <span class="p">]</span>
+            <span class="ow">is</span> <span class="kc">True</span>
+        <span class="p">):</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">output_folder</span><span class="p">,</span>
+                <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;history&quot;</span><span class="p">,</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_FILE_FORMAT</span><span class="p">]]),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_history</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_CONTOUR</span>
+            <span class="ow">in</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">][</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_CONTOUR</span>
+            <span class="p">]</span>
+            <span class="ow">is</span> <span class="kc">True</span>
+        <span class="p">):</span>
+            <span class="n">contour_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s2">&quot;contour&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_folder</span><span class="p">(</span><span class="n">contour_folder</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_contour</span><span class="p">(</span>
+                <span class="n">folder_path</span><span class="o">=</span><span class="n">contour_folder</span><span class="p">,</span>
+                <span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">,</span>
+                <span class="n">file_format</span><span class="o">=</span><span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_FILE_FORMAT</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_PARALLEL_COORDINATE</span>
+            <span class="ow">in</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">][</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_PARALLEL_COORDINATE</span>
+            <span class="p">]</span>
+            <span class="ow">is</span> <span class="kc">True</span>
+        <span class="p">):</span>
+            <span class="n">para_coord_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s2">&quot;parallel_coordinates&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_folder</span><span class="p">(</span><span class="n">para_coord_folder</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_parallel_coordinate</span><span class="p">(</span>
+                <span class="n">folder_path</span><span class="o">=</span><span class="n">para_coord_folder</span><span class="p">,</span>
+                <span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">,</span>
+                <span class="n">file_format</span><span class="o">=</span><span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_FILE_FORMAT</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_SLICE</span>
+            <span class="ow">in</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS</span><span class="p">][</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_PLOTS_SLICE</span>
+            <span class="p">]</span>
+            <span class="ow">is</span> <span class="kc">True</span>
+        <span class="p">):</span>
+            <span class="n">slice_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s2">&quot;slice&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_folder</span><span class="p">(</span><span class="n">slice_folder</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_slice</span><span class="p">(</span>
+                <span class="n">folder_path</span><span class="o">=</span><span class="n">slice_folder</span><span class="p">,</span>
+                <span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">,</span>
+                <span class="n">file_format</span><span class="o">=</span><span class="n">vis_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_FILE_FORMAT</span><span class="p">],</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Visualizer.plot_slice"><a class="viewcode-back" href="../../optunaz.html#optunaz.visualizer.Visualizer.plot_slice">[docs]</a>    <span class="k">def</span> <span class="nf">plot_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">):</span>
+        <span class="c1"># formats &quot;png&quot; and &quot;jpeg&quot; are handled inside the &quot;write_image()&quot; function of &quot;plotly&quot; / &quot;orca&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">studies_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_study_by_algorithm</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sub_study</span> <span class="ow">in</span> <span class="n">studies_list</span><span class="p">:</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">folder_path</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sub_study</span><span class="o">.</span><span class="n">study_name</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_format</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="n">fig</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">_get_slice_plot</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">sub_study</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="n">sub_study</span><span class="o">.</span><span class="n">study_name</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">3.25</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Orca could not find an X11 interface, plotting disabled.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Visualizer.plot_parallel_coordinate"><a class="viewcode-back" href="../../optunaz.html#optunaz.visualizer.Visualizer.plot_parallel_coordinate">[docs]</a>    <span class="k">def</span> <span class="nf">plot_parallel_coordinate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span>
+    <span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">studies_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_study_by_algorithm</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sub_study</span> <span class="ow">in</span> <span class="n">studies_list</span><span class="p">:</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">folder_path</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sub_study</span><span class="o">.</span><span class="n">study_name</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_format</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="n">fig</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">_get_parallel_coordinate_plot</span><span class="p">(</span>
+                    <span class="n">study</span><span class="o">=</span><span class="n">sub_study</span>
+                <span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="n">sub_study</span><span class="o">.</span><span class="n">study_name</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">6.75</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Orca could not find an X11 interface, plotting disabled.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Visualizer.plot_contour"><a class="viewcode-back" href="../../optunaz.html#optunaz.visualizer.Visualizer.plot_contour">[docs]</a>    <span class="k">def</span> <span class="nf">plot_contour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">studies_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_study_by_algorithm</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sub_study</span> <span class="ow">in</span> <span class="n">studies_list</span><span class="p">:</span>
+                <span class="c1"># as this is a two-dimensional plot, disable it for all algorithms that have less than 2 hyperparameters</span>
+                <span class="c1"># note, that &quot;study_type&quot; has been removed by &quot;_split_study_by_algorithm()&quot;, so only &#39;real&#39; hyperparameters</span>
+                <span class="c1"># remain at this stage</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_study</span><span class="o">.</span><span class="n">trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">folder_path</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sub_study</span><span class="o">.</span><span class="n">study_name</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_format</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="n">fig</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">_get_contour_plot</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">sub_study</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="n">sub_study</span><span class="o">.</span><span class="n">study_name</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">6.75</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Orca could not find an X11 interface, plotting disabled.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Visualizer.plot_history"><a class="viewcode-back" href="../../optunaz.html#optunaz.visualizer.Visualizer.plot_history">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">plot_history</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">_get_optimization_history_plot</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">3.25</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Orca could not find an X11 interface, plotting disabled.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_split_study_by_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="c1"># the general idea is to make a copy of the &quot;Study&quot; object and remove all trials that do not belong to a given</span>
+        <span class="c1"># algorithm, i.e. return a list of &quot;Study&quot; objects, one for each algorithm used</span>
+        <span class="c1"># note, that internally &quot;optuna&quot; only uses the trials and optimization direction to do the plots</span>
+        <span class="n">studies_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 1) get whether it is a regression or classification and, since algorithms are just another hyperparameter in</span>
+        <span class="c1">#    &quot;Optuna_AZ&quot;, build a list of the algorithms used</span>
+        <span class="n">study_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_study_type</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">)</span>
+        <span class="n">names_algorithms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">study_type</span><span class="p">]</span> <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">])</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 2) loop over algorithms and remove trials that are not using the current algorithm; also set &quot;best&quot; attributes</span>
+        <span class="c1">#    to &quot;None&quot; to avoid undesirable side-effects</span>
+        <span class="k">for</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="n">names_algorithms</span><span class="p">:</span>
+            <span class="c1"># a unique study name is necessary for internal reasons</span>
+            <span class="n">storage</span> <span class="o">=</span> <span class="n">storages</span><span class="o">.</span><span class="n">InMemoryStorage</span><span class="p">()</span>
+
+            <span class="c1"># remove the algorithm as &quot;hyperparameter&quot; and renumber the trials to make sure they are plotted properly</span>
+            <span class="n">trials</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">trial</span>
+                <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">study_type</span><span class="p">]</span> <span class="o">==</span> <span class="n">algorithm</span>
+                <span class="ow">and</span> <span class="n">trial</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">TrialState</span><span class="o">.</span><span class="n">COMPLETE</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trials</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">number</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trials</span><span class="p">):</span>
+                <span class="k">del</span> <span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">study_type</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">trial</span><span class="o">.</span><span class="n">distributions</span><span class="p">[</span><span class="n">study_type</span><span class="p">]</span>
+                <span class="n">trial_updated</span> <span class="o">=</span> <span class="n">FrozenTrial</span><span class="p">(</span>
+                    <span class="n">number</span><span class="o">=</span><span class="n">number</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="n">TrialState</span><span class="o">.</span><span class="n">COMPLETE</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">datetime_start</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">datetime_start</span><span class="p">,</span>
+                    <span class="n">datetime_complete</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">datetime_complete</span><span class="p">,</span>
+                    <span class="n">params</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                    <span class="n">distributions</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">distributions</span><span class="p">,</span>
+                    <span class="n">user_attrs</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span><span class="p">,</span>
+                    <span class="n">system_attrs</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">system_attrs</span><span class="p">,</span>
+                    <span class="n">intermediate_values</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">intermediate_values</span><span class="p">,</span>
+                    <span class="n">trial_id</span><span class="o">=</span><span class="n">number</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">trials</span><span class="p">[</span><span class="n">number</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_updated</span>
+
+            <span class="n">storage</span><span class="o">.</span><span class="n">trials</span> <span class="o">=</span> <span class="n">trials</span>
+            <span class="n">storage</span><span class="o">.</span><span class="n">study_name</span> <span class="o">=</span> <span class="n">algorithm</span>
+            <span class="n">sub_study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span><span class="n">study_name</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">storage</span><span class="p">)</span>
+            <span class="n">studies_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_study</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">studies_list</span>
+
+    <span class="k">def</span> <span class="nf">_get_study_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_REGRESSOR</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">best_trial</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_REGRESSOR</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_CLASSIFIER</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">best_trial</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_VE</span><span class="o">.</span><span class="n">VISUALIZATION_CLASSIFIER</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Study must be either classification or regression.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_folder</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c1"># make sure, the output folder for the plots exists; not that this will only work if the</span>
+        <span class="c1"># last directory is missing</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

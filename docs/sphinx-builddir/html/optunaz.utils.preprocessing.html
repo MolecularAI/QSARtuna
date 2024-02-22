@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.utils.preprocessing package &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">optunaz.utils.preprocessing package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/optunaz.utils.preprocessing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="optunaz-utils-preprocessing-package">
+<h1>optunaz.utils.preprocessing package<a class="headerlink" href="#optunaz-utils-preprocessing-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-optunaz.utils.preprocessing.deduplicator">
+<span id="optunaz-utils-preprocessing-deduplicator-module"></span><h2>optunaz.utils.preprocessing.deduplicator module<a class="headerlink" href="#module-optunaz.utils.preprocessing.deduplicator" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.Deduplicator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">Deduplicator</span></span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#Deduplicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for deduplicators.</p>
+<p>Each deduplicator should provide method <cite>dedup</cite>,
+which takes dataframe and name of SMILES column,
+and returns dataframe with duplicates removed.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.Deduplicator.dedup">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#Deduplicator.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator.dedup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepFirst">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepFirst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepFirst'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepFirst"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepFirst" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep first.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepFirst.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepFirst'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepFirst.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepFirst.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepFirst.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepFirst.dedup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepLast">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepLast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepLast'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepLast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepLast" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep last.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepLast.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepLast'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepLast.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepLast.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepLast.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepLast.dedup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepRandom">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepRandom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepRandom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepRandom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepRandom" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep random.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepRandom.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepRandom'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepRandom.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepRandom.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepRandom.seed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepRandom.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepRandom.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepRandom.dedup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepMin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepMin'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepMin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep min.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMin.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepMin'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMin.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMin.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepMin.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMin.dedup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepMax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepMax'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepMax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep max.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMax.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepMax'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMax.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMax.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepMax.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMax.dedup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepAvg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepAvg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepAvg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepAvg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepAvg" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep average. Classification will threshold at 0.5.</p>
+<p>This deduplicator converts input SMILES to canonical SMILES.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepAvg.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepAvg'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepAvg.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepAvg.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepAvg.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepAvg.dedup" title="Permalink to this definition"></a></dt>
+<dd><p>For regression, keep mean value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMedian">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepMedian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepMedian'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepMedian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMedian" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep median. Classification will threshold at 0.5.</p>
+<p>This deduplicator converts input SMILES to canonical SMILES.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMedian.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepMedian'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMedian.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepMedian.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepMedian.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepMedian.dedup" title="Permalink to this definition"></a></dt>
+<dd><p>For regression, keep median value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.deduplicator.</span></span><span class="sig-name descname"><span class="pre">KeepAllNoDeduplication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KeepAllNoDeduplication'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepAllNoDeduplication"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.deduplicator.Deduplicator" title="optunaz.utils.preprocessing.deduplicator.Deduplicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code></a></p>
+<p>Keep all.</p>
+<p>Do not perform any deduplication.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KeepAllNoDeduplication'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication.dedup">
+<span class="sig-name descname"><span class="pre">dedup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/deduplicator.html#KeepAllNoDeduplication.dedup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication.dedup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.preprocessing.splitter">
+<span id="optunaz-utils-preprocessing-splitter-module"></span><h2>optunaz.utils.preprocessing.splitter module<a class="headerlink" href="#module-optunaz.utils.preprocessing.splitter" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.SklearnSplitter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">SklearnSplitter</span></span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#SklearnSplitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.SklearnSplitter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Interface definition for scikit-learn cross-validation splitter.</p>
+<p>Scikit-learn does not define a class that describes the splitter interface.
+Instead, scikit-learn describes in text that splitter should have two methods:
+‘get_n_splits’ and ‘split’.</p>
+<p>This class describes this splitter interface as an abstract Python class,
+for convenience and better type checking.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.SklearnSplitter.get_n_splits">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#SklearnSplitter.get_n_splits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.SklearnSplitter.get_n_splits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.SklearnSplitter.split">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#SklearnSplitter.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.SklearnSplitter.split" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Splitter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Splitter</span></span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Splitter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Splitter for input data.</p>
+<p>This is the base class for classes that split input data into train and test.</p>
+<p>See also CvSplitter for making multiple cross-validation splits.</p>
+<p>Splitter and CvSplitter are used to define valid input choices
+for splitting data into train-test sets,
+and for splitting train data into cross-validation splits
+in scikit-learn cross_validate function.
+These two sets of options might be different
+(although underlying implementations might be merged).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Splitter.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Splitter.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Splitter.split" title="Permalink to this definition"></a></dt>
+<dd><p>Splits input and returns indices for train and test sets.</p>
+<p>Returns two numpy arrays:
+one with indices of train set,
+and one with indices of test set.</p>
+<p>Note that scikit-learn splitters return an Iterator
+that yields (train, test) tuples for multiple splits,
+here we return only one split.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Splitter.get_sklearn_splitter">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Splitter.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Splitter.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Random">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Random" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.Splitter" title="optunaz.utils.preprocessing.splitter.Splitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Splitter</span></code></a></p>
+<p>Random split.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Random.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Random'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Random.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Random.fraction">
+<span class="sig-name descname"><span class="pre">fraction</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Random.fraction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Random.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Random.seed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Random.get_sklearn_splitter">
+<span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Random.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Random.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Temporal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Temporal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Temporal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Temporal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Temporal" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.Splitter" title="optunaz.utils.preprocessing.splitter.Splitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Splitter</span></code></a></p>
+<p>Temporal split.</p>
+<p>Assumes that the data is sorted,
+with the oldest entries in the beginning of the file,
+and the newest entries added at the end.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Temporal.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Temporal'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Temporal.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Temporal.fraction">
+<span class="sig-name descname"><span class="pre">fraction</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Temporal.fraction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Temporal.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Temporal.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Temporal.split" title="Permalink to this definition"></a></dt>
+<dd><p>Splits input and returns indices for train and test sets.</p>
+<p>Returns two numpy arrays:
+one with indices of train set,
+and one with indices of test set.</p>
+<p>Note that scikit-learn splitters return an Iterator
+that yields (train, test) tuples for multiple splits,
+here we return only one split.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Temporal.get_sklearn_splitter">
+<span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Temporal.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Temporal.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Stratified">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Stratified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stratified'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fd'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Stratified"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.Splitter" title="optunaz.utils.preprocessing.splitter.Splitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Splitter</span></code></a></p>
+<p>Real-valued Stratified Shuffle Split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>Literal</em>) – </p></li>
+<li><p><strong>fraction</strong> (<em>float</em>) – Fraction of samples to use for test set. - title: Test fraction</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Random seed, for repeatable splits. - title: Random seed</p></li>
+<li><p><strong>bins</strong> (<em>str</em>) – Algorithm to use for determining histogram bin edges, see numpy.histogram for possible options, or use default ‘fd’ - title: Binning algorithm</p></li>
+</ul>
+</dd>
+</dl>
+<p>This is similar to scikit-learn StratifiedShuffleSplit,
+but uses histogram binning for real-valued inputs.</p>
+<p>If inputs are integers (or strings),
+this splitter reverts to StratifiedShuffleSplit.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Stratified.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Stratified'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Stratified.fraction">
+<span class="sig-name descname"><span class="pre">fraction</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified.fraction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Stratified.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified.seed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Stratified.bins">
+<span class="sig-name descname"><span class="pre">bins</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fd'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified.bins" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Stratified.get_sklearn_splitter">
+<span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Stratified.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.NoSplitting">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">NoSplitting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NoSplitting'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#NoSplitting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.NoSplitting" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.Splitter" title="optunaz.utils.preprocessing.splitter.Splitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Splitter</span></code></a></p>
+<p>No splitting.</p>
+<p>Do not perform any splitting.
+Returns all input data as training set,
+and returns an empty test set.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.NoSplitting.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NoSplitting'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.NoSplitting.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.NoSplitting.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#NoSplitting.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.NoSplitting.split" title="Permalink to this definition"></a></dt>
+<dd><p>Splits input and returns indices for train and test sets.</p>
+<p>Returns two numpy arrays:
+one with indices of train set,
+and one with indices of test set.</p>
+<p>Note that scikit-learn splitters return an Iterator
+that yields (train, test) tuples for multiple splits,
+here we return only one split.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.NoSplitting.get_sklearn_splitter">
+<span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#NoSplitting.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.NoSplitting.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.KFold">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">KFold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KFold'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#KFold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.KFold" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.Splitter" title="optunaz.utils.preprocessing.splitter.Splitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Splitter</span></code></a></p>
+<p>KFold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>Literal</em>) – </p></li>
+<li><p><strong>shuffle</strong> (<em>bool</em>) – Whether to shuffle the data before splitting into batches. Note that the samples within each split will not be shuffled. - title: Shuffle</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em>) – When shuffle is True, random_state affects the ordering of the indices, which controls the randomness of each fold. Otherwise, this parameter has no effect. Pass an int for reproducible output across multiple function calls. - title: Random state</p></li>
+</ul>
+</dd>
+</dl>
+<p>Split dataset into k consecutive folds (without shuffling by default).</p>
+<p>Each fold is then used once as a validation,
+while the k - 1 remaining folds form the training set.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.KFold.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KFold'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.KFold.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.KFold.shuffle">
+<span class="sig-name descname"><span class="pre">shuffle</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.KFold.shuffle" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.KFold.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.KFold.random_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.KFold.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#KFold.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.KFold.split" title="Permalink to this definition"></a></dt>
+<dd><p>Splits input and returns indices for train and test sets.</p>
+<p>Returns two numpy arrays:
+one with indices of train set,
+and one with indices of test set.</p>
+<p>Note that scikit-learn splitters return an Iterator
+that yields (train, test) tuples for multiple splits,
+here we return only one split.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.KFold.get_sklearn_splitter">
+<span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#KFold.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.KFold.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.stratify">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">stratify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fd'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#stratify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.stratify" title="Permalink to this definition"></a></dt>
+<dd><p>Stratifies (splits into groups) the values in ‘y’.</p>
+<p>If input ‘y’ is real-valued (numpy.dtype.kind == ‘f’),
+this function bins the values based on computed histogram edges.</p>
+<p>For all other types of inputs,
+this function returns the original array,
+since downstream algorithms can natively deal with integer and categorical data.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">HistogramStratifiedShuffleSplit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#HistogramStratifiedShuffleSplit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.SklearnSplitter" title="optunaz.utils.preprocessing.splitter.SklearnSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SklearnSplitter</span></code></a></p>
+<p>StratifiedShuffleSplit for real-valued inputs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.test_fraction">
+<span class="sig-name descname"><span class="pre">test_fraction</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.test_fraction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.n_splits">
+<span class="sig-name descname"><span class="pre">n_splits</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.n_splits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.bins">
+<span class="sig-name descname"><span class="pre">bins</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fd'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.bins" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.random_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.get_n_splits">
+<span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#HistogramStratifiedShuffleSplit.get_n_splits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.get_n_splits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#HistogramStratifiedShuffleSplit.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.split" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.GroupingSplitter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">GroupingSplitter</span></span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#GroupingSplitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.GroupingSplitter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.Splitter" title="optunaz.utils.preprocessing.splitter.Splitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Splitter</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Splitter for methods using the group method</p>
+<p>This is the base class for the Predefined and ScaffoldSplit classes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.GroupingSplitter.groups">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#GroupingSplitter.groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.GroupingSplitter.groups" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Predefined">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Predefined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Predefined'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Predefined"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Predefined" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.GroupingSplitter" title="optunaz.utils.preprocessing.splitter.GroupingSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupingSplitter</span></code></a></p>
+<p>Predefined split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column_name</strong> (<em>Optional</em>) – Name of the column with labels for splits. Use <cite>-1</cite> to denote datapoints for the train set - title: Column Name</p></li>
+<li><p><strong>name</strong> (<em>Literal</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Splits data based predefined labels in a column. Integers can be used, and <cite>-1</cite> flags datapoints for use only in
+the training set.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Predefined.column_name">
+<span class="sig-name descname"><span class="pre">column_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Predefined.column_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Predefined.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Predefined'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Predefined.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Predefined.get_sklearn_splitter">
+<span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Predefined.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Predefined.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Predefined.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Predefined.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Predefined.split" title="Permalink to this definition"></a></dt>
+<dd><p>Splits input and returns indices for train and test sets.</p>
+<p>Returns two numpy arrays:
+one with indices of train set,
+and one with indices of test set.</p>
+<p>Note that scikit-learn splitters return an Iterator
+that yields (train, test) tuples for multiple splits,
+here we return only one split.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Predefined.groups">
+<span class="sig-name descname"><span class="pre">groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Predefined.groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Predefined.groups" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.butina_cluster">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">butina_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#butina_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.butina_cluster" title="Permalink to this definition"></a></dt>
+<dd><p>Clusters the scaffolds based on Butina and returns the scaffold grouping labels</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">ScaffoldSplit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_scaffold_generic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">butina_cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ScaffoldSplit'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#ScaffoldSplit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.splitter.GroupingSplitter" title="optunaz.utils.preprocessing.splitter.GroupingSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupingSplitter</span></code></a></p>
+<p>Stratified Group K Fold based on chemical scaffold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bins</strong> (<em>str</em>) – Algorithm to use for determining histogram bin edges, see numpy.histogram for possible options, or use default ‘fd’ - title: Binning algorithm</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em>) – </p></li>
+<li><p><strong>make_scaffold_generic</strong> (<em>bool</em>) – Makes Murcko scaffolds generic by removing hetero-atoms - title: Make scaffold generic</p></li>
+<li><p><strong>butina_cluster</strong> (<em>float</em>) – Butina clustering to aggregate scaffolds into shared folds. Elements within this cluster range are considered neighbors, increasing test difficulty. <cite>0.0</cite> turns Butina clustering off - minimum: 0.0, maximum: 1.0, title: Cluster threshold</p></li>
+<li><p><strong>name</strong> (<em>Literal</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Splits data based chemical (Murcko) scaffolds for the compounds in the user input data.
+This emulates the real-world scenario when models are applied to novel chemical space</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.bins">
+<span class="sig-name descname"><span class="pre">bins</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fd'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.bins" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.random_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.make_scaffold_generic">
+<span class="sig-name descname"><span class="pre">make_scaffold_generic</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.make_scaffold_generic" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.butina_cluster">
+<span class="sig-name descname"><span class="pre">butina_cluster</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.4</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.butina_cluster" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ScaffoldSplit'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.get_sklearn_splitter">
+<span class="sig-name descname"><span class="pre">get_sklearn_splitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#ScaffoldSplit.get_sklearn_splitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.get_sklearn_splitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.get_n_splits">
+<span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#ScaffoldSplit.get_n_splits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.get_n_splits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#ScaffoldSplit.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.split" title="Permalink to this definition"></a></dt>
+<dd><p>Splits input and returns indices for train and test sets.</p>
+<p>Returns two numpy arrays:
+one with indices of train set,
+and one with indices of test set.</p>
+<p>Note that scikit-learn splitters return an Iterator
+that yields (train, test) tuples for multiple splits,
+here we return only one split.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.ScaffoldSplit.groups">
+<span class="sig-name descname"><span class="pre">groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#ScaffoldSplit.groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.ScaffoldSplit.groups" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate scaffold smiles from a smiles column</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.preprocessing.transform">
+<span id="optunaz-utils-preprocessing-transform-module"></span><h2>optunaz.utils.preprocessing.transform module<a class="headerlink" href="#module-optunaz.utils.preprocessing.transform" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.DataTransform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">DataTransform</span></span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#DataTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.DataTransform" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="optunaz.config.html#optunaz.config.NameParameterDataclass" title="optunaz.config.NameParameterDataclass"><code class="xref py py-class docutils literal notranslate"><span class="pre">NameParameterDataclass</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for auxiliary transformers.</p>
+<p>Each data transformer should provide method <cite>transform</cite>,
+which takes raw input data, and returns numpy arrays with
+transformed output data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.DataTransform.transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#DataTransform.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.DataTransform.transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">PTRTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#PTRTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.transform.DataTransform" title="optunaz.utils.preprocessing.transform.DataTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataTransform</span></code></a></p>
+<p>Transform model input/output with PTR</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#PTRTransform.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform.Parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>threshold</strong> (<em>float</em>) – The decision boundary for discretising active or inactive classes used by PTR. - title: PTR Threshold</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – The standard deviation used by PTR, e.g. experimental reproducibility/uncertainty - title: PTR standard deviation</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform.Parameters.threshold">
+<span class="sig-name descname"><span class="pre">threshold</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform.Parameters.threshold" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform.Parameters.std">
+<span class="sig-name descname"><span class="pre">std</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform.Parameters.std" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#PTRTransform.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform.transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.PTRTransform.reverse_transform">
+<span class="sig-name descname"><span class="pre">reverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#PTRTransform.reverse_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.PTRTransform.reverse_transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.LogBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">LogBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#LogBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.LogBase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Base for Numpy transform in ModelDataTransform</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.LogBase.LOG2">
+<span class="sig-name descname"><span class="pre">LOG2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'log2'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.LogBase.LOG2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.LogBase.LOG10">
+<span class="sig-name descname"><span class="pre">LOG10</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'log10'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.LogBase.LOG10" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.LogBase.LOG">
+<span class="sig-name descname"><span class="pre">LOG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'log'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.LogBase.LOG" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.LogNegative">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">LogNegative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#LogNegative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.LogNegative" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Base for Numpy negated</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.LogNegative.TRUE">
+<span class="sig-name descname"><span class="pre">TRUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'True'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.LogNegative.TRUE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.LogNegative.FALSE">
+<span class="sig-name descname"><span class="pre">FALSE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'False'</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.LogNegative.FALSE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">ModelDataTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.transform.DataTransform" title="optunaz.utils.preprocessing.transform.DataTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataTransform</span></code></a></p>
+<p>Data transformer that applies and reverses logarithmic functions to user data</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conversion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base</strong> (<a class="reference internal" href="#optunaz.utils.preprocessing.transform.LogBase" title="optunaz.utils.preprocessing.transform.LogBase"><em>LogBase</em></a>) – The log, log2 or log10 base to use in log transformation - title: Base</p></li>
+<li><p><strong>negation</strong> (<a class="reference internal" href="#optunaz.utils.preprocessing.transform.LogNegative" title="optunaz.utils.preprocessing.transform.LogNegative"><em>LogNegative</em></a>) – Whether or not to make the log transform performed negated (-) - title: Negation</p></li>
+<li><p><strong>conversion</strong> (<em>Optional</em>) – The conversion power applied in the log transformation - title: Conversion power</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters.base">
+<span class="sig-name descname"><span class="pre">base</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters.base" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters.negation">
+<span class="sig-name descname"><span class="pre">negation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters.negation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters.conversion">
+<span class="sig-name descname"><span class="pre">conversion</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters.conversion" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.base_dict">
+<span class="sig-name descname"><span class="pre">base_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{LogBase.LOG:</span> <span class="pre">&lt;ufunc</span> <span class="pre">'log'&gt;,</span> <span class="pre">LogBase.LOG10:</span> <span class="pre">&lt;ufunc</span> <span class="pre">'log10'&gt;,</span> <span class="pre">LogBase.LOG2:</span> <span class="pre">&lt;ufunc</span> <span class="pre">'log2'&gt;}</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.base_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.base_negation">
+<span class="sig-name descname"><span class="pre">base_negation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{LogNegative.FALSE:</span> <span class="pre">False,</span> <span class="pre">LogNegative.TRUE:</span> <span class="pre">True}</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.base_negation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_dict">
+<span class="sig-name descname"><span class="pre">reverse_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{LogBase.LOG:</span> <span class="pre">&lt;ufunc</span> <span class="pre">'exp'&gt;,</span> <span class="pre">LogBase.LOG10:</span> <span class="pre">&lt;function</span> <span class="pre">ModelDataTransform.&lt;lambda&gt;&gt;,</span> <span class="pre">LogBase.LOG2:</span> <span class="pre">&lt;function</span> <span class="pre">ModelDataTransform.&lt;lambda&gt;&gt;}</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.transform_df">
+<span class="sig-name descname"><span class="pre">transform_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform.transform_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.transform_df" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.transform_one">
+<span class="sig-name descname"><span class="pre">transform_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform.transform_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.transform_one" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform_df">
+<span class="sig-name descname"><span class="pre">reverse_transform_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform.reverse_transform_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform_df" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform_one">
+<span class="sig-name descname"><span class="pre">reverse_transform_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform.reverse_transform_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform_one" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform">
+<span class="sig-name descname"><span class="pre">reverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ModelDataTransform.reverse_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ModelDataTransform.reverse_transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.AuxTransformer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">AuxTransformer</span></span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#AuxTransformer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.AuxTransformer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.transform.DataTransform" title="optunaz.utils.preprocessing.transform.DataTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataTransform</span></code></a></p>
+<p>Base class for Auxiliary transformation classes</p>
+<p>Each auxiliary data transforation provides the method <cite>transform</cite>,
+which takes raw auxiliary data, and returns numpy arrays with
+transformed auxiliary data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.AuxTransformer.transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auxiliary_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#AuxTransformer.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.AuxTransformer.transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.VectorFromColumn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">VectorFromColumn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#VectorFromColumn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.VectorFromColumn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.transform.AuxTransformer" title="optunaz.utils.preprocessing.transform.AuxTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuxTransformer</span></code></a></p>
+<p>Vector from column</p>
+<p>Splits delimited values from in inputs into usable vectors</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#VectorFromColumn.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>delimiter</strong> (<em>str</em>) – String used to split the auxiliary column into a vector - title: Delimiter</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters.delimiter">
+<span class="sig-name descname"><span class="pre">delimiter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">','</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters.delimiter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.VectorFromColumn.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.VectorFromColumn.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.VectorFromColumn.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.VectorFromColumn.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.VectorFromColumn.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auxiliary_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#VectorFromColumn.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.VectorFromColumn.transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ZScales">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.transform.</span></span><span class="sig-name descname"><span class="pre">ZScales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ZScales"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ZScales" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.preprocessing.transform.AuxTransformer" title="optunaz.utils.preprocessing.transform.AuxTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuxTransformer</span></code></a></p>
+<p>Z-scales from column</p>
+<p>Calculates Z-scores for sequences or a predefined list of protein targets</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ZScales.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ZScales.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ZScales.Parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>delimiter</strong> (<em>str</em>) – String used to split the auxiliary column into a vector - title: Delimiter</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ZScales.Parameters.delimiter">
+<span class="sig-name descname"><span class="pre">delimiter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">','</span></em><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ZScales.Parameters.delimiter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ZScales.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ZScales.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ZScales.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ZScales.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.preprocessing.transform.ZScales.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auxiliary_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/transform.html#ZScales.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.transform.ZScales.transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.preprocessing">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-optunaz.utils.preprocessing" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

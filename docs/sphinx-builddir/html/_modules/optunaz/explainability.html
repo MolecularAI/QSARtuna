@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.explainability &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">optunaz.explainability</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for optunaz.explainability</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">serialize</span>
+<span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">ModelMode</span>
+
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span>
+<span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">effective_n_jobs</span>
+
+
+<div class="viewcode-block" id="get_ecfp_fpinfo"><a class="viewcode-back" href="../../optunaz.html#optunaz.explainability.get_ecfp_fpinfo">[docs]</a><span class="k">def</span> <span class="nf">get_ecfp_fpinfo</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the ecfp info for a compound mol&quot;&quot;&quot;</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">GetMorganFingerprintAsBitVect</span><span class="p">(</span>
+        <span class="n">m</span><span class="p">,</span>
+        <span class="n">radius</span><span class="o">=</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span>
+        <span class="n">nBits</span><span class="o">=</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">nBits</span><span class="p">,</span>
+        <span class="n">bitInfo</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">info</span></div>
+
+
+<div class="viewcode-block" id="get_ecfpcount_fpinfo"><a class="viewcode-back" href="../../optunaz.html#optunaz.explainability.get_ecfpcount_fpinfo">[docs]</a><span class="k">def</span> <span class="nf">get_ecfpcount_fpinfo</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the ecfp_count info for a compound mol&quot;&quot;&quot;</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">GetHashedMorganFingerprint</span><span class="p">(</span>
+        <span class="n">m</span><span class="p">,</span>
+        <span class="n">radius</span><span class="o">=</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span>
+        <span class="n">nBits</span><span class="o">=</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">nBits</span><span class="p">,</span>
+        <span class="n">useFeatures</span><span class="o">=</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">useFeatures</span><span class="p">,</span>
+        <span class="n">bitInfo</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">info</span></div>
+
+
+<div class="viewcode-block" id="explain_ECFP"><a class="viewcode-back" href="../../optunaz.html#optunaz.explainability.explain_ECFP">[docs]</a><span class="k">def</span> <span class="nf">explain_ECFP</span><span class="p">(</span><span class="n">len_feats</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Explain ECFPs using train atom environments&quot;&quot;&quot;</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">len_feats</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;&lt;U50&quot;</span><span class="p">)</span>
+    <span class="c1"># enumerate through each important feature</span>
+    <span class="k">for</span> <span class="n">feat_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len_feats</span><span class="p">):</span>
+        <span class="n">this_feat_explained</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># enumerate through training set searching a compound with the feature</span>
+        <span class="k">for</span> <span class="n">mol_idx</span><span class="p">,</span> <span class="n">mol</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">X_</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">this_feat_explained</span><span class="p">:</span>
+                <span class="c1"># the feature is present in the mol if bit is &gt; 0</span>
+                <span class="k">if</span> <span class="n">mol</span><span class="p">[</span><span class="n">feat_idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">train_smiles_</span><span class="p">[</span><span class="n">mol_idx</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;ECFP&quot;</span><span class="p">:</span>
+                        <span class="n">info</span> <span class="o">=</span> <span class="n">get_ecfp_fpinfo</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)[</span><span class="n">feat_idx</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;ECFP_counts&quot;</span><span class="p">:</span>
+                        <span class="n">info</span> <span class="o">=</span> <span class="n">get_ecfpcount_fpinfo</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)[</span><span class="n">feat_idx</span><span class="p">]</span>
+                    <span class="c1"># enumerate atom matches, breaking when valid smiles produced</span>
+                    <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">radius</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+                        <span class="n">env</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">FindAtomEnvironmentOfRadiusN</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+                        <span class="n">amap</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="n">submol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">PathToSubmol</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">atomMap</span><span class="o">=</span><span class="n">amap</span><span class="p">)</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">feat_smi</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolToSmiles</span><span class="p">(</span>
+                                <span class="n">submol</span><span class="p">,</span> <span class="n">rootedAtAtom</span><span class="o">=</span><span class="n">amap</span><span class="p">[</span><span class="n">atom</span><span class="p">],</span> <span class="n">canonical</span><span class="o">=</span><span class="kc">False</span>
+                            <span class="p">)</span>
+                            <span class="n">ret</span><span class="p">[</span><span class="n">feat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat_smi</span>
+                            <span class="n">this_feat_explained</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="c1"># continue trying other matches if blank feature</span>
+                            <span class="k">if</span> <span class="n">feat_smi</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                                <span class="k">break</span>
+                        <span class="c1"># sometime MolToSmiles fails</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="k">pass</span>
+            <span class="c1"># feature is explained, so break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="get_fp_info"><a class="viewcode-back" href="../../optunaz.html#optunaz.explainability.get_fp_info">[docs]</a><span class="k">def</span> <span class="nf">get_fp_info</span><span class="p">(</span><span class="n">exp_df</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">descript</span><span class="p">,</span> <span class="n">fp_idx</span><span class="p">,</span> <span class="n">strt_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get ECFP SMILES environments or Physchem names when available&quot;&quot;&quot;</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s2">&quot;ECFP&quot;</span> <span class="ow">in</span> <span class="n">descript</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">explain_ECFP</span><span class="p">(</span><span class="n">fp_idx</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">descript</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;Physchem&quot;</span> <span class="ow">in</span> <span class="n">descript</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">descript</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">rdkit_names</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">descript</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">rdkit_names</span>
+    <span class="k">elif</span> <span class="s2">&quot;Jazzy&quot;</span> <span class="ow">in</span> <span class="n">descript</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">descript</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">descript</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">strt_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exp_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">strt_idx</span> <span class="p">:</span> <span class="n">strt_idx</span> <span class="o">+</span> <span class="n">fp_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exp_df</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="runShap"><a class="viewcode-back" href="../../optunaz.html#optunaz.explainability.runShap">[docs]</a><span class="k">def</span> <span class="nf">runShap</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Explain model prediction using auto explainer or SHAP KernelExplainer&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">shap</span>
+
+    <span class="c1"># see if shap can auto explain</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">Explainer</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">X_</span><span class="p">)</span>
+        <span class="c1"># deal with methods that require the inference method</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">:</span>
+                <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">Explainer</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">X_</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">:</span>
+                <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">Explainer</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">X_</span><span class="p">)</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_pred</span><span class="p">))))</span>
+    <span class="c1"># use kernel for other models</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">:</span>
+            <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">KernelExplainer</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">X_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="p">:</span>
+            <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">KernelExplainer</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">X_</span><span class="p">)</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_pred</span><span class="p">[:</span><span class="mi">1</span><span class="p">]),</span> <span class="n">nsamples</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">shap_values</span></div>
+
+
+<div class="viewcode-block" id="ShapExplainer"><a class="viewcode-back" href="../../optunaz.html#optunaz.explainability.ShapExplainer">[docs]</a><span class="k">def</span> <span class="nf">ShapExplainer</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run SHAP and populate the explainability dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shap_values</span> <span class="o">=</span> <span class="n">runShap</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="n">descriptor_</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">descriptor</span><span class="p">)</span>
+
+    <span class="c1"># process the shap_values shapes</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">shap_values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># if explainer explains both classes, take the active [1] class</span>
+            <span class="n">shap_values</span> <span class="o">=</span> <span class="n">shap_values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">shap_values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># sometimes values are wrapped and require [0]</span>
+            <span class="n">shap_values</span> <span class="o">=</span> <span class="n">shap_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># if multiple inputs provided then average the importance across predictions</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">exp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;shap_value&quot;</span><span class="p">:</span> <span class="n">shap_values</span><span class="p">,</span>
+            <span class="s2">&quot;descriptor&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+            <span class="s2">&quot;bit&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+            <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># process single descriptors</span>
+    <span class="k">if</span> <span class="n">descriptor_</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;CompositeDescriptor&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">descriptor_</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;ScaledDescriptor&quot;</span><span class="p">:</span>
+            <span class="n">descriptor_</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">descriptor_</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">exp_df</span><span class="p">[</span><span class="s2">&quot;descriptor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">descriptor_</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">exp_df</span><span class="p">[</span><span class="s2">&quot;bit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="p">))</span>
+        <span class="n">get_fp_info</span><span class="p">(</span><span class="n">exp_df</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">descriptor_</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shap_values</span><span class="p">))</span>
+    <span class="c1"># process CompositeDescriptor</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fp_info</span> <span class="o">=</span> <span class="n">descriptor_</span><span class="o">.</span><span class="n">fp_info</span><span class="p">()</span>
+        <span class="n">strt_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">descript</span> <span class="ow">in</span> <span class="n">descriptor_</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptors</span><span class="p">:</span>
+            <span class="n">fp_idx</span> <span class="o">=</span> <span class="n">fp_info</span><span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">serialize</span><span class="p">(</span><span class="n">descript</span><span class="p">))]</span>
+            <span class="k">if</span> <span class="n">descript</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;ScaledDescriptor&quot;</span><span class="p">:</span>
+                <span class="n">descript</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">descript</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">col_value</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;descriptor&quot;</span><span class="p">,</span> <span class="n">descript</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;bit&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fp_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="p">]:</span>
+                <span class="n">exp_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">strt_idx</span> <span class="p">:</span> <span class="n">strt_idx</span> <span class="o">+</span> <span class="n">fp_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">col_value</span>
+            <span class="n">get_fp_info</span><span class="p">(</span><span class="n">exp_df</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">descript</span><span class="p">,</span> <span class="n">fp_idx</span><span class="p">,</span> <span class="n">strt_idx</span><span class="o">=</span><span class="n">strt_idx</span><span class="p">)</span>
+            <span class="n">strt_idx</span> <span class="o">+=</span> <span class="n">fp_idx</span>
+    <span class="k">return</span> <span class="n">exp_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;shap_value&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExplainPreds"><a class="viewcode-back" href="../../optunaz.html#optunaz.explainability.ExplainPreds">[docs]</a><span class="k">def</span> <span class="nf">ExplainPreds</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Explain predictions using either SHAP (shallow models) or ChemProp interpret&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="s2">&quot;interpret&quot;</span><span class="p">):</span>
+        <span class="n">n_cores</span> <span class="o">=</span> <span class="n">effective_n_jobs</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_cores</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">estimator</span><span class="o">.</span><span class="n">interpret</span><span class="p">(</span><span class="n">X_pred</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_cores</span><span class="p">)(</span>
+                    <span class="n">delayed</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">interpret</span><span class="p">)([</span><span class="n">X</span><span class="p">])</span> <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">X_pred</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ShapExplainer</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

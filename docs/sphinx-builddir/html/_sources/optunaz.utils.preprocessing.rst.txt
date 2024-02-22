@@ -1,0 +1,37 @@
+optunaz.utils.preprocessing package
+===================================
+
+Submodules
+----------
+
+optunaz.utils.preprocessing.deduplicator module
+-----------------------------------------------
+
+.. automodule:: optunaz.utils.preprocessing.deduplicator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+optunaz.utils.preprocessing.splitter module
+-------------------------------------------
+
+.. automodule:: optunaz.utils.preprocessing.splitter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+optunaz.utils.preprocessing.transform module
+--------------------------------------------
+
+.. automodule:: optunaz.utils.preprocessing.transform
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: optunaz.utils.preprocessing
+   :members:
+   :undoc-members:
+   :show-inheritance:

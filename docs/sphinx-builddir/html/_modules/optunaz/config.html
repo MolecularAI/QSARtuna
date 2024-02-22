@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.config &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">optunaz.config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for optunaz.config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">deserialize</span>
+
+<span class="kn">from</span> <span class="nn">optunaz.utils</span> <span class="kn">import</span> <span class="n">mkdict</span>
+
+
+<div class="viewcode-block" id="ModelMode"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.ModelMode">[docs]</a><span class="k">class</span> <span class="nc">ModelMode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model mode, either regression or classification.&quot;&quot;&quot;</span>
+
+    <span class="n">REGRESSION</span> <span class="o">=</span> <span class="s2">&quot;regression&quot;</span>
+    <span class="n">CLASSIFICATION</span> <span class="o">=</span> <span class="s2">&quot;classification&quot;</span></div>
+
+
+<div class="viewcode-block" id="OptimizationDirection"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.OptimizationDirection">[docs]</a><span class="k">class</span> <span class="nc">OptimizationDirection</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optimization direction, either minimization or maximization.&quot;&quot;&quot;</span>
+
+    <span class="n">MINIMIZATION</span> <span class="o">=</span> <span class="s2">&quot;minimize&quot;</span>
+    <span class="n">MAXIMIZATION</span> <span class="o">=</span> <span class="s2">&quot;maximize&quot;</span></div>
+
+
+<div class="viewcode-block" id="Task"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.Task">[docs]</a><span class="k">class</span> <span class="nc">Task</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Task: optimization, building, or prediction.&quot;&quot;&quot;</span>
+
+    <span class="n">OPTIMIZATION</span> <span class="o">=</span> <span class="s2">&quot;optimization&quot;</span>
+    <span class="n">PREDICTION</span> <span class="o">=</span> <span class="s2">&quot;prediction&quot;</span>
+    <span class="n">BUILDING</span> <span class="o">=</span> <span class="s2">&quot;building&quot;</span></div>
+
+
+<div class="viewcode-block" id="NameParameterDataclass"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.NameParameterDataclass">[docs]</a><span class="k">class</span> <span class="nc">NameParameterDataclass</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A base class for (data-)classes that follow &quot;name&quot;-&quot;parameter&quot; structure.</span>
+
+<span class="sd">    Here is example of a name-parameter class:</span>
+
+<span class="sd">    &gt;&gt;&gt; class ECFP(NameParameterDataclass):</span>
+<span class="sd">    &gt;&gt;&gt;     name: str</span>
+<span class="sd">    &gt;&gt;&gt;     parameters: Dict</span>
+
+<span class="sd">    This name-parameter structure is used for parsing Json.</span>
+
+<span class="sd">    Normally, this abstract class should declare two abstract properties:</span>
+
+<span class="sd">    &gt;&gt;&gt; @property</span>
+<span class="sd">    &gt;&gt;&gt; @abstractmethod</span>
+<span class="sd">    &gt;&gt;&gt; def name(self) -&gt; str:</span>
+<span class="sd">    &gt;&gt;&gt;     pass</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; @property</span>
+<span class="sd">    &gt;&gt;&gt; @abstractmethod</span>
+<span class="sd">    &gt;&gt;&gt; def name(self) -&gt; Any:</span>
+<span class="sd">    &gt;&gt;&gt;     pass</span>
+
+<span class="sd">    However, Pydantic does not allow overriding properties,</span>
+<span class="sd">    thus we don&#39;t declare them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NameParameterDataclass.new"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.NameParameterDataclass.new">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convenience method to initialize objects, instead of __init__.</span>
+
+<span class="sd">        For example, the following is a full version that calls __init__:</span>
+<span class="sd">        &gt;&gt;&gt; descriptor = Avalon(name=&#39;Avalon&#39;, parameters=Avalon.Parameters(nBits=1024))</span>
+
+<span class="sd">        This method allows a shorter version:</span>
+<span class="sd">        &gt;&gt;&gt; descriptor = Avalon.new(nBits=1024)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Dataclasses can&#39;t handle recursive instantiation, use apischema.</span>
+        <span class="c1"># Apischema requires plain dict, can&#39;t handle instantiated classes,</span>
+        <span class="c1"># so convert everything to dict first.</span>
+        <span class="k">return</span> <span class="n">deserialize</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">mkdict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)})</span></div></div>
+
+
+<div class="viewcode-block" id="Algorithm"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.Algorithm">[docs]</a><span class="k">class</span> <span class="nc">Algorithm</span><span class="p">(</span><span class="n">NameParameterDataclass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class for ML algorithms.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Visualization"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.Visualization">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Visualization</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualization configuration.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Visualization.ImageFileFormat"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.Visualization.ImageFileFormat">[docs]</a>    <span class="k">class</span> <span class="nc">ImageFileFormat</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+        <span class="n">PNG</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span>
+        <span class="n">JPEG</span> <span class="o">=</span> <span class="s2">&quot;jpeg&quot;</span>
+        <span class="n">JPG</span> <span class="o">=</span> <span class="s2">&quot;jpg&quot;</span>
+        <span class="n">PDF</span> <span class="o">=</span> <span class="s2">&quot;pdf&quot;</span>
+        <span class="n">SVG</span> <span class="o">=</span> <span class="s2">&quot;svg&quot;</span></div>
+
+<div class="viewcode-block" id="Visualization.Plots"><a class="viewcode-back" href="../../optunaz.config.html#optunaz.config.optconfig.Visualization.Plots">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Plots</span><span class="p">:</span>
+        <span class="n">plot_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">plot_contour</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">plot_parallel_coordinate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">plot_slice</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="n">output_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span>
+    <span class="n">file_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ImageFileFormat</span><span class="p">]</span>
+    <span class="n">plots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Plots</span><span class="p">]</span>
+    <span class="n">use_xvfb</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preprocessing data for Qptuna &mdash; QPTUNA 2.7.11 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="QPTUNA CLI Tutorial" href="QPTUNA_Tutorial.html" />
+    <link rel="prev" title="QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" href="../README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            QPTUNA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Jupyter Notebook: Preprocessing Data for Qptuna</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Translate-from-SDF-to-CSV-(if-needed)">Translate from SDF to CSV (if needed)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Deal-with-duplicates-(Deduplication)">Deal with duplicates (Deduplication)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Interlude:-Compare-the-different-unification-strategies">Interlude: Compare the different unification strategies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Splitting-the-data">Splitting the data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Random-split">Random split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Temporal-split">Temporal split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Stratified-split">Stratified split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Scaffold-based-split">Scaffold-based split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Interlude:-Compare-splitting-strategies">Interlude: Compare splitting strategies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Transform-of-data-inputs">Transform of data inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Log-transform-of-user-input-data">Log transform of user input data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Importance-of-log-transformation">Importance of log transformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Qptuna-logarithmic-transformation">Qptuna logarithmic transformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Performing-data-transform-within-the-Datareader">Performing data transform within the Datareader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Probabilistic-Threshold-Representation-(PTR)-and-experimental-error">Probabilistic Threshold Representation (PTR) and experimental error</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Definition-of-the-PTR">Definition of the PTR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Qptuna-implementation-of-the-PTR">Qptuna implementation of the PTR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Conclusion:-PTR-calculation,-evaluation-of-experimental-reproducability-&amp;-best-practices">Conclusion: PTR calculation, evaluation of experimental reproducability &amp; best practices</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../splitters.html">List of available evaluation splits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">QPTUNA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Preprocessing data for Qptuna</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/preprocess_data.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars and line breaks on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+    white-space: pre;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="Preprocessing-data-for-Qptuna">
+<h1>Preprocessing data for Qptuna<a class="headerlink" href="#Preprocessing-data-for-Qptuna" title="Permalink to this heading"></a></h1>
+<section id="Introduction">
+<h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
+<p>Probably the most important step in using the automated parameter optimization is the preprocessing of the data prior to training the model. Common considerations include how to deal with duplicates SMILES having different read-out values, if and how to split the data into a training and (holdout) test set, and how to prepare input files in a proper way (e.g. transform SDF files into a dataframe with SMILE string- and read-out-columns).</p>
+<p>The Qptuna (<code class="docutils literal notranslate"><span class="pre">Optuna_AZ</span></code>) packages have some built-in functionality to facilitate that process.</p>
+<p>Start with imports.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">PandasTools</span>
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.Draw</span> <span class="kn">import</span> <span class="n">IPythonConsole</span>
+<span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">listdir</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isfile</span><span class="p">,</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">walk</span>
+
+<span class="c1">#load code from the &quot;Optuna_AZ&quot; package that comes in handy here</span>
+<span class="o">%</span><span class="k">run</span> ../optunaz/utils/preprocessing/deduplicator.py
+<span class="o">%</span><span class="k">run</span> ../optunaz/utils/preprocessing/splitter.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/var/folders/1v/9y_z128d7gvcp8mf8q0pz3ch0000gq/T/ipykernel_82497/796203442.py:8: DeprecationWarning: Importing display from IPython.core.display is deprecated since IPython 7.14, please import from IPython display
+  from IPython.core.display import display, HTML
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the plotting libraries, in case needed</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+<span class="c1"># set plotting parameters</span>
+<span class="n">large</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span> <span class="n">med</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span> <span class="n">small</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;axes.titlesize&#39;</span><span class="p">:</span> <span class="n">large</span><span class="p">,</span>
+          <span class="s1">&#39;legend.fontsize&#39;</span><span class="p">:</span> <span class="n">med</span><span class="p">,</span>
+          <span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+          <span class="s1">&#39;axes.labelsize&#39;</span><span class="p">:</span> <span class="n">med</span><span class="p">,</span>
+          <span class="s1">&#39;axes.titlesize&#39;</span><span class="p">:</span> <span class="n">med</span><span class="p">,</span>
+          <span class="s1">&#39;xtick.labelsize&#39;</span><span class="p">:</span> <span class="n">med</span><span class="p">,</span>
+          <span class="s1">&#39;ytick.labelsize&#39;</span><span class="p">:</span> <span class="n">med</span><span class="p">,</span>
+          <span class="s1">&#39;figure.titlesize&#39;</span><span class="p">:</span> <span class="n">large</span><span class="p">}</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-whitegrid&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/var/folders/1v/9y_z128d7gvcp8mf8q0pz3ch0000gq/T/ipykernel_82497/3336016810.py:16: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as &#39;seaborn-v0_8-&lt;style&gt;&#39;. Alternatively, directly use the seaborn API instead.
+  plt.style.use(&#39;seaborn-whitegrid&#39;)
+</pre></div></div>
+</div>
+</section>
+<section id="Translate-from-SDF-to-CSV-(if-needed)">
+<h2>Translate from SDF to CSV (if needed)<a class="headerlink" href="#Translate-from-SDF-to-CSV-(if-needed)" title="Permalink to this heading"></a></h2>
+<p>Qptuna can use either SMILES strings (no stereochemistry!) or SDF as input molecular representation.</p>
+<p>SMILES input is a comma-separated values (CSV) file with a SMILES column and a read-out (response) column. Read-out (response) column can be either numeric values (for regression) or labels (for classification). Note, that labels can be in the form of integer/boolean values - as long as the optimization process is specified as <code class="docutils literal notranslate"><span class="pre">classification</span></code>, they will be translated into nominal data values. SDF files should have the response column provided within the SDF file.</p>
+<p>Data provided in SDF format can (optionally - since Qptuna can accept SDF files) be converted to a SMILES file (so that any optional more advanced preprocessing can be conducted) using the following code.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file</span> <span class="o">=</span> <span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span>
+<span class="n">primarydf</span> <span class="o">=</span> <span class="n">PandasTools</span><span class="o">.</span><span class="n">LoadSDF</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">primarydf</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Molecule Name</th>
+      <th>Measurement</th>
+      <th>Measurement Unit</th>
+      <th>Smiles</th>
+      <th>pXC50</th>
+      <th>InChI</th>
+      <th>InChI-Key</th>
+      <th>Similarity SkeletonSpheres</th>
+      <th>Activity [nM]</th>
+      <th>Activity Type</th>
+      <th>Target</th>
+      <th>ID</th>
+      <th>ROMol</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Compound 2</td>
+      <td>990.1</td>
+      <td>IC50 (µM)</td>
+      <td>c1ccc2c(c1)NC(=O)CO2</td>
+      <td>3.004320939</td>
+      <td>InChI=1S/C8H7NO2/c10-8-5-11-7-4-2-1-3-6(7)9-8/...</td>
+      <td>QRCGFTXRXYMJOS-UHFFFAOYSA-N</td>
+      <td>0.86075</td>
+      <td>0.74</td>
+      <td>IC50</td>
+      <td>MAP kinase p38 alpha</td>
+      <td>Compound 1</td>
+      <td>&lt;rdkit.Chem.rdchem.Mol object at 0x7fd1c0d34040&gt;</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Compound 4</td>
+      <td>13.11</td>
+      <td>IC50 (µM)</td>
+      <td>c1ccc(cc1)CCc2ccccc2OCc3ccc(cc3)C(=O)O</td>
+      <td>4.882397308</td>
+      <td>InChI=1S/C22H20O3/c23-22(24)20-14-11-18(12-15-...</td>
+      <td>YTDAOQYEYFCINY-UHFFFAOYSA-N</td>
+      <td>0.89637</td>
+      <td>95</td>
+      <td>Kd</td>
+      <td>Retinoid X receptor alpha</td>
+      <td>Compound 2</td>
+      <td>&lt;rdkit.Chem.rdchem.Mol object at 0x7fd1f8f965e0&gt;</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Compound 5</td>
+      <td>7.408</td>
+      <td>IC50 (µM)</td>
+      <td>c1ccc(cc1)CCc2ccccc2OCc3ccc(cc3)C(=O)O</td>
+      <td>5.130299026</td>
+      <td>InChI=1S/C22H20O3/c23-22(24)20-14-11-18(12-15-...</td>
+      <td>YTDAOQYEYFCINY-UHFFFAOYSA-N</td>
+      <td>0.89637</td>
+      <td>95</td>
+      <td>Kd</td>
+      <td>Retinoid X receptor alpha</td>
+      <td>Compound 3</td>
+      <td>&lt;rdkit.Chem.rdchem.Mol object at 0x7fd1f8f96650&gt;</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Compound 7</td>
+      <td>330</td>
+      <td>IC50 (µM)</td>
+      <td>c1ccc2c(c1)ccc(=O)[nH]2</td>
+      <td>3.48148606</td>
+      <td>InChI=1S/C9H7NO/c11-9-6-5-7-3-1-2-4-8(7)10-9/h...</td>
+      <td>LISFMEBWQUVKPJ-UHFFFAOYSA-N</td>
+      <td>1</td>
+      <td>93\n93\n82\n82\n65\n65\n36\n36\n33\n33\n82\n93...</td>
+      <td>Ki\nKi\nKi\nKi\nKi\nKi\nKi\nKi\nKi\nKi\nKi\nKi...</td>
+      <td>Carbonic anhydrase XII\nCarbonic anhydrase XII...</td>
+      <td>Compound 4</td>
+      <td>&lt;rdkit.Chem.rdchem.Mol object at 0x7fd1f8f966c0&gt;</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Compound 8</td>
+      <td>990.1</td>
+      <td>IC50 (µM)</td>
+      <td>CC(=O)Nc1ccccn1</td>
+      <td>3.004320939</td>
+      <td>InChI=1S/C7H8N2O/c1-6(10)9-7-4-2-3-5-8-7/h2-5H...</td>
+      <td>QROKOTBWFZITJZ-UHFFFAOYSA-N</td>
+      <td>0.86233</td>
+      <td>1</td>
+      <td>Ki</td>
+      <td>Nicotinate phosphoribosyltransferase</td>
+      <td>Compound 5</td>
+      <td>&lt;rdkit.Chem.rdchem.Mol object at 0x7fd1f8f96730&gt;</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the important columns (activity values and calculated SMILES) and rename them for convenience</span>
+<span class="c1"># drop the rest</span>
+<span class="n">primarydf</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">primarydf</span><span class="p">[</span><span class="s2">&quot;pXC50&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">primarydf</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToSmiles</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">isomericSmiles</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">primarydf</span><span class="p">[</span><span class="s2">&quot;ROMol&quot;</span><span class="p">]]</span>
+<span class="n">primarydf</span> <span class="o">=</span> <span class="n">primarydf</span><span class="p">[[</span><span class="s2">&quot;smiles&quot;</span><span class="p">,</span> <span class="s2">&quot;activity&quot;</span><span class="p">]]</span>
+<span class="n">primarydf</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>smiles</th>
+      <th>activity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>O=C1COc2ccccc2N1</td>
+      <td>3.004321</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>O=C(O)c1ccc(COc2ccccc2CCc2ccccc2)cc1</td>
+      <td>4.882397</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>O=C(O)c1ccc(COc2ccccc2CCc2ccccc2)cc1</td>
+      <td>5.130299</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>O=c1ccc2ccccc2[nH]1</td>
+      <td>3.481486</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CC(=O)Nc1ccccn1</td>
+      <td>3.004321</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Note, that there is no need to stick to this column-naming convention - both the preprocessing engine and <code class="docutils literal notranslate"><span class="pre">Optuna_AZ</span></code> allow you to specify the column names to be used explicitly.</p>
+</section>
+<section id="Deal-with-duplicates-(Deduplication)">
+<h2>Deal with duplicates (Deduplication)<a class="headerlink" href="#Deal-with-duplicates-(Deduplication)" title="Permalink to this heading"></a></h2>
+<p>Let’s assume you have a proper <code class="docutils literal notranslate"><span class="pre">pandas</span></code> dataframe at this stage, with one column for the molecules as SMILES and one read-out column (numeric activity values in this example). Depending on how you obtained your dataset and whether it is already processed, you might have the same molecule present more than once (duplicates), probably with (hopefully slightly) different values. As these pose a potential problem afterwards, it might be wise to use only unique observations, i.e. remove all
+instances of duplicated molecules but one.</p>
+<p>There are different strategies to remove duplicates, which will are outlined below. * <code class="docutils literal notranslate"><span class="pre">KeepFirst()</span></code> and <code class="docutils literal notranslate"><span class="pre">KeepLast()</span></code>: keep the first or last occurrence of each duplicate. * <code class="docutils literal notranslate"><span class="pre">KeepRandom(seed)</span></code>: keep a random observation for each duplicate. Note, that the order of observations is not preserved. Use the <code class="docutils literal notranslate"><span class="pre">seed</span></code> parameter to vary results or to reproduce them. * <code class="docutils literal notranslate"><span class="pre">KeepMin()</span></code> and <code class="docutils literal notranslate"><span class="pre">KeepMax()</span></code>: keep min or max value. * <code class="docutils literal notranslate"><span class="pre">KeepAvg()</span></code>: take the average for all duplicates. *
+<code class="docutils literal notranslate"><span class="pre">KeepMedian()</span></code>: (default in Qptuna) take the median for all duplicates.</p>
+<p>The default deduplication method in Qptuna is KeepMedian, which is recommended best practice due the ability to utilise all experimental data into one value (account for experimental variability across replicated), whilst being robust to outliers.</p>
+<p>Each of the deduplication methods returns a unique version of the stored dataframe.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">optunaz.utils.preprocessing.deduplicator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">col</span> <span class="o">=</span> <span class="s2">&quot;smiles&quot;</span>
+
+<span class="n">df_pos</span> <span class="o">=</span> <span class="n">KeepFirst</span><span class="p">()</span><span class="o">.</span><span class="n">dedup</span><span class="p">(</span><span class="n">primarydf</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+<span class="n">df_rnd</span> <span class="o">=</span> <span class="n">KeepRandom</span><span class="p">()</span><span class="o">.</span><span class="n">dedup</span><span class="p">(</span><span class="n">primarydf</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+<span class="n">df_max</span> <span class="o">=</span> <span class="n">KeepMax</span><span class="p">()</span><span class="o">.</span><span class="n">dedup</span><span class="p">(</span><span class="n">primarydf</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+<span class="n">df_avg</span> <span class="o">=</span> <span class="n">KeepAvg</span><span class="p">()</span><span class="o">.</span><span class="n">dedup</span><span class="p">(</span><span class="n">primarydf</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+<span class="n">df_med</span> <span class="o">=</span> <span class="n">KeepMedian</span><span class="p">()</span><span class="o">.</span><span class="n">dedup</span><span class="p">(</span><span class="n">primarydf</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+
+<span class="c1"># print sizes</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;original: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">primarydf</span><span class="p">)</span><span class="si">}</span><span class="s2">, deduplidcated: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_pos</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_rnd</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_max</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_avg</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_med</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+original: 397, deduplidcated: 38, 38, 38, 38, 38
+</pre></div></div>
+</div>
+<p>To print duplicate, use Pandas DataFrame method <code class="docutils literal notranslate"><span class="pre">duplicated()</span></code> to get indicies of the duplicates.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="n">primarydf</span><span class="o">.</span><span class="n">duplicated</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;smiles&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">primarydf</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                                                smiles  activity
+2                 O=C(O)c1ccc(COc2ccccc2CCc2ccccc2)cc1  5.130299
+6        COc1cc2ncnc(Nc3ccc(SCc4ccccc4)c(Cl)c3)c2cc1OC  5.282579
+7                                  O=c1ccc2ccccc2[nH]1  3.004321
+8                                     O=C1COc2ccccc2N1  4.912929
+10               Cc1cccc(Nc2ncnc3ccc(-c4ccccc4)cc23)c1  5.004321
+..                                                 ...       ...
+389  CC(=O)c1nn(CC(=O)N2CC(F)CC2C(=O)Nc2cccc(Br)n2)...  8.065502
+390                                    CC(=O)Nc1ccccn1  3.958607
+392                NC(=O)c1ccc(Oc2cccc(C(F)(F)F)c2)cc1  3.004321
+394  Cn1nc(-c2cnc(Cl)c(-c3ccc(C(N)=O)cc3)n2)nc1C1(c...  4.958607
+396  CCC(Oc1nc(Oc2cc(-c3ccccc3)cc(-c3cccc(CN)c3)c2)...  5.936291
+
+[359 rows x 2 columns]
+</pre></div></div>
+</div>
+<section id="Interlude:-Compare-the-different-unification-strategies">
+<h3>Interlude: Compare the different unification strategies<a class="headerlink" href="#Interlude:-Compare-the-different-unification-strategies" title="Permalink to this heading"></a></h3>
+<p>Depending on the way duplicates are removed, the resulting activity-value distribution is (slightly) different. Both <code class="docutils literal notranslate"><span class="pre">uniquify_by_position()</span></code> and <code class="docutils literal notranslate"><span class="pre">uniquify_randomly()</span></code> are in essence a random selection, while <code class="docutils literal notranslate"><span class="pre">uniquify_by_value()</span></code> will result in the distribution with the highest values (see mean values below).</p>
+<p>Note, however, that only few (~40) duplicates were present in the data, so the effect is minimal for this dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a density plot to compare the strategies</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;activity&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Different deduplication strategies&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_pos</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;KeepFirst(): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">round</span><span class="p">(</span><span class="n">df_pos</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">ndigits</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_rnd</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+            <span class="n">label</span> <span class="o">=</span><span class="s2">&quot;KeepRandom(): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">round</span><span class="p">(</span><span class="n">df_rnd</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">ndigits</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_avg</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;KeepAverage(): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">round</span><span class="p">(</span><span class="n">df_avg</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">ndigits</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;deeppink&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;KeepMedian(): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">round</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">ndigits</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="c1"># do the legend and render</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_18_0.png" src="../_images/notebooks_preprocess_data_18_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Splitting-the-data">
+<h2>Splitting the data<a class="headerlink" href="#Splitting-the-data" title="Permalink to this heading"></a></h2>
+<p>While it is recommended to use a hold-out / test set to independently assess your model’s performance after the fitting procedure, this step might be skipped, e.g. if your dataset is small and you want to use all observations for training the model. However, usually it would be advisable to separate a hold-out set now (typically about 20% of observations). There are different strategies, depending on your data and aims.</p>
+<section id="Random-split">
+<h3>Random split<a class="headerlink" href="#Random-split" title="Permalink to this heading"></a></h3>
+<p>It is typically not a good idea to simply take, say, the first 20% of observations and train on the rest. It could very well be, that your data points have some kind of internal ordering such as a temporal dependence. In general, you would want to have your test set to resemble the same (or similar) distribution than the training set.</p>
+<p>The easiest way to achieve that is to simply draw observations randomly. This works especially well if you have large datasets, where you can rely on a stochastic behaviour. See example below. Note, that you can use the <code class="docutils literal notranslate"><span class="pre">seed</span></code> parameter to control the initial seed of the random number generator.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate a training and test, respectively</span>
+<span class="n">train_ran</span><span class="p">,</span> <span class="n">test_ran</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train (random):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_ran</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test (random):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_ran</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Train (random): 26
+Test (random): 12
+</pre></div></div>
+</div>
+</section>
+<section id="Temporal-split">
+<h3>Temporal split<a class="headerlink" href="#Temporal-split" title="Permalink to this heading"></a></h3>
+<p>Sometimes it might be interesting to split the data according to a <code class="docutils literal notranslate"><span class="pre">time_column</span></code>, to e.g. group all old datapoints into the training set and all data points accrued after a specified time into the test set.</p>
+<p>Temporal splitting achieves this, and assumes that the data is sorted, with the oldest entries in the beginning of the file, and the newest entries added at the end.</p>
+<p>As our test input does not have a specific <code class="docutils literal notranslate"><span class="pre">time_column</span></code> to indicate sorting, we will assume that the observations were made with a timestamp recorded, but new observations were added at the top.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a copy of the dataframe for illustrative purposes</span>
+<span class="n">df_med_temporal</span> <span class="o">=</span> <span class="n">df_med</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># add a &quot;fake&quot; time_column with timestamps</span>
+<span class="n">df_med_temporal</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">,</span>
+                       <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_med_temporal</span><span class="p">)))))</span>
+<span class="n">df_med_temporal</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>smiles</th>
+      <th>activity</th>
+      <th>timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CC(=O)NCCCCCCOc1ccc2c(c1)c(NC(=O)N1CC(F)CC1C(=...</td>
+      <td>7.684240</td>
+      <td>1037</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CC(=O)Nc1ccccn1</td>
+      <td>3.481464</td>
+      <td>1036</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>CC(=O)c1cn(CC(=O)N2C(C(=O)Nc3cccc(Br)n3)CC3CC3...</td>
+      <td>7.732625</td>
+      <td>1035</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CC(=O)c1cn(CC(=O)N2CC(F)CC2C(=O)Nc2cccc(Br)n2)...</td>
+      <td>7.568332</td>
+      <td>1034</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CC(=O)c1nn(CC(=O)N2C(C(=O)Nc3cccc(Br)n3)CC3CC3...</td>
+      <td>7.790259</td>
+      <td>1033</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialize a new splitter with this extended data</span>
+<span class="n">train_temporal</span><span class="p">,</span> <span class="n">test_temporal</span> <span class="o">=</span> <span class="n">Temporal</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med_temporal</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train (temporal):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_temporal</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test (temporal):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_temporal</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Train (temporal): 34
+Test (temporal): 4
+</pre></div></div>
+</div>
+</section>
+<section id="Stratified-split">
+<h3>Stratified split<a class="headerlink" href="#Stratified-split" title="Permalink to this heading"></a></h3>
+<p>Sometimes (especially for small datasets, using only a very small fraction for testing or highly skewed distributions) it might be better to use a <em>stratified</em> splitting strategy. Essentially, it will bin the observations according to the value column <code class="docutils literal notranslate"><span class="pre">respCol</span></code> and instead of drawing <code class="docutils literal notranslate"><span class="pre">fraction</span></code> observations from the whole dataset, draw them individually from each bin. This ensures that the distributions of the training and test sets are very close. See example below. Note, that while it is
+possible to specify a number of bins using parameter <code class="docutils literal notranslate"><span class="pre">bins</span></code>, it is probably better to use the default “fd” (see <code class="docutils literal notranslate"><span class="pre">numpy.histogram</span></code> documentation) which will try to determine a well-balanced number of bins automatically taking the data variability and variance into account.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate a training and test, respectively</span>
+
+<span class="n">train_str</span><span class="p">,</span> <span class="n">test_str</span> <span class="o">=</span> <span class="n">Stratified</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">],</span> <span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train (stratified):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test (stratified):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_str</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Train (stratified): 22
+Test (stratified): 16
+</pre></div></div>
+</div>
+</section>
+<section id="Scaffold-based-split">
+<h3>Scaffold-based split<a class="headerlink" href="#Scaffold-based-split" title="Permalink to this heading"></a></h3>
+<p>A scaffold based split affords the generation of a more real-world/realistic split when a model is trained on a given set of chemical scaffolds (core ring system) and deplopyed to a new set of scaffolds. This emulates a real-world situation when QSAR models used to identify scaffold-hopping opportunities or to new chemical series distinct to training data. These situations push the applicability domain of the models (the area of chemical space that they are realible) to the limit. A
+scaffold-split is hence the most challenging of the splitting strategies employed.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate a training and test, respectively</span>
+<span class="n">scaf_split</span> <span class="o">=</span> <span class="n">ScaffoldSplit</span><span class="p">()</span>
+<span class="n">scaffolds</span> <span class="o">=</span> <span class="n">scaf_split</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="n">df_med</span><span class="p">,</span> <span class="s2">&quot;smiles&quot;</span><span class="p">)</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">scaffolds</span><span class="p">)</span>
+<span class="n">train_sca</span><span class="p">,</span> <span class="n">test_sca</span> <span class="o">=</span> <span class="n">scaf_split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">],</span> <span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train (stratified):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_sca</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test (stratified):&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_sca</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Train (stratified): 34
+Test (stratified): 4
+</pre></div></div>
+</div>
+</section>
+<section id="Interlude:-Compare-splitting-strategies">
+<h3>Interlude: Compare splitting strategies<a class="headerlink" href="#Interlude:-Compare-splitting-strategies" title="Permalink to this heading"></a></h3>
+<p>The following code will plot the ground distribution for the activity (stored in <code class="docutils literal notranslate"><span class="pre">df_val</span></code>) and the train-test distributions obtained from one of the splitting strategies. This is a good example why caution is in order when using temporal splitting: if the data distributions are different between training and test sets, the resulting model will likely not generalize well to the test set. The random split roughly resembles the ground distribution, but it is evident, that the stratified does an
+even better job in this respect. For (very) large datasets, the difference between the latter two will likely be less pronounced.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a density plot to compare the strategies</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+
+<span class="c1"># left plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;activity&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Temporal split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med_temporal</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med_temporal</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_temporal</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;temp.split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med_temporal</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">test_temporal</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;temp. split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+
+<span class="c1"># middle left plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;activity&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Random split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_ran</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;random split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">test_ran</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;random split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+
+<span class="c1"># middle right plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;activity&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Stratified split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_str</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;stratified split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">test_str</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;stratified split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+
+<span class="c1"># right plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;activity&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Scaffold split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_sca</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;saffold split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">test_sca</span><span class="p">][</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;scaffold split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+
+<span class="c1"># do the legend and render</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_32_0.png" src="../_images/notebooks_preprocess_data_32_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Transform-of-data-inputs">
+<h2>Transform of data inputs<a class="headerlink" href="#Transform-of-data-inputs" title="Permalink to this heading"></a></h2>
+<p>Qptuna can perform two types of transforms on input labels either a probabilistic transformation named Probabilistic Threshold Representation (PTR) or simple logarithmic scaling. The latter is a required step for data that is not normally distributed for most Machine Learning inputs. These approaches are discussed in more detail in the following sections.</p>
+</section>
+<section id="Log-transform-of-user-input-data">
+<h2>Log transform of user input data<a class="headerlink" href="#Log-transform-of-user-input-data" title="Permalink to this heading"></a></h2>
+<p>For some molecule proprety prediction tasks that are non-linear, activity endpoints are routinely log transformed to ensure the generation of predictive models. This is because a linear model applied to non-linear activity data will not be precise due to the non-linearity of the activity scale. A logarithmic function can be used to linearise the molecule property scale, affording better performance/prediction.</p>
+<section id="Importance-of-log-transformation">
+<h3>Importance of log transformation<a class="headerlink" href="#Importance-of-log-transformation" title="Permalink to this heading"></a></h3>
+<p>Most algorithms assume numerical co-variates have a Gaussian (normally distributed) probability distribution. In reality, input data may or may not have a normal distribution. Some may have a Gaussian-like distribution (e.g. nearly Gaussian but with outliers or a skew) whilst other may exhibit totally different distribution (e.g. exponential scale). For this reason, superior performance for a wide range of machine learning algorithms is obtained by performing a transformation to user inputs
+and/or output variables to have a Gaussian or Gaussian-like distribution.</p>
+<p>A good example of this is the conversion of principal (IC50) activity results to the pXC50 (negative log base), which have already been precomputed outside of Qptuna in the following example:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">optunaz.datareader</span> <span class="kn">import</span> <span class="n">Dataset</span>
+
+<span class="c1">#Load a dataset selecting the principal result (raw XC50 values)</span>
+<span class="n">xc50_data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;Smiles&quot;</span><span class="p">,</span>
+    <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;Measurement&quot;</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+    <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
+    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepAllNoDeduplication</span><span class="p">(),</span>
+<span class="p">)</span>
+
+<span class="c1">#Load a dataset selecting the pre-computed transformed result (pXC50 values)</span>
+<span class="n">pxc50_data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;Smiles&quot;</span><span class="p">,</span>
+    <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+    <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
+    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepAllNoDeduplication</span><span class="p">(),</span>
+<span class="p">)</span>
+
+<span class="n">comparison</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">xc50_data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pxc50_data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;XC50&#39;</span><span class="p">,</span><span class="s1">&#39;pXC50&#39;</span><span class="p">])</span>
+<span class="c1">#plot raw vs. pXC50 log transform</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">comparison</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;XC50&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Pre-computed pXC50 as a function of a precomputed pXC50&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_marginals</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">rugplot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mf">.15</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;seaborn.axisgrid.JointGrid at 0x7fd1f984f670&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_35_1.png" src="../_images/notebooks_preprocess_data_35_1.png" />
+</div>
+</div>
+<p>As illustrated in the above plot, the raw data (X axis &amp; histogram at the top) shows a very skewed (heteroscedastic) distribution toward low values. In comparison, the negative log10^6 scaled pXC50 values (y-axis &amp; histogram on the right) exhibits a more normal (homoscedastic) distribution of points. For this example, the log transformation yields a data set that should generate more predictive models.</p>
+</section>
+<section id="Qptuna-logarithmic-transformation">
+<h3>Qptuna logarithmic transformation<a class="headerlink" href="#Qptuna-logarithmic-transformation" title="Permalink to this heading"></a></h3>
+<p>Qptuna implements a ‘ModelDataTransform’ transormation method for converting numerical input or output variables to have a Gaussian or more-Gaussian-like distribution, which can be performed like so:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">optunaz.utils.preprocessing.transform</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LogBase</span><span class="p">,</span>
+    <span class="n">LogNegative</span><span class="p">,</span>
+    <span class="n">ModelDataTransform</span>
+<span class="p">)</span>
+
+<span class="n">transform</span> <span class="o">=</span> <span class="n">ModelDataTransform</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+    <span class="n">base</span><span class="o">=</span><span class="n">LogBase</span><span class="o">.</span><span class="n">LOG10</span><span class="p">,</span>
+    <span class="n">negation</span><span class="o">=</span><span class="n">LogNegative</span><span class="o">.</span><span class="n">TRUE</span><span class="p">,</span>
+    <span class="n">conversion</span><span class="o">=</span><span class="mi">6</span>
+<span class="p">)</span>
+
+<span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;Qptuna pXC50 ModelDataTransform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;XC50&#39;</span><span class="p">])</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">comparison</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;Qptuna pXC50 ModelDataTransform&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_marginals</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">rugplot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mf">.15</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;seaborn.axisgrid.JointGrid at 0x7fd1eb924700&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_38_1.png" src="../_images/notebooks_preprocess_data_38_1.png" />
+</div>
+</div>
+</section>
+<section id="Performing-data-transform-within-the-Datareader">
+<h3>Performing data transform within the Datareader<a class="headerlink" href="#Performing-data-transform-within-the-Datareader" title="Permalink to this heading"></a></h3>
+<p>There are different logartihmic functions (<code class="docutils literal notranslate"><span class="pre">log_transform_base</span></code>) to transform the activity scale, which are outlined below: * <code class="docutils literal notranslate"><span class="pre">Log</span></code>: perform a standard log function (np.log) * <code class="docutils literal notranslate"><span class="pre">Log2</span></code>: perform a log2 function (np.log2) * <code class="docutils literal notranslate"><span class="pre">Log10</span></code>: perform a log10 function (np.log10) [default]</p>
+<p>Users can also specify whether to negate the transformation (<code class="docutils literal notranslate"><span class="pre">log_transform_negative</span></code>) and also to perform a log transform unit conversion by a power of 10^X (<code class="docutils literal notranslate"><span class="pre">log_transform_unit_conversion</span></code>), where X is an integer to be specified by a user.</p>
+<p>These options can be supplied to the Dataset datareader, and, as an example, a <code class="docutils literal notranslate"><span class="pre">log_transform_base</span></code> set to perform a Log10, <code class="docutils literal notranslate"><span class="pre">log_transform_negative</span></code>=LogNegative.TRUE, and a <code class="docutils literal notranslate"><span class="pre">log_transform_unit_conversion</span></code> of 6 is used to convert uM values to pXC50. This is demonstrated in the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example of how to perform dataset transform within the Datareader</span>
+<span class="n">dataset_transformed</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;Smiles&quot;</span><span class="p">,</span>
+    <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;Measurement&quot;</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+    <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
+    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepAllNoDeduplication</span><span class="p">(),</span>
+    <span class="n">log_transform</span><span class="o">=</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="c1"># flags to use a transform</span>
+    <span class="n">log_transform_base</span><span class="o">=</span><span class="n">LogBase</span><span class="o">.</span><span class="n">LOG10</span><span class="p">,</span> <span class="c1"># Log10 base will be used</span>
+    <span class="n">log_transform_negative</span><span class="o">=</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="c1"># The negated log transform will be applied</span>
+    <span class="n">log_transform_unit_conversion</span><span class="o">=</span><span class="mi">6</span> <span class="c1"># THe unit conversion for pXC50 values is 6</span>
+<span class="p">)</span>
+
+<span class="n">pxc50_data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;Smiles&quot;</span><span class="p">,</span>
+    <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+    <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
+    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepAllNoDeduplication</span><span class="p">(),</span>
+<span class="p">)</span>
+
+<span class="n">comparison</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dataset_transformed</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pxc50_data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Computed pXC50&#39;</span><span class="p">,</span><span class="s1">&#39;Precomputed pXC50&#39;</span><span class="p">])</span>
+<span class="c1">#plot raw vs. pXC50 log transform</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">comparison</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;Computed pXC50&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Precomputed pXC50&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_marginals</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">rugplot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mf">.15</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;seaborn.axisgrid.JointGrid at 0x7fd1db908550&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_41_1.png" src="../_images/notebooks_preprocess_data_41_1.png" />
+</div>
+</div>
+<p>As illustrated, a <code class="docutils literal notranslate"><span class="pre">log_transform_base</span></code> set to perform a Log10, <code class="docutils literal notranslate"><span class="pre">log_transform_negative</span></code>=LogNegative.TRUE, and a <code class="docutils literal notranslate"><span class="pre">log_transform_unit_conversion</span></code> of 6 reproduces the pXC50 conversion we had pre-computed in the file.</p>
+<p>NB: the log transformation is reversed at inference. I.e. only the model is trained with the transformed values, any predictions will be output to the original scale as provided in user input data.</p>
+<p>Qptuna also implements the reverse of the transform using <code class="docutils literal notranslate"><span class="pre">reverse_transform</span></code>, so that users can obtain values on the original scale at inference, like so:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot raw vs. pXC50 log transform</span>
+<span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;Reverse transform&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">transform</span><span class="o">.</span><span class="n">reverse_transform</span><span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;Computed pXC50&#39;</span><span class="p">])</span> <span class="c1">#reverse_transform applied</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">comparison</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;Reverse transform&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Computed pXC50&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_marginals</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">rugplot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mf">.15</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;seaborn.axisgrid.JointGrid at 0x7fd1bc05b4c0&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_43_1.png" src="../_images/notebooks_preprocess_data_43_1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Probabilistic-Threshold-Representation-(PTR)-and-experimental-error">
+<h2>Probabilistic Threshold Representation (PTR) and experimental error<a class="headerlink" href="#Probabilistic-Threshold-Representation-(PTR)-and-experimental-error" title="Permalink to this heading"></a></h2>
+<p>PTR is a technique to model the uncertainty of experimental error (first reported by Mervin et al.[1]), which converts user response columns into a framework somewhere between regression and classification.</p>
+<section id="Definition-of-the-PTR">
+<h3>Definition of the PTR<a class="headerlink" href="#Definition-of-the-PTR" title="Permalink to this heading"></a></h3>
+<p>Molecule properties derived from experiments have reproducibility limits due to experimental errors. Any model based on this data have such unavoidable error influencing performance which should ideally be factored into modelling and output predictions, such as the actual standard deviation of experimental (replicate) measurements (i.e. σ) or the associated comparability of activity values between aggregated heterogenous activity units (e.g., Ki versus IC50 values) during dataset assimilation
+(see [1] for a detailed analysis on this).</p>
+<p>Since uncertainty originates from the hypothesis that experimental data has a degree of uncertainty, compound response labels can be treated as probability distribution functions (rather than deterministic values) on a per-threshold basis (<span class="math">p_{ActivityT}</span>) given a standard deviation (σ) threshold. For each bioactivity value (<span class="math">p_{Activity}</span>), the cumulative distribution function (cdf) of a normal distribution (Eq. 1) with a mean equal to the bioactivity threshold for each
+<span class="math">p_{ActivityT}</span> can be used:</p>
+<div class="math">
+<p><span class="math">\Delta y\left( {\vec{c}} \right) = \frac{1}{2}\left[ {1 + {\text{erf}}\left( {\frac{{\overrightarrow {{p_{Activity} }} - \overrightarrow {{p_{Threshold} }} }}{\sigma \sqrt 2 }} \right)} \right]</span></p>
+</div><p>Eq.1</p>
+<p>More concretely, assuming only the mean and variance of response column values is known, the maximum entropy distribution to represent these values is a normal distribution. One can set the mean and variance parameters of this distribution to a response columns threshold value (e.g., pXC50 of 5), and experimental error (e.g., σ of 0.3) and compute the probability of activity values with the cdf. A sensible arbitrary default can be provided when experimental error is unknown. Each
+<span class="math">p_{Activity}</span> value is therefore converted to a y-label probability (∆y), a value representing the uncertainty in the measurement, which can be used for training (using either a probabilistic random forest (PRF) or regression algorithm). A schematic representation/lookup table of how the PTR works is shown below.</p>
+<img alt="title" src="../_images/ptr.png" />
+<p>Response column values (e.g. pXC50) are converted into the ideal y-label probability using cdf with different bioactivity thresholds and standard deviation (SD) values. E.g. a response column of 5.1, would be assigned a PTR of 0.63 given a cutoff of 5.0 and σ (SD) of 0.3. The case when SD is 0 corresponds to the traditional classification at a cutoff scenario.</p>
+<p>PTR hence represents the activity in a framework in-between the classification and regression architecture, with philosophical differences from either approach. Compared to classification, this approach enables better representation of factors increasing/decreasing inactivity. Conversely, one can utilize all data (even delimited/operand/censored data far from a cut-off) at the same time as taking into account the granularity around the cut-off, compared to a conventional regression framework.
+Thereby, PTR combines characteristics from both classification and regression settings.</p>
+<p>NB: Qptuna treats the PTR values as the ‘ideal y-label’, i.e. they become the new response column values for train/test/validation performance evaluation, since it represents the ideal case, where experimental error is taken into account and model outputs most closely reflect this.</p>
+<p>[1] <a class="reference external" href="https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00539-7#Sec12">https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00539-7#Sec12</a></p>
+</section>
+<section id="Qptuna-implementation-of-the-PTR">
+<h3>Qptuna implementation of the PTR<a class="headerlink" href="#Qptuna-implementation-of-the-PTR" title="Permalink to this heading"></a></h3>
+<p>PTR is also easily applied within the Datareader class by specifying the PTR options to the Qptuna datareader. E.g:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pxc50_threshold</span><span class="o">=</span><span class="mi">5</span>
+<span class="n">pxc50_std</span><span class="o">=</span><span class="mf">0.3</span>
+
+<span class="c1"># ptr query for the exmaple sdf</span>
+<span class="n">ptr_data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;Smiles&quot;</span><span class="p">,</span>
+    <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+    <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
+    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepMedian</span><span class="p">(),</span>
+    <span class="n">split_strategy</span><span class="o">=</span><span class="n">Random</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+    <span class="n">probabilistic_threshold_representation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># This enables PTR</span>
+    <span class="n">probabilistic_threshold_representation_threshold</span><span class="o">=</span><span class="n">pxc50_threshold</span><span class="p">,</span> <span class="c1"># This defines the activity threshold</span>
+    <span class="n">probabilistic_threshold_representation_std</span><span class="o">=</span><span class="n">pxc50_std</span><span class="p">,</span> <span class="c1"># This captures the deviation/uncertainty in the dataset</span>
+<span class="p">)</span>
+
+<span class="c1"># normal query (ptr not applied) for the exmaple sdf</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;Smiles&quot;</span><span class="p">,</span>
+    <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+    <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
+    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepMedian</span><span class="p">(),</span>
+    <span class="n">split_strategy</span><span class="o">=</span><span class="n">Random</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1">#gather response col values before &amp; after applying the ptr</span>
+<span class="n">datareaders</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ptr_data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="c1">#get pXC50 value at the limit of ~100% inactive certainty</span>
+<span class="n">lower_reproducability</span><span class="o">=</span><span class="n">datareaders</span><span class="p">[</span><span class="n">datareaders</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="c1">#get pXC50 value at the limit of ~100% active certainty</span>
+<span class="n">upper_reproducability</span><span class="o">=</span><span class="n">datareaders</span><span class="p">[</span><span class="n">datareaders</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>The distribution for the PTR dataloader looks like this (note the a somewhat inverted bell shape):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot the kde for the ptr</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PTR distribution from the example SDF&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PTR (pXC50=</span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s2">, SD=</span><span class="si">{</span><span class="n">pxc50_std</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Density&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">datareaders</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> \
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ptr ground&quot;</span><span class="p">,</span> \
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">cut</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_48_0.png" src="../_images/notebooks_preprocess_data_48_0.png" />
+</div>
+</div>
+<p>Plotting the PTR as a function of the pXC50 outlines how the PTR transform behaves for our data:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mpatches</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+
+<span class="c1">#relate the ptr versus the no ptr query</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">datareaders</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;PTR as a function of the original response column&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PTR (pXC50=</span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s2">, SD=</span><span class="si">{</span><span class="n">pxc50_std</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Original response col (pXC50)&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">pxc50_threshold</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span> <span class="c1">#add threshold line to main plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">pxc50_threshold</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span> <span class="c1">#add threshold line to y margin</span>
+
+<span class="c1">#add median to margin histograms</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ax_marg_x</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">datareaders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ax_marg_y</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">datareaders</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+
+<span class="c1">#plot the region of uncertainty given the pxc50_threshold and pxc50_std</span>
+<span class="n">uncert_color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span>
+<span class="n">uncert_region</span><span class="o">=</span><span class="n">mpatches</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">lower_reproducability</span><span class="p">),</span><span class="mi">3</span><span class="p">,</span>
+                        <span class="n">upper_reproducability</span><span class="o">-</span><span class="n">lower_reproducability</span><span class="p">,</span>
+                        <span class="n">fill</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.2</span><span class="p">,</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="n">uncert_color</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">uncert_region</span><span class="p">)</span>
+
+<span class="c1"># create the legend &amp; make include uncertainty box</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> \
+           <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pXC50</span><span class="se">\n</span><span class="s1">Threshold=</span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> \
+                   <span class="s1">&#39;pXC50 or</span><span class="se">\n</span><span class="s1">PTR Median&#39;</span><span class="p">,</span><span class="s1">&#39;Uncertainty</span><span class="se">\n</span><span class="s1">Region&#39;</span><span class="p">],</span> \
+           <span class="n">fancybox</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">leg</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span>
+<span class="n">leg</span><span class="o">.</span><span class="n">legendHandles</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">uncert_color</span><span class="p">)</span>
+<span class="n">leg</span><span class="o">.</span><span class="n">legendHandles</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">.2</span><span class="p">)</span>
+
+
+<span class="c1">#show the plot in tight layout</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">((</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/var/folders/1v/9y_z128d7gvcp8mf8q0pz3ch0000gq/T/ipykernel_82497/1725493911.py:30: MatplotlibDeprecationWarning: The legendHandles attribute was deprecated in Matplotlib 3.7 and will be removed two minor releases later. Use legend_handles instead.
+  leg.legendHandles[2].set_color(uncert_color)
+/var/folders/1v/9y_z128d7gvcp8mf8q0pz3ch0000gq/T/ipykernel_82497/1725493911.py:31: MatplotlibDeprecationWarning: The legendHandles attribute was deprecated in Matplotlib 3.7 and will be removed two minor releases later. Use legend_handles instead.
+  leg.legendHandles[2].set_alpha(.2)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_50_1.png" src="../_images/notebooks_preprocess_data_50_1.png" />
+</div>
+</div>
+<p>where the PTR threshold [<code class="docutils literal notranslate"><span class="pre">pXC50</span> <span class="pre">=</span> <span class="pre">5</span></code>] is outlined via the dashed blue line, region of uncertainty for class membership given the standard deviation of experimental error shown via purple shading, and PTR and pXC50 scale medians shown via black lines within the margin histrograms, respectively.</p>
+<p>We observe the clipping toward perfectly certain (~100%) compounds belonging to active or inactive classes at either end of the activity scale (outside the purple shaded region), leading to the aforementioned inverted bell shape distribution.</p>
+<p>The PTR can also be applied using the ‘PTRTransform’ class directly:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">optunaz.utils.preprocessing.transform</span> <span class="kn">import</span> <span class="n">PTRTransform</span>
+
+<span class="c1"># normal query (ptr not applied) for the exmaple sdf</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;Smiles&quot;</span><span class="p">,</span>
+    <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+    <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
+    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepMedian</span><span class="p">(),</span>
+    <span class="n">split_strategy</span><span class="o">=</span><span class="n">Random</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">ptr_transformed</span> <span class="o">=</span> <span class="n">PTRTransform</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">datareader</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PTR distribution from PTRTransform&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PTR (pXC50=</span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s2">, SD=</span><span class="si">{</span><span class="n">pxc50_std</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Density&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">ptr_transformed</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">datareader</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_53_0.png" src="../_images/notebooks_preprocess_data_53_0.png" />
+</div>
+</div>
+</section>
+<section id="Conclusion:-PTR-calculation,-evaluation-of-experimental-reproducability-&amp;-best-practices">
+<h3>Conclusion: PTR calculation, evaluation of experimental reproducability &amp; best practices<a class="headerlink" href="#Conclusion:-PTR-calculation,-evaluation-of-experimental-reproducability-&-best-practices" title="Permalink to this heading"></a></h3>
+<p>In this section, we next also look at how the PTR within the Qptuna datareader is implemented, and show how a user can assess the experimental reproducability/uncertainty for their query dataset.</p>
+<p>First we start with imports and define the PTR function using <code class="docutils literal notranslate"><span class="pre">stats.norm.cdf</span></code> from scipy</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+
+<span class="c1"># calculate the ptr for a resp_col value based on sd &amp; threshold</span>
+<span class="k">def</span> <span class="nf">ptr</span><span class="p">(</span><span class="n">resp_col</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">sd</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">resp_col</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">sd</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1">#r2 for activity dependent error analysis plot</span>
+<span class="k">def</span> <span class="nf">r2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we can group property measurement replicates via their structure (SMILES), and calculate the standard deviation for those replicates, also noting the median value across the replicates for each compound (in the same way as the aforementioned <code class="docutils literal notranslate"><span class="pre">KeepMedian()</span></code> deduplication method)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#standard deviation across compound replicates</span>
+<span class="n">std_df</span> <span class="o">=</span> <span class="n">primarydf</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;smiles&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="c1">#median across compound replicates</span>
+<span class="n">mdn_df</span> <span class="o">=</span> <span class="n">primarydf</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;smiles&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="c1">#create dataframe between standard deviation and the median across replicates</span>
+<span class="n">std_vs_median</span><span class="o">=</span><span class="n">std_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">mdn_df</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s2">&quot;smiles&quot;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_std&quot;</span><span class="p">,</span> <span class="s2">&quot;_median&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="c1">#show example of replicate data</span>
+<span class="n">std_vs_median</span><span class="o">=</span><span class="n">std_vs_median</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">std_vs_median</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Compound Index&#39;</span>
+<span class="n">std_vs_median</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>activity_std</th>
+      <th>activity_median</th>
+    </tr>
+    <tr>
+      <th>Compound Index</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.088539</td>
+      <td>7.684240</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.674782</td>
+      <td>3.481464</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.265123</td>
+      <td>7.732625</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.138620</td>
+      <td>7.568332</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.157605</td>
+      <td>7.790259</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>The mean overall standard deviation of experimental error across replicates can be hence derived:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stdev</span><span class="o">=</span><span class="n">std_vs_median</span><span class="p">[</span><span class="s2">&quot;activity_std&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Standard deviation of experimental results:</span><span class="si">{</span><span class="n">stdev</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Standard deviation of experimental results:0.22
+</pre></div></div>
+</div>
+<p>As a best practice, we can now analyse if experimental error has an activity dependent correlation for our query dataset:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#r2 of median vs. std</span>
+<span class="n">stat_func</span> <span class="o">=</span> <span class="n">r2</span><span class="p">(</span><span class="n">std_vs_median</span><span class="p">[</span><span class="s2">&quot;activity_median&quot;</span><span class="p">],</span><span class="n">std_vs_median</span><span class="p">[</span><span class="s2">&quot;activity_std&quot;</span><span class="p">])</span>
+
+<span class="c1">#plot median vs. std dev</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">std_vs_median</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;activity_median&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;activity_std&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">7.5</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;r2=</span><span class="si">{</span><span class="n">stat_func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_joint</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">.7</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_marginals</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">rugplot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mf">.15</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;seaborn.axisgrid.JointGrid at 0x7fd1def2f8b0&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_62_1.png" src="../_images/notebooks_preprocess_data_62_1.png" />
+</div>
+</div>
+<p>Hence, we conclude there is no significant correlation between deduplicated experimental value and the standard deviation of those replicates (hence experimental uncertainty is homoscedastic), and the assumptions made by PTR transform are fulfilled according to the analysis presented here.</p>
+<p>Next we can outline how a PTR fold would look for the different splits, given our experimental deviation, and for a threshold of <code class="docutils literal notranslate"><span class="pre">PXC50=6</span></code>. First we can calculate the split as so:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the ptr column, generate train and test sets given the ptr, respectively</span>
+<span class="n">pxc50_threshold</span> <span class="o">=</span> <span class="mi">6</span> <span class="c1">#defined pxc50 threshold</span>
+<span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;ptr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">],</span><span class="n">pxc50_threshold</span><span class="p">,</span><span class="n">stdev</span><span class="p">)</span> <span class="c1">#add the ptr column to the dataframe</span>
+<span class="n">ptr_train_ran</span><span class="p">,</span> <span class="n">ptr_test_ran</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">])</span> <span class="c1">#random split</span>
+<span class="n">ptr_train_str</span><span class="p">,</span> <span class="n">ptr_test_str</span> <span class="o">=</span> <span class="n">Stratified</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">],</span> <span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;ptr&quot;</span><span class="p">])</span> <span class="c1">#stratified split</span>
+<span class="n">ptr_train_temporal</span><span class="p">,</span> <span class="n">ptr_test_temporal</span> <span class="o">=</span> <span class="n">Temporal</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">])</span> <span class="c1">#temporal split</span>
+<span class="c1">#scaffold split</span>
+<span class="n">scaf_split</span> <span class="o">=</span> <span class="n">ScaffoldSplit</span><span class="p">()</span>
+<span class="n">scaffolds</span> <span class="o">=</span> <span class="n">scaf_split</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="n">df_med</span><span class="p">,</span> <span class="s2">&quot;smiles&quot;</span><span class="p">)</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">scaffolds</span><span class="p">)</span>
+<span class="n">ptr_train_sca</span><span class="p">,</span> <span class="n">ptr_test_sca</span> <span class="o">=</span> <span class="n">scaf_split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">],</span> <span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The PTR behaves differently to the distribution of input values, so it would be interesting to contrast ground distribution for the activity and the train-test distributions obtained from splitting strategies as above:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a density plot to compare the strategies</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+
+<span class="c1"># left plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;probability of activity above </span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s2"> (ptr)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Temporal split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_train_temporal</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;temp.split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_test_temporal</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;temp. split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># middle left plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;probability of activity above </span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s2"> (ptr)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Random split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_train_ran</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;random split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_test_ran</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;random split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># middle right plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;probability of activity above </span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s2"> (ptr)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Stratified split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_train_str</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;stratified split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_test_str</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;stratified split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># right plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;probability of activity above </span><span class="si">{</span><span class="n">pxc50_threshold</span><span class="si">}</span><span class="s2"> (ptr)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Scaffold split&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="p">[</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ground&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_train_sca</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Scaffold split (training)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">df_med</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ptr_test_sca</span><span class="p">][</span><span class="s2">&quot;ptr&quot;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;dodgerblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Scaffold split (test)&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># do the legend and render</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/kljk345/Library/Caches/pypoetry/virtualenvs/qptuna-_QsKTRFT-py3.10/lib/python3.10/site-packages/seaborn/distributions.py:316: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
+  warnings.warn(msg, UserWarning)
+/Users/kljk345/Library/Caches/pypoetry/virtualenvs/qptuna-_QsKTRFT-py3.10/lib/python3.10/site-packages/seaborn/distributions.py:316: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
+  warnings.warn(msg, UserWarning)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_preprocess_data_67_1.png" src="../_images/notebooks_preprocess_data_67_1.png" />
+</div>
+</div>
+<p>This above provides an example of the typical splitting distribution when using PTR across the different strategies.</p>
+<p>It can be seen via the inverted bell shape curve that the distributions peak to either extemes on the PTR scale. The figures also show cases when data distributions are different between training and test, when the resulting model will likely not generalize well to the test set.</p>
+<p>As before, the random split roughly resembles the ground distribution, whilst the stratified does an even better job in this respect.</p>
+<p>N.B: In comparison to the earlier splitting density analysis, similar dsitributions to the above are expected for even larger datasets, since the PTR preprocessing step will always “clip” values that are far away from the threshold or decision boundary, which hence biases y-labels toward either ends of the scale.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../README.html" class="btn btn-neutral float-left" title="QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="QPTUNA_Tutorial.html" class="btn btn-neutral float-right" title="QPTUNA CLI Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

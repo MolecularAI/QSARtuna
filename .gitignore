@@ -75,5 +75,5 @@ target
 /tests/mlruns/
 /dist/
 /.pytest_cache/
-/docs/sphinx-builddir/
 /docs/sphinx-staging/
+.DS_Store
