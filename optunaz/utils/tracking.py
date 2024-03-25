@@ -121,9 +121,9 @@ def track_build(model, buildconfig: BuildConfig):
 
     mode = buildconfig.settings.mode
     descriptor = buildconfig.descriptor
-    qptuna_model = wrap_model(model, descriptor=descriptor, mode=mode)
+    qsartuna_model = wrap_model(model, descriptor=descriptor, mode=mode)
 
-    predicted = qptuna_model.predict_from_smiles(smiles)
+    predicted = qsartuna_model.predict_from_smiles(smiles)
 
     test_points = [
         Datapoint(

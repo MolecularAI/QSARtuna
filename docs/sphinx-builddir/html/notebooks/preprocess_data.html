@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Preprocessing data for Qptuna &mdash; QPTUNA 2.7.11 documentation</title>
+  <title>Preprocessing data for QSARtuna &mdash; QSARtuna 2.7.11 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/autodoc_pydantic.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="QPTUNA CLI Tutorial" href="QPTUNA_Tutorial.html" />
-    <link rel="prev" title="QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" href="../README.html" /> 
+    <link rel="next" title="QSARtuna CLI Tutorial" href="QSARtuna_Tutorial.html" />
+    <link rel="prev" title="QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" href="../README.html" />
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +34,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            QPTUNA
+            QSARtuna
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -47,7 +47,7 @@
               <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../README.html">Intro and Quick Start</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Jupyter Notebook: Preprocessing Data for Qptuna</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Jupyter Notebook: Preprocessing Data for QSARtuna</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Translate-from-SDF-to-CSV-(if-needed)">Translate from SDF to CSV (if needed)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Deal-with-duplicates-(Deduplication)">Deal with duplicates (Deduplication)</a><ul>
@@ -65,19 +65,19 @@
 <li class="toctree-l2"><a class="reference internal" href="#Transform-of-data-inputs">Transform of data inputs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Log-transform-of-user-input-data">Log transform of user input data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Importance-of-log-transformation">Importance of log transformation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Qptuna-logarithmic-transformation">Qptuna logarithmic transformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#QSARtuna-logarithmic-transformation">QSARtuna logarithmic transformation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Performing-data-transform-within-the-Datareader">Performing data transform within the Datareader</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Probabilistic-Threshold-Representation-(PTR)-and-experimental-error">Probabilistic Threshold Representation (PTR) and experimental error</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Definition-of-the-PTR">Definition of the PTR</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Qptuna-implementation-of-the-PTR">Qptuna implementation of the PTR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#QSARtuna-implementation-of-the-PTR">QSARtuna implementation of the PTR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Conclusion:-PTR-calculation,-evaluation-of-experimental-reproducability-&amp;-best-practices">Conclusion: PTR calculation, evaluation of experimental reproducability &amp; best practices</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../splitters.html">List of available evaluation splits</a></li>
@@ -89,7 +89,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">QPTUNA</a>
+          <a href="../index.html">QSARtuna</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -97,7 +97,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Preprocessing data for Qptuna</li>
+      <li class="breadcrumb-item active">Preprocessing data for QSARtuna</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebooks/preprocess_data.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -386,12 +386,12 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Preprocessing-data-for-Qptuna">
-<h1>Preprocessing data for Qptuna<a class="headerlink" href="#Preprocessing-data-for-Qptuna" title="Permalink to this heading"></a></h1>
+<section id="Preprocessing-data-for-QSARtuna">
+<h1>Preprocessing data for QSARtuna<a class="headerlink" href="#Preprocessing-data-for-QSARtuna" title="Permalink to this heading"></a></h1>
 <section id="Introduction">
 <h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
 <p>Probably the most important step in using the automated parameter optimization is the preprocessing of the data prior to training the model. Common considerations include how to deal with duplicates SMILES having different read-out values, if and how to split the data into a training and (holdout) test set, and how to prepare input files in a proper way (e.g. transform SDF files into a dataframe with SMILE string- and read-out-columns).</p>
-<p>The Qptuna (<code class="docutils literal notranslate"><span class="pre">Optuna_AZ</span></code>) packages have some built-in functionality to facilitate that process.</p>
+<p>The QSARtuna (<code class="docutils literal notranslate"><span class="pre">Optuna_AZ</span></code>) packages have some built-in functionality to facilitate that process.</p>
 <p>Start with imports.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -462,9 +462,9 @@ div.rendered_html tbody tr:hover {
 </section>
 <section id="Translate-from-SDF-to-CSV-(if-needed)">
 <h2>Translate from SDF to CSV (if needed)<a class="headerlink" href="#Translate-from-SDF-to-CSV-(if-needed)" title="Permalink to this heading"></a></h2>
-<p>Qptuna can use either SMILES strings (no stereochemistry!) or SDF as input molecular representation.</p>
+<p>QSARtuna can use either SMILES strings (no stereochemistry!) or SDF as input molecular representation.</p>
 <p>SMILES input is a comma-separated values (CSV) file with a SMILES column and a read-out (response) column. Read-out (response) column can be either numeric values (for regression) or labels (for classification). Note, that labels can be in the form of integer/boolean values - as long as the optimization process is specified as <code class="docutils literal notranslate"><span class="pre">classification</span></code>, they will be translated into nominal data values. SDF files should have the response column provided within the SDF file.</p>
-<p>Data provided in SDF format can (optionally - since Qptuna can accept SDF files) be converted to a SMILES file (so that any optional more advanced preprocessing can be conducted) using the following code.</p>
+<p>Data provided in SDF format can (optionally - since QSARtuna can accept SDF files) be converted to a SMILES file (so that any optional more advanced preprocessing can be conducted) using the following code.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -682,8 +682,8 @@ div.rendered_html tbody tr:hover {
 <p>Let’s assume you have a proper <code class="docutils literal notranslate"><span class="pre">pandas</span></code> dataframe at this stage, with one column for the molecules as SMILES and one read-out column (numeric activity values in this example). Depending on how you obtained your dataset and whether it is already processed, you might have the same molecule present more than once (duplicates), probably with (hopefully slightly) different values. As these pose a potential problem afterwards, it might be wise to use only unique observations, i.e. remove all
 instances of duplicated molecules but one.</p>
 <p>There are different strategies to remove duplicates, which will are outlined below. * <code class="docutils literal notranslate"><span class="pre">KeepFirst()</span></code> and <code class="docutils literal notranslate"><span class="pre">KeepLast()</span></code>: keep the first or last occurrence of each duplicate. * <code class="docutils literal notranslate"><span class="pre">KeepRandom(seed)</span></code>: keep a random observation for each duplicate. Note, that the order of observations is not preserved. Use the <code class="docutils literal notranslate"><span class="pre">seed</span></code> parameter to vary results or to reproduce them. * <code class="docutils literal notranslate"><span class="pre">KeepMin()</span></code> and <code class="docutils literal notranslate"><span class="pre">KeepMax()</span></code>: keep min or max value. * <code class="docutils literal notranslate"><span class="pre">KeepAvg()</span></code>: take the average for all duplicates. *
-<code class="docutils literal notranslate"><span class="pre">KeepMedian()</span></code>: (default in Qptuna) take the median for all duplicates.</p>
-<p>The default deduplication method in Qptuna is KeepMedian, which is recommended best practice due the ability to utilise all experimental data into one value (account for experimental variability across replicated), whilst being robust to outliers.</p>
+<code class="docutils literal notranslate"><span class="pre">KeepMedian()</span></code>: (default in QSARtuna) take the median for all duplicates.</p>
+<p>The default deduplication method in QSARtuna is KeepMedian, which is recommended best practice due the ability to utilise all experimental data into one value (account for experimental variability across replicated), whilst being robust to outliers.</p>
 <p>Each of the deduplication methods returns a unique version of the stored dataframe.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -1039,7 +1039,7 @@ even better job in this respect. For (very) large datasets, the difference betwe
 </section>
 <section id="Transform-of-data-inputs">
 <h2>Transform of data inputs<a class="headerlink" href="#Transform-of-data-inputs" title="Permalink to this heading"></a></h2>
-<p>Qptuna can perform two types of transforms on input labels either a probabilistic transformation named Probabilistic Threshold Representation (PTR) or simple logarithmic scaling. The latter is a required step for data that is not normally distributed for most Machine Learning inputs. These approaches are discussed in more detail in the following sections.</p>
+<p>QSARtuna can perform two types of transforms on input labels either a probabilistic transformation named Probabilistic Threshold Representation (PTR) or simple logarithmic scaling. The latter is a required step for data that is not normally distributed for most Machine Learning inputs. These approaches are discussed in more detail in the following sections.</p>
 </section>
 <section id="Log-transform-of-user-input-data">
 <h2>Log transform of user input data<a class="headerlink" href="#Log-transform-of-user-input-data" title="Permalink to this heading"></a></h2>
@@ -1048,7 +1048,7 @@ even better job in this respect. For (very) large datasets, the difference betwe
 <h3>Importance of log transformation<a class="headerlink" href="#Importance-of-log-transformation" title="Permalink to this heading"></a></h3>
 <p>Most algorithms assume numerical co-variates have a Gaussian (normally distributed) probability distribution. In reality, input data may or may not have a normal distribution. Some may have a Gaussian-like distribution (e.g. nearly Gaussian but with outliers or a skew) whilst other may exhibit totally different distribution (e.g. exponential scale). For this reason, superior performance for a wide range of machine learning algorithms is obtained by performing a transformation to user inputs
 and/or output variables to have a Gaussian or Gaussian-like distribution.</p>
-<p>A good example of this is the conversion of principal (IC50) activity results to the pXC50 (negative log base), which have already been precomputed outside of Qptuna in the following example:</p>
+<p>A good example of this is the conversion of principal (IC50) activity results to the pXC50 (negative log base), which have already been precomputed outside of QSARtuna in the following example:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
@@ -1099,9 +1099,9 @@ and/or output variables to have a Gaussian or Gaussian-like distribution.</p>
 </div>
 <p>As illustrated in the above plot, the raw data (X axis &amp; histogram at the top) shows a very skewed (heteroscedastic) distribution toward low values. In comparison, the negative log10^6 scaled pXC50 values (y-axis &amp; histogram on the right) exhibits a more normal (homoscedastic) distribution of points. For this example, the log transformation yields a data set that should generate more predictive models.</p>
 </section>
-<section id="Qptuna-logarithmic-transformation">
-<h3>Qptuna logarithmic transformation<a class="headerlink" href="#Qptuna-logarithmic-transformation" title="Permalink to this heading"></a></h3>
-<p>Qptuna implements a ‘ModelDataTransform’ transormation method for converting numerical input or output variables to have a Gaussian or more-Gaussian-like distribution, which can be performed like so:</p>
+<section id="QSARtuna-logarithmic-transformation">
+<h3>QSARtuna logarithmic transformation<a class="headerlink" href="#QSARtuna-logarithmic-transformation" title="Permalink to this heading"></a></h3>
+<p>QSARtuna implements a ‘ModelDataTransform’ transormation method for converting numerical input or output variables to have a Gaussian or more-Gaussian-like distribution, which can be performed like so:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -1118,9 +1118,9 @@ and/or output variables to have a Gaussian or Gaussian-like distribution.</p>
     <span class="n">conversion</span><span class="o">=</span><span class="mi">6</span>
 <span class="p">)</span>
 
-<span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;Qptuna pXC50 ModelDataTransform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;XC50&#39;</span><span class="p">])</span>
+<span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;QSARtuna pXC50 ModelDataTransform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s1">&#39;XC50&#39;</span><span class="p">])</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">comparison</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;Qptuna pXC50 ModelDataTransform&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">comparison</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;QSARtuna pXC50 ModelDataTransform&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;pXC50&quot;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">plot_marginals</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">rugplot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mf">.15</span><span class="p">,</span> <span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1197,7 +1197,7 @@ and/or output variables to have a Gaussian or Gaussian-like distribution.</p>
 </div>
 <p>As illustrated, a <code class="docutils literal notranslate"><span class="pre">log_transform_base</span></code> set to perform a Log10, <code class="docutils literal notranslate"><span class="pre">log_transform_negative</span></code>=LogNegative.TRUE, and a <code class="docutils literal notranslate"><span class="pre">log_transform_unit_conversion</span></code> of 6 reproduces the pXC50 conversion we had pre-computed in the file.</p>
 <p>NB: the log transformation is reversed at inference. I.e. only the model is trained with the transformed values, any predictions will be output to the original scale as provided in user input data.</p>
-<p>Qptuna also implements the reverse of the transform using <code class="docutils literal notranslate"><span class="pre">reverse_transform</span></code>, so that users can obtain values on the original scale at inference, like so:</p>
+<p>QSARtuna also implements the reverse of the transform using <code class="docutils literal notranslate"><span class="pre">reverse_transform</span></code>, so that users can obtain values on the original scale at inference, like so:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
@@ -1245,12 +1245,12 @@ and/or output variables to have a Gaussian or Gaussian-like distribution.</p>
 <p>Response column values (e.g. pXC50) are converted into the ideal y-label probability using cdf with different bioactivity thresholds and standard deviation (SD) values. E.g. a response column of 5.1, would be assigned a PTR of 0.63 given a cutoff of 5.0 and σ (SD) of 0.3. The case when SD is 0 corresponds to the traditional classification at a cutoff scenario.</p>
 <p>PTR hence represents the activity in a framework in-between the classification and regression architecture, with philosophical differences from either approach. Compared to classification, this approach enables better representation of factors increasing/decreasing inactivity. Conversely, one can utilize all data (even delimited/operand/censored data far from a cut-off) at the same time as taking into account the granularity around the cut-off, compared to a conventional regression framework.
 Thereby, PTR combines characteristics from both classification and regression settings.</p>
-<p>NB: Qptuna treats the PTR values as the ‘ideal y-label’, i.e. they become the new response column values for train/test/validation performance evaluation, since it represents the ideal case, where experimental error is taken into account and model outputs most closely reflect this.</p>
+<p>NB: QSARtuna treats the PTR values as the ‘ideal y-label’, i.e. they become the new response column values for train/test/validation performance evaluation, since it represents the ideal case, where experimental error is taken into account and model outputs most closely reflect this.</p>
 <p>[1] <a class="reference external" href="https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00539-7#Sec12">https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00539-7#Sec12</a></p>
 </section>
-<section id="Qptuna-implementation-of-the-PTR">
-<h3>Qptuna implementation of the PTR<a class="headerlink" href="#Qptuna-implementation-of-the-PTR" title="Permalink to this heading"></a></h3>
-<p>PTR is also easily applied within the Datareader class by specifying the PTR options to the Qptuna datareader. E.g:</p>
+<section id="QSARtuna-implementation-of-the-PTR">
+<h3>QSARtuna implementation of the PTR<a class="headerlink" href="#QSARtuna-implementation-of-the-PTR" title="Permalink to this heading"></a></h3>
+<p>PTR is also easily applied within the Datareader class by specifying the PTR options to the QSARtuna datareader. E.g:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
@@ -1420,7 +1420,7 @@ Thereby, PTR combines characteristics from both classification and regression se
 </section>
 <section id="Conclusion:-PTR-calculation,-evaluation-of-experimental-reproducability-&amp;-best-practices">
 <h3>Conclusion: PTR calculation, evaluation of experimental reproducability &amp; best practices<a class="headerlink" href="#Conclusion:-PTR-calculation,-evaluation-of-experimental-reproducability-&-best-practices" title="Permalink to this heading"></a></h3>
-<p>In this section, we next also look at how the PTR within the Qptuna datareader is implemented, and show how a user can assess the experimental reproducability/uncertainty for their query dataset.</p>
+<p>In this section, we next also look at how the PTR within the QSARtuna datareader is implemented, and show how a user can assess the experimental reproducability/uncertainty for their query dataset.</p>
 <p>First we start with imports and define the PTR function using <code class="docutils literal notranslate"><span class="pre">stats.norm.cdf</span></code> from scipy</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
@@ -1651,9 +1651,9 @@ Standard deviation of experimental results:0.22
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/Users/kljk345/Library/Caches/pypoetry/virtualenvs/qptuna-_QsKTRFT-py3.10/lib/python3.10/site-packages/seaborn/distributions.py:316: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
+/Users/kljk345/Library/Caches/pypoetry/virtualenvs/qsartuna-_QsKTRFT-py3.10/lib/python3.10/site-packages/seaborn/distributions.py:316: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
   warnings.warn(msg, UserWarning)
-/Users/kljk345/Library/Caches/pypoetry/virtualenvs/qptuna-_QsKTRFT-py3.10/lib/python3.10/site-packages/seaborn/distributions.py:316: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
+/Users/kljk345/Library/Caches/pypoetry/virtualenvs/qsartuna-_QsKTRFT-py3.10/lib/python3.10/site-packages/seaborn/distributions.py:316: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
   warnings.warn(msg, UserWarning)
 </pre></div></div>
 </div>
@@ -1676,8 +1676,8 @@ Standard deviation of experimental results:0.22
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../README.html" class="btn btn-neutral float-left" title="QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="QPTUNA_Tutorial.html" class="btn btn-neutral float-right" title="QPTUNA CLI Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../README.html" class="btn btn-neutral float-left" title="QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="QSARtuna_Tutorial.html" class="btn btn-neutral float-right" title="QSARtuna CLI Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -46,7 +46,7 @@ def predict(
 
     Returns: 1d numpy array, with numpy.nan for invalid SMILES.
 
-    Deprecated, use 'QptunaModel.predict_from_smiles()' instead.
+    Deprecated, use 'QSARtunaModel.predict_from_smiles()' instead.
     """
 
     if isinstance(smiles, str):  # Single SMILES string - wrap into list.
@@ -117,7 +117,7 @@ def predict_from_smiles_and_descriptor(
 
     This function will become a method of the predictive model.
 
-    Deprecated, use 'QptunaModel.predict_from_smiles()' instead.
+    Deprecated, use 'QSARtunaModel.predict_from_smiles()' instead.
     """
 
     return predict(self, mode, self.mol_descriptor, smiles, uncert, explain)
@@ -126,7 +126,7 @@ def predict_from_smiles_and_descriptor(
 def add_predict_from_smiles(model: Any, descriptor: AnyDescriptor, mode: ModelMode):
     """Adds method 'predict_from_smiles' to a predictive model.
 
-    Deprecated, use 'QptunaModel.predict_from_smiles()' instead.
+    Deprecated, use 'QSARtunaModel.predict_from_smiles()' instead.
     """
 
     # side info replaced so side info not required for inference
@@ -183,7 +183,7 @@ class Predictor(abc.ABC):
 
 
 @dataclass
-class QptunaModel(abc.ABC):
+class QSARtunaModel(abc.ABC):
     predictor: Predictor
     descriptor: AnyDescriptor
     mode: ModelMode
@@ -306,8 +306,8 @@ def wrap_model(
     transform: Optional[ModelDataTransform] = None,
     aux_transform: Optional[AnyAuxTransformer] = None,
     metadata: Optional[Dict] = None,
-) -> QptunaModel:
-    return QptunaModel(model, descriptor, mode, transform, aux_transform, metadata)
+) -> QSARtunaModel:
+    return QSARtunaModel(model, descriptor, mode, transform, aux_transform, metadata)
 
 
 def save_model(

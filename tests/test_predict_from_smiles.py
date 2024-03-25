@@ -9,7 +9,7 @@ from optunaz.config import ModelMode
 from optunaz.descriptors import ECFP, SmilesFromFile
 from optunaz.model_writer import (
     save_model,
-    QptunaModel,
+    QSARtunaModel,
     Predictor,
 )
 
@@ -42,7 +42,7 @@ def test1():
     descriptor = ECFP.new()
     m0 = Model()
     mode = ModelMode.REGRESSION
-    m = QptunaModel(m0, descriptor, mode)
+    m = QSARtunaModel(m0, descriptor, mode)
 
     smis = ["CCC"]
     assert m.predict_from_smiles(smis) == np.array([4])

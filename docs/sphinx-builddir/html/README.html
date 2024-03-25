@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ) &mdash; QPTUNA 2.7.11 documentation</title>
+  <title>QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ) &mdash; QSARtuna 2.7.11 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Preprocessing data for Qptuna" href="notebooks/preprocess_data.html" />
-    <link rel="prev" title="Welcome to QPTUNA Documentation!" href="index.html" /> 
+    <link rel="next" title="Preprocessing data for QSARtuna" href="notebooks/preprocess_data.html" />
+    <link rel="prev" title="Welcome to QSARtuna Documentation!" href="index.html" />
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +34,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            QPTUNA
+            QSARtuna
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,8 +62,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#run-from-python-jupyter-notebook">Run from Python/Jupyter Notebook</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
@@ -75,7 +75,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">QPTUNA</a>
+          <a href="index.html">QSARtuna</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -83,7 +83,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)</li>
+      <li class="breadcrumb-item active">QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -117,8 +117,8 @@
     text-align: unset;
 }
 </style>
-<section id="qptuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az">
-<h1>QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)<a class="headerlink" href="#qptuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az" title="Permalink to this heading"></a></h1>
+<section id="qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az">
+<h1>QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)<a class="headerlink" href="#qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az" title="Permalink to this heading"></a></h1>
 <p>Build predictive models for CompChem with hyperparameters optimized by <a class="reference external" href="https://optuna.org/">Optuna</a>.</p>
 <p>Developed with Uncertainty Quantification and model explainability in mind.</p>
 <section id="background">
@@ -135,7 +135,7 @@ uncertinaty estimation and
 explainability python packages</p>
 <section id="the-three-step-process">
 <h3>The three-step process<a class="headerlink" href="#the-three-step-process" title="Permalink to this heading"></a></h3>
-<p>QPTUNA is structured around three steps:</p>
+<p>QSARtuna is structured around three steps:</p>
 <ol class="simple">
 <li><p><em>Hyperparameter Optimization:</em>
 Train many models with different parameters using Optuna.
@@ -242,18 +242,18 @@ and optimization is free to pair any specified descriptor with any of the algori
 </section>
 <section id="running-via-singulartity">
 <h3>Running via singulartity<a class="headerlink" href="#running-via-singulartity" title="Permalink to this heading"></a></h3>
-<p>QPTUNA can be deployed using <a class="reference external" href="https://sylabs.io/guides/3.7/user-guide/index.html">Singularity</a> container.</p>
+<p>QSARtuna can be deployed using <a class="reference external" href="https://sylabs.io/guides/3.7/user-guide/index.html">Singularity</a> container.</p>
 <p>To run commands inside the container, Singularity uses the following syntax:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;container.sif&gt;<span class="w"> </span>&lt;command&gt;
 </pre></div>
 </div>
 <p>We can run three-step-process from command line with the following command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/projects/cc/mai/containers/Qptuna_latest.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qptuna/.venv/bin/qptuna-optimize<span class="w"> </span><span class="se">\</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/projects/cc/mai/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--config<span class="w"> </span>examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qptuna-target/best.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qptuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qptuna-target/merged.pkl
+<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
 </pre></div>
 </div>
 <p>Since optimization can be a long process,
@@ -271,48 +271,48 @@ and we should submit it to the SLURM queue instead.</p>
 <span class="c1">#SBATCH --time=100:0:0</span>
 <span class="c1">#SBATCH --partition core</span>
 
-<span class="c1"># This script illustrates how to run one configuration from Qptuna examples.</span>
+<span class="c1"># This script illustrates how to run one configuration from QSARtuna examples.</span>
 <span class="c1"># The example we use is in examples/optimization/regression_drd2_50.json.</span>
 
 <span class="c1"># The example we chose uses relative paths to data files, change directory.</span>
 <span class="nb">cd</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/OptunaAZ-versions/OptunaAZ_latest
 
 singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/Qptuna_latest.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qptuna/.venv/bin/qptuna-optimize<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--config<span class="o">{</span>project_folder<span class="o">}</span>/examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qptuna-target/best.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qptuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qptuna-target/merged.pkl
+<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
 </pre></div>
 </div>
-<p>When the script is complete, it will create pickled model files inside your home directory under <code class="docutils literal notranslate"><span class="pre">~/qptuna-target/</span></code>.</p>
+<p>When the script is complete, it will create pickled model files inside your home directory under <code class="docutils literal notranslate"><span class="pre">~/qsartuna-target/</span></code>.</p>
 </section>
 <section id="using-the-model">
 <h3>Using the model<a class="headerlink" href="#using-the-model" title="Permalink to this heading"></a></h3>
 <p>When the model is built, run inference:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/Qptuna_latest.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qptuna/.venv/bin/qptuna-predict<span class="w"> </span><span class="se">\</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--model-file<span class="w"> </span>target/merged.pkl<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-smiles-csv-column<span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>target/prediction.csv
 </pre></div>
 </div>
-<p>Note that Qptuna_latest.sif points to the most recent version of Qptuna.</p>
-<p>Legacy models require the inference with the same Qptuna version used to train the model.
+<p>Note that QSARtuna_latest.sif points to the most recent version of QSARtuna.</p>
+<p>Legacy models require the inference with the same QSARtuna version used to train the model.
 This can be specified by modifying the above command and supplying
-<code class="docutils literal notranslate"><span class="pre">/projects/cc/mai/containers/Qptuna_&lt;version&gt;.sif</span></code> (replace <version> with the version of Qptuna).</p>
+<code class="docutils literal notranslate"><span class="pre">/projects/cc/mai/containers/QSARtuna_&lt;version&gt;.sif</span></code> (replace <version> with the version of QSARtuna).</p>
 <p>E.g:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/Qptuna_2.5.1.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qptuna/.venv/bin/qptuna-predict<span class="w"> </span><span class="se">\</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_2.5.1.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--model-file<span class="w"> </span><span class="m">2</span>.5.1_model.pkl<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-smiles-csv-column<span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>target/prediction.csv
 </pre></div>
 </div>
-<p>would generate predictions for a model trained with Qptuna 2.5.1.</p>
+<p>would generate predictions for a model trained with QSARtuna 2.5.1.</p>
 </section>
 <section id="optional-inspect">
 <h3>Optional: inspect<a class="headerlink" href="#optional-inspect" title="Permalink to this heading"></a></h3>
@@ -347,25 +347,25 @@ There you can access run/trial build (training) configuration.</p>
 </section>
 <section id="run-from-python-jupyter-notebook">
 <h2>Run from Python/Jupyter Notebook<a class="headerlink" href="#run-from-python-jupyter-notebook" title="Permalink to this heading"></a></h2>
-<p>Create conda environment with Jupyter and Install Qptuna there:</p>
+<p>Create conda environment with Jupyter and Install QSARtuna there:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>purge
 module<span class="w"> </span>load<span class="w"> </span>Miniconda3
-conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>my_env_with_qptuna<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10.10<span class="w"> </span>jupyter<span class="w"> </span>pip
-conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qptuna
+conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>my_env_with_qsartuna<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10.10<span class="w"> </span>jupyter<span class="w"> </span>pip
+conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qsartuna
 module<span class="w"> </span>purge<span class="w">  </span><span class="c1"># Just in case.</span>
-which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Check. Should output path that contains &quot;my_env_with_qptuna&quot;.</span>
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>http://pages.scp.astrazeneca.net/mai/qptuna/releases/Qptuna_latest.tar.gz
+which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Check. Should output path that contains &quot;my_env_with_qsartuna&quot;.</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>http://pages.scp.astrazeneca.net/mai/qsartuna/releases/QSARtuna_latest.tar.gz
 </pre></div>
 </div>
-<p>Then you can use Qptuna inside your Notebook:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qptuna.three_step_opt_build_merge</span> <span class="kn">import</span> <span class="p">(</span>
+<p>Then you can use QSARtuna inside your Notebook:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qsartuna.three_step_opt_build_merge</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">optimize</span><span class="p">,</span>
     <span class="n">buildconfig_best</span><span class="p">,</span>
     <span class="n">build_best</span><span class="p">,</span>
     <span class="n">build_merged</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">qptuna.config</span> <span class="kn">import</span> <span class="n">ModelMode</span><span class="p">,</span> <span class="n">OptimizationDirection</span>
-<span class="kn">from</span> <span class="nn">qptuna.config.optconfig</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">qsartuna.config</span> <span class="kn">import</span> <span class="n">ModelMode</span><span class="p">,</span> <span class="n">OptimizationDirection</span>
+<span class="kn">from</span> <span class="nn">qsartuna.config.optconfig</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationConfig</span><span class="p">,</span>
     <span class="n">SVR</span><span class="p">,</span>
     <span class="n">RandomForest</span><span class="p">,</span>
@@ -374,8 +374,8 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     <span class="n">PLS</span><span class="p">,</span>
     <span class="n">XGBregressor</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">qptuna.datareader</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">qptuna.descriptors</span> <span class="kn">import</span> <span class="n">ECFP</span><span class="p">,</span> <span class="n">MACCS_keys</span><span class="p">,</span> <span class="n">ECFP_counts</span>
+<span class="kn">from</span> <span class="nn">qsartuna.datareader</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">qsartuna.descriptors</span> <span class="kn">import</span> <span class="n">ECFP</span><span class="p">,</span> <span class="n">MACCS_keys</span><span class="p">,</span> <span class="n">ECFP_counts</span>
 
 <span class="c1">##</span>
 <span class="c1"># Prepare hyperparameter optimization configuration.</span>
@@ -429,8 +429,8 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to QPTUNA Documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="notebooks/preprocess_data.html" class="btn btn-neutral float-right" title="Preprocessing data for Qptuna" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to QSARtuna Documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/preprocess_data.html" class="btn btn-neutral float-right" title="Preprocessing data for QSARtuna" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

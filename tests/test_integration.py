@@ -380,7 +380,7 @@ def optconfig_prfc(file_drd2_50):
         "optconfig_calibration_rf",
     ],
 )
-def test_qptuna_integration(file_drd2_50, shared_datadir, optconfig, request):
+def test_qsartuna_integration(file_drd2_50, shared_datadir, optconfig, request):
     optconfig = request.getfixturevalue(optconfig)
     # optconfig.set_cache() Not setting cache to capture integration without cache test
 

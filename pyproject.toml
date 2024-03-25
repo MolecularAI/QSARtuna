@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "qptuna"
+name = "qsartuna"
 version = "3.0.0"
-description = "QPTUNA: QSAR using Optimization for Hyperparameter Tuning"
+description = "QSARtuna: QSAR using Optimization for Hyperparameter Tuning"
 authors = ["Molecular AI, AstraZeneca"]
 license = "Apache-2.0"
 readme = "README.md"
 packages = [
     { include = "optunaz" },
-    { include = "qptuna" },
+    { include = "qsartuna" },
 ]
 
 [tool.poetry.dependencies]
@@ -51,10 +51,10 @@ pandoc = "^2.3"
 plotly = "5.15.0"
 
 [tool.poetry.scripts]
-qptuna-optimize = "qptuna.optbuild:main"
-qptuna-build = "qptuna.optbuild:main"
-qptuna-predict = "qptuna.predict:main"
-qptuna-schemagen = "qptuna.schemagen:main"
+qsartuna-optimize = "qsartuna.optbuild:main"
+qsartuna-build = "qsartuna.optbuild:main"
+qsartuna-predict = "qsartuna.predict:main"
+qsartuna-schemagen = "qsartuna.schemagen:main"
 
 [build-system]
 requires = ["poetry-core>=1.5.2"]

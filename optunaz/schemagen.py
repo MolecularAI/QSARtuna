@@ -308,7 +308,7 @@ def patch_schema_optunaz(schema):
         .get("training_dataset_file", {})
     )[
         "format"
-    ] = "qptuna-file"  # this format emphasized csv and sdf support with basic validation and automated column handling
+    ] = "qsartuna-file"  # this format emphasized csv and sdf support with basic validation and automated column handling
 
     (
         schema.get("$defs", {})
@@ -326,7 +326,7 @@ def patch_schema_optunaz(schema):
         .get("input_column", {})
     )[
         "format"
-    ] = "single-string-select"  # for Qptuna model this field is string, but in GUI we generate values for it based on qptuna-file
+    ] = "single-string-select"  # for QSARtuna model this field is string, but in GUI we generate values for it based on qsartuna-file
 
     (
         schema.get("$defs", {})
@@ -335,7 +335,7 @@ def patch_schema_optunaz(schema):
         .get("response_column", {})
     )[
         "format"
-    ] = "single-string-select"  # for Qptuna model this field is string, but in GUI we generate values for it based on qptuna-file
+    ] = "single-string-select"  # for QSARtuna model this field is string, but in GUI we generate values for it based on qsartuna-file
 
     (
         schema.get("$defs", {})

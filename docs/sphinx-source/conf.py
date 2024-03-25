@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'QPTUNA'
+project = 'QSARtuna'
 copyright = '2023, AstraZeneca'
 author = 'MAI'
 

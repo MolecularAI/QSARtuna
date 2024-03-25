@@ -250,7 +250,7 @@ def optconfig_classification_chemprop(file_drd2_50, file_drd2_50_side_info):
         "optconfig_regression_chemprop",
     ],
 )
-def test_qptuna_explainability(file_drd2_50, shared_datadir, optconfig, request):
+def test_qsartuna_explainability(file_drd2_50, shared_datadir, optconfig, request):
     optconfig = request.getfixturevalue(optconfig)
     optconfig.set_cache()
 

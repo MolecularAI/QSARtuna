@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.model_writer &mdash; QPTUNA 2.7.11 documentation</title>
+  <title>optunaz.model_writer &mdash; QSARtuna 2.7.11 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -31,7 +31,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            QPTUNA
+            QSARtuna
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -44,8 +44,8 @@
               <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">Intro and Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for Qptuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QPTUNA_Tutorial.html">Jupyter Notebook: Qptuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">QPTUNA</a>
+          <a href="../../index.html">QSARtuna</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -124,7 +124,7 @@
 
 <span class="sd">    Returns: 1d numpy array, with numpy.nan for invalid SMILES.</span>
 
-<span class="sd">    Deprecated, use &#39;QptunaModel.predict_from_smiles()&#39; instead.</span>
+<span class="sd">    Deprecated, use &#39;QSARtunaModel.predict_from_smiles()&#39; instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Single SMILES string - wrap into list.</span>
@@ -195,7 +195,7 @@
 
 <span class="sd">    This function will become a method of the predictive model.</span>
 
-<span class="sd">    Deprecated, use &#39;QptunaModel.predict_from_smiles()&#39; instead.</span>
+<span class="sd">    Deprecated, use &#39;QSARtunaModel.predict_from_smiles()&#39; instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_descriptor</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">explain</span><span class="p">)</span></div>
@@ -204,7 +204,7 @@
 <div class="viewcode-block" id="add_predict_from_smiles"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.add_predict_from_smiles">[docs]</a><span class="k">def</span> <span class="nf">add_predict_from_smiles</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">:</span> <span class="n">AnyDescriptor</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">ModelMode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds method &#39;predict_from_smiles&#39; to a predictive model.</span>
 
-<span class="sd">    Deprecated, use &#39;QptunaModel.predict_from_smiles()&#39; instead.</span>
+<span class="sd">    Deprecated, use &#39;QSARtunaModel.predict_from_smiles()&#39; instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># side info replaced so side info not required for inference</span>
@@ -260,8 +260,8 @@
         <span class="o">...</span></div></div>
 
 
-<div class="viewcode-block" id="QptunaModel"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.QptunaModel">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">QptunaModel</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="QSARtunaModel"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.QSARtunaModel">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">QSARtunaModel</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
     <span class="n">predictor</span><span class="p">:</span> <span class="n">Predictor</span>
     <span class="n">descriptor</span><span class="p">:</span> <span class="n">AnyDescriptor</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">ModelMode</span>
@@ -269,7 +269,7 @@
     <span class="n">aux_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyAuxTransformer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="QptunaModel.predict_from_smiles"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.QptunaModel.predict_from_smiles">[docs]</a>    <span class="k">def</span> <span class="nf">predict_from_smiles</span><span class="p">(</span>
+<div class="viewcode-block" id="QSARtunaModel.predict_from_smiles"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.QSARtunaModel.predict_from_smiles">[docs]</a>    <span class="k">def</span> <span class="nf">predict_from_smiles</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">smiles</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">aux</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -384,8 +384,8 @@
     <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelDataTransform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">aux_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyAuxTransformer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QptunaModel</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">QptunaModel</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">aux_transform</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QSARtunaModel</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">QSARtunaModel</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">aux_transform</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="save_model"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.save_model">[docs]</a><span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span>

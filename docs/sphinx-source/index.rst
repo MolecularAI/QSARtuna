@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to QPTUNA Documentation!
+Welcome to QSARtuna Documentation!
 =====================================
 
-Welcome to QPTUNA: QSAR using Optimization for Hyperparameter Tuning.
+Welcome to QSARtuna: QSAR using Optimization for Hyperparameter Tuning.
 
 Build QSAR models with hyperparameters optimized by `Optuna <https://optuna.org/>`_.
 
@@ -15,8 +15,8 @@ Build QSAR models with hyperparameters optimized by `Optuna <https://optuna.org/
    :caption: Documentation:
 
    Intro and Quick Start <README.md>
-   Jupyter Notebook: Preprocessing Data for Qptuna <notebooks/preprocess_data.ipynb>
-   Jupyter Notebook: Qptuna CLI Tutorial <notebooks/QPTUNA_Tutorial.ipynb>
+   Jupyter Notebook: Preprocessing Data for QSARtuna <notebooks/preprocess_data.ipynb>
+   Jupyter Notebook: QSARtuna CLI Tutorial <notebooks/QSARtuna_Tutorial.ipynb>
    List of available ML algorithms <algorithms.rst>
    List of available molecular descriptors <descriptors.rst>
    List of available evaluation splits <splitters.rst>
@@ -28,4 +28,4 @@ Development
 * `Test coverage <_static/pytest/coverage/index.html>`_
 * `Source code (GitHub) <https://github.com/AZU-RDIT/optuna_az/>`_
 * `Issues (Jira) <https://jira.rd.astrazeneca.net/browse/OPTUNA/>`_
-* `Public release (3.0.0)  <https://github.com/MolecularAI/Qptuna/>`_
+* `Public release (3.0.0)  <https://github.com/MolecularAI/QSARtuna/>`_

@@ -1,4 +1,4 @@
-# QPTUNA: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)
+# QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)
 
 Build predictive models for CompChem with hyperparameters optimized by [Optuna](https://optuna.org/).
 
@@ -14,16 +14,16 @@ for the given data.
 The search itself 
 is done using [Optuna](https://optuna.org/).
 
-Devloped models employ
+Developed models employ
 the latest state-of-the-art
-uncertinaty estimation and
+uncertainty estimation and
 explainability python packages
 
 Further documentation in the GitHub pages [here](https://molecularai.github.io/Qptuna/).
 
 ### The three-step process
 
-QPTUNA is structured around three steps:
+QSARtuna is structured around three steps:
 
 1. *Hyperparameter Optimization:* 
     Train many models with different parameters using Optuna.
@@ -135,7 +135,7 @@ When we have our data and our configuration, it is time to start the optimizatio
 
 ### Running via singulartity
 
-QPTUNA can be deployed using [Singularity](https://sylabs.io/guides/3.7/user-guide/index.html) container.
+QSARtuna can be deployed using [Singularity](https://sylabs.io/guides/3.7/user-guide/index.html) container.
 
 To run commands inside the container, Singularity uses the following syntax:
 ```shell
@@ -145,12 +145,12 @@ singularity exec <container.sif> <command>
 We can run three-step-process from command line with the following command:
 
 ```shell
-singularity exec /projects/cc/mai/containers/Qptuna_latest.sif \
-  /opt/qptuna/.venv/bin/qptuna-optimize \
+singularity exec /projects/cc/mai/containers/QSARtuna_latest.sif \
+  /opt/qsartuna/.venv/bin/qsartuna-optimize \
   --config examples/optimization/regression_drd2_50.json \
-  --best-buildconfig-outpath ~/qptuna-target/best.json \
-  --best-model-outpath ~/qptuna-target/best.pkl \
-  --merged-model-outpath ~/qptuna-target/merged.pkl
+  --best-buildconfig-outpath ~/qsartuna-target/best.json \
+  --best-model-outpath ~/qsartuna-target/best.pkl \
+  --merged-model-outpath ~/qsartuna-target/merged.pkl
 ```
 
 Since optimization can be a long process,
@@ -171,53 +171,53 @@ We can submit our script to the queue by giving `sbatch` the following script:
 #SBATCH --time=100:0:0
 #SBATCH --partition core
 
-# This script illustrates how to run one configuration from Qptuna examples.
+# This script illustrates how to run one configuration from QSARtuna examples.
 # The example we use is in examples/optimization/regression_drd2_50.json.
 
 # The example we chose uses relative paths to data files, change directory.
 cd /{project_folder}/OptunaAZ-versions/OptunaAZ_latest
 
 singularity exec \
-  /{project_folder}/containers/Qptuna_latest.sif \
-  /opt/qptuna/.venv/bin/qptuna-optimize \
+  /{project_folder}/containers/QSARtuna_latest.sif \
+  /opt/qsartuna/.venv/bin/qsartuna-optimize \
   --config{project_folder}/examples/optimization/regression_drd2_50.json \
-  --best-buildconfig-outpath ~/qptuna-target/best.json \
-  --best-model-outpath ~/qptuna-target/best.pkl \
-  --merged-model-outpath ~/qptuna-target/merged.pkl
+  --best-buildconfig-outpath ~/qsartuna-target/best.json \
+  --best-model-outpath ~/qsartuna-target/best.pkl \
+  --merged-model-outpath ~/qsartuna-target/merged.pkl
 ```
 
-When the script is complete, it will create pickled model files inside your home directory under `~/qptuna-target/`.
+When the script is complete, it will create pickled model files inside your home directory under `~/qsartuna-target/`.
 
 
 ### Using the model
 
 When the model is built, run inference:
 ```shell
-singularity exec /{project_folder}/containers/Qptuna_latest.sif \
-  /opt/qptuna/.venv/bin/qptuna-predict \
+singularity exec /{project_folder}/containers/QSARtuna_latest.sif \
+  /opt/qsartuna/.venv/bin/qsartuna-predict \
   --model-file target/merged.pkl \
   --input-smiles-csv-file tests/data/DRD2/subset-50/test.csv \
   --input-smiles-csv-column "canonical" \
   --output-prediction-csv-file target/prediction.csv
 ```
 
-Note that Qptuna_latest.sif points to the most recent version of Qptuna.
+Note that QSARtuna_latest.sif points to the most recent version of QSARtuna.
 
-Legacy models require the inference with the same Qptuna version used to train the model.
+Legacy models require the inference with the same QSARtuna version used to train the model.
 This can be specified by modifying the above command and supplying 
-`/projects/cc/mai/containers/Qptuna_<version>.sif` (replace <version> with the version of Qptuna).
+`/projects/cc/mai/containers/QSARtuna_<version>.sif` (replace <version> with the version of QSARtuna).
 
 E.g:
 ```shell
-singularity exec /{project_folder}/containers/Qptuna_2.5.1.sif \
-  /opt/qptuna/.venv/bin/qptuna-predict \
+singularity exec /{project_folder}/containers/QSARtuna_2.5.1.sif \
+  /opt/qsartuna/.venv/bin/qsartuna-predict \
   --model-file 2.5.1_model.pkl \
   --input-smiles-csv-file tests/data/DRD2/subset-50/test.csv \
   --input-smiles-csv-column "canonical" \
   --output-prediction-csv-file target/prediction.csv
 ```
 
-would generate predictions for a model trained with Qptuna 2.5.1.
+would generate predictions for a model trained with QSARtuna 2.5.1.
 
 ### Optional: inspect
 To inspect performance of different models tried during optimization,
@@ -258,27 +258,27 @@ There you can access run/trial build (training) configuration.
 
 ## Run from Python/Jupyter Notebook
 
-Create conda environment with Jupyter and Install Qptuna there:
+Create conda environment with Jupyter and Install QSARtuna there:
 ```shell
 module purge
 module load Miniconda3
-conda create --name my_env_with_qptuna python=3.10.10 jupyter pip
-conda activate my_env_with_qptuna
+conda create --name my_env_with_qsartuna python=3.10.10 jupyter pip
+conda activate my_env_with_qsartuna
 module purge  # Just in case.
-which python  # Check. Should output path that contains "my_env_with_qptuna".
-python -m pip install http://pages.scp.astrazeneca.net/mai/qptuna/releases/Qptuna_latest.tar.gz
+which python  # Check. Should output path that contains "my_env_with_qsartuna".
+python -m pip install 
 ```
 
-Then you can use Qptuna inside your Notebook:
+Then you can use QSARtuna inside your Notebook:
 ```python
-from qptuna.three_step_opt_build_merge import (
+from qsartuna.three_step_opt_build_merge import (
     optimize,
     buildconfig_best,
     build_best,
     build_merged,
 )
-from qptuna.config import ModelMode, OptimizationDirection
-from qptuna.config.optconfig import (
+from qsartuna.config import ModelMode, OptimizationDirection
+from qsartuna.config.optconfig import (
     OptimizationConfig,
     SVR,
     RandomForest,
@@ -287,8 +287,8 @@ from qptuna.config.optconfig import (
     PLS,
     XGBregressor,
 )
-from qptuna.datareader import Dataset
-from qptuna.descriptors import ECFP, MACCS_keys, ECFP_counts
+from qsartuna.datareader import Dataset
+from qsartuna.descriptors import ECFP, MACCS_keys, ECFP_counts
 
 ##
 # Prepare hyperparameter optimization configuration.

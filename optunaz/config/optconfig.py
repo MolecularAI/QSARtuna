@@ -1172,7 +1172,7 @@ class ChemPropRegressor(Algorithm):
 
 class ChemPropSearch_Parameter_Level(str, Enum):
     """
-    `Qptuna` implements a hyperparameter search space level for ChemProp in order to define Hyperopt search space
+    `QSARtuna` implements a hyperparameter search space level for ChemProp in order to define Hyperopt search space
      to optimise. Increasing levels correspond to increasing the search space.
     """
 

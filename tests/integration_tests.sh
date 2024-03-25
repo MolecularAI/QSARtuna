@@ -1,3 +1,3 @@
 #!/bin/sh
-cd /opt/qptuna
+cd /opt/qsartuna
 /opt/poetry/bin/poetry run pytest -m "integration"
