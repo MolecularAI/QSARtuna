@@ -560,9 +560,9 @@ class PrecomputedDescriptorFromFile(MolDescriptor):
                 f"Multiple descriptors found for {smi}, taking the first one."
             )
         descriptor_iloc = rows[self.parameters.response_column].iloc[0]
-        if type(descriptor_iloc) == np.float64:
-            return np.array([descriptor_iloc])
-        else:
+        try:
+            return np.array([descriptor_iloc.astype(float)])
+        except (ValueError, AttributeError):
             fp = np.fromstring(descriptor_iloc, sep=",")
             if len(fp) == 0:
                 return None
