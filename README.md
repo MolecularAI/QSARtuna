@@ -19,7 +19,7 @@ the latest state-of-the-art
 uncertainty estimation and
 explainability python packages
 
-Further documentation in the GitHub pages [here](https://molecularai.github.io/Qptuna/).
+Further documentation in the GitHub pages [here](https://molecularai.github.io/QSARtuna/).
 
 ### The three-step process
 
