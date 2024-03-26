@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'QSARtuna'
-copyright = '2023, AstraZeneca'
+copyright = '2024, AstraZeneca'
 author = 'MAI'
 
 # The full version, including alpha/beta/rc tags
-release = '2.7.11'
+release = '3.0.0.1'
 
 
 # -- General configuration ---------------------------------------------------

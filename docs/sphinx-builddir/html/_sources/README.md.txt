@@ -1,4 +1,4 @@
-# QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)
+# QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)
 
 Build predictive models for CompChem with hyperparameters optimized by [Optuna](https://optuna.org/).
 
@@ -14,9 +14,9 @@ for the given data.
 The search itself 
 is done using [Optuna](https://optuna.org/).
 
-Devloped models employ
+Developed models employ
 the latest state-of-the-art
-uncertinaty estimation and
+uncertainty estimation and
 explainability python packages
 
 ### The three-step process
@@ -264,7 +264,7 @@ conda create --name my_env_with_qsartuna python=3.10.10 jupyter pip
 conda activate my_env_with_qsartuna
 module purge  # Just in case.
 which python  # Check. Should output path that contains "my_env_with_qsartuna".
-python -m pip install http://pages.scp.astrazeneca.net/mai/qsartuna/releases/QSARtuna_latest.tar.gz
+python -m pip install 
 ```
 
 Then you can use QSARtuna inside your Notebook:
