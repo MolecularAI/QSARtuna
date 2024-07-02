@@ -1,0 +1,257 @@
+Command line
+python /Users/kljk345/Library/Caches/pypoetry/virtualenvs/qptuna-_QsKTRFT-py3.10/bin/chemprop_train --data_path train.csv --dataset_type regression --save_dir ./save --target_columns molwt --smiles_columns canonical --epochs 30 --split_sizes 0.8 0.2 0.0 --seed 0
+Args
+{'activation': 'ReLU',
+ 'adding_bond_types': True,
+ 'adding_h': False,
+ 'aggregation': 'mean',
+ 'aggregation_norm': 100,
+ 'atom_constraints': [],
+ 'atom_descriptor_scaling': True,
+ 'atom_descriptors': None,
+ 'atom_descriptors_path': None,
+ 'atom_descriptors_size': 0,
+ 'atom_features_size': 0,
+ 'atom_messages': False,
+ 'atom_targets': [],
+ 'batch_size': 50,
+ 'bias': False,
+ 'bias_solvent': False,
+ 'bond_constraints': [],
+ 'bond_descriptor_scaling': True,
+ 'bond_descriptors': None,
+ 'bond_descriptors_path': None,
+ 'bond_descriptors_size': 0,
+ 'bond_features_size': 0,
+ 'bond_targets': [],
+ 'cache_cutoff': 10000,
+ 'checkpoint_dir': None,
+ 'checkpoint_frzn': None,
+ 'checkpoint_path': None,
+ 'checkpoint_paths': None,
+ 'class_balance': False,
+ 'config_path': None,
+ 'constraints_path': None,
+ 'crossval_index_dir': None,
+ 'crossval_index_file': None,
+ 'crossval_index_sets': None,
+ 'cuda': False,
+ 'data_path': 'train.csv',
+ 'data_weights_path': None,
+ 'dataset_type': 'regression',
+ 'depth': 3,
+ 'depth_solvent': 3,
+ 'device': device(type='cpu'),
+ 'dropout': 0.0,
+ 'empty_cache': False,
+ 'ensemble_size': 1,
+ 'epochs': 30,
+ 'evidential_regularization': 0,
+ 'explicit_h': False,
+ 'extra_metrics': [],
+ 'features_generator': None,
+ 'features_only': False,
+ 'features_path': None,
+ 'features_scaling': True,
+ 'features_size': None,
+ 'ffn_hidden_size': 300,
+ 'ffn_num_layers': 2,
+ 'final_lr': 0.0001,
+ 'folds_file': None,
+ 'freeze_first_only': False,
+ 'frzn_ffn_layers': 0,
+ 'gpu': None,
+ 'grad_clip': None,
+ 'hidden_size': 300,
+ 'hidden_size_solvent': 300,
+ 'ignore_columns': None,
+ 'init_lr': 0.0001,
+ 'is_atom_bond_targets': False,
+ 'keeping_atom_map': False,
+ 'log_frequency': 10,
+ 'loss_function': 'mse',
+ 'max_data_size': None,
+ 'max_lr': 0.001,
+ 'metric': 'rmse',
+ 'metrics': ['rmse'],
+ 'minimize_score': True,
+ 'mpn_shared': False,
+ 'multiclass_num_classes': 3,
+ 'no_adding_bond_types': False,
+ 'no_atom_descriptor_scaling': False,
+ 'no_bond_descriptor_scaling': False,
+ 'no_cache_mol': False,
+ 'no_cuda': False,
+ 'no_features_scaling': False,
+ 'no_shared_atom_bond_ffn': False,
+ 'num_folds': 1,
+ 'num_lrs': 1,
+ 'num_tasks': 1,
+ 'num_workers': 8,
+ 'number_of_molecules': 1,
+ 'overwrite_default_atom_features': False,
+ 'overwrite_default_bond_features': False,
+ 'phase_features_path': None,
+ 'pytorch_seed': 0,
+ 'quiet': False,
+ 'reaction': False,
+ 'reaction_mode': 'reac_diff',
+ 'reaction_solvent': False,
+ 'resume_experiment': False,
+ 'save_dir': './save',
+ 'save_preds': False,
+ 'save_smiles_splits': False,
+ 'seed': 0,
+ 'separate_test_atom_descriptors_path': None,
+ 'separate_test_bond_descriptors_path': None,
+ 'separate_test_constraints_path': None,
+ 'separate_test_features_path': None,
+ 'separate_test_path': None,
+ 'separate_test_phase_features_path': None,
+ 'separate_val_atom_descriptors_path': None,
+ 'separate_val_bond_descriptors_path': None,
+ 'separate_val_constraints_path': None,
+ 'separate_val_features_path': None,
+ 'separate_val_path': None,
+ 'separate_val_phase_features_path': None,
+ 'shared_atom_bond_ffn': True,
+ 'show_individual_scores': False,
+ 'smiles_columns': ['canonical'],
+ 'spectra_activation': 'exp',
+ 'spectra_phase_mask_path': None,
+ 'spectra_target_floor': 1e-08,
+ 'split_key_molecule': 0,
+ 'split_sizes': [0.8, 0.2, 0.0],
+ 'split_type': 'random',
+ 'target_columns': ['molwt'],
+ 'target_weights': None,
+ 'task_names': ['molwt'],
+ 'test': False,
+ 'test_fold_index': None,
+ 'train_data_size': None,
+ 'undirected': False,
+ 'use_input_features': False,
+ 'val_fold_index': None,
+ 'warmup_epochs': 2.0,
+ 'weights_ffn_num_layers': 2}
+Setting molecule featurization parameters to default.
+Loading data
+Number of tasks = 1
+Fold 0
+Splitting data with seed 0
+Total size = 300 | train size = 240 | val size = 60 | test size = 0
+The test data split is empty. This may be either because splitting with no test set was selected,             such as with `cv-no-test`, or because test data provided with `--separate_test_path` was empty or contained only invalid molecules.             Performance on the test set will not be evaluated and metric scores will return `nan` for each task.
+Fitting scaler
+Building model 0
+MoleculeModel(
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=300, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=1, bias=True)
+  )
+)
+Number of parameters = 355,201
+Epoch 0
+Validation rmse = 70.942052
+Epoch 1
+Validation rmse = 65.281611
+Epoch 2
+Loss = 1.0579e+00, PNorm = 34.0224, GNorm = 1.2233, lr_0 = 9.2106e-04
+Validation rmse = 64.793322
+Epoch 3
+Validation rmse = 65.170715
+Epoch 4
+Loss = 9.8676e-01, PNorm = 34.0468, GNorm = 0.7429, lr_0 = 7.4989e-04
+Validation rmse = 65.462774
+Epoch 5
+Validation rmse = 64.894714
+Epoch 6
+Loss = 1.0811e+00, PNorm = 34.0679, GNorm = 2.0573, lr_0 = 5.9812e-04
+Validation rmse = 64.837672
+Epoch 7
+Validation rmse = 65.255069
+Epoch 8
+Loss = 1.0198e+00, PNorm = 34.0856, GNorm = 1.5510, lr_0 = 4.8697e-04
+Validation rmse = 64.633570
+Epoch 9
+Validation rmse = 64.586749
+Epoch 10
+Loss = 9.9451e-01, PNorm = 34.1019, GNorm = 0.4425, lr_0 = 3.9647e-04
+Validation rmse = 64.695400
+Epoch 11
+Validation rmse = 64.305009
+Epoch 12
+Loss = 8.9196e-01, PNorm = 34.1204, GNorm = 1.3080, lr_0 = 3.1623e-04
+Validation rmse = 64.320658
+Epoch 13
+Validation rmse = 64.320223
+Epoch 14
+Loss = 7.9954e-01, PNorm = 34.1371, GNorm = 1.0705, lr_0 = 2.5746e-04
+Validation rmse = 63.597166
+Epoch 15
+Validation rmse = 63.765724
+Epoch 16
+Loss = 9.1938e-01, PNorm = 34.1549, GNorm = 1.2673, lr_0 = 2.0535e-04
+Validation rmse = 63.653436
+Epoch 17
+Validation rmse = 63.562236
+Epoch 18
+Loss = 8.0192e-01, PNorm = 34.1695, GNorm = 0.4434, lr_0 = 1.6719e-04
+Validation rmse = 63.422256
+Epoch 19
+Validation rmse = 62.921393
+Epoch 20
+Loss = 8.7960e-01, PNorm = 34.1838, GNorm = 1.0050, lr_0 = 1.3612e-04
+Loss = 6.1863e-01, PNorm = 34.1851, GNorm = 0.4344, lr_0 = 1.3335e-04
+Validation rmse = 63.120581
+Epoch 21
+Validation rmse = 62.524482
+Epoch 22
+Loss = 8.4437e-01, PNorm = 34.1971, GNorm = 2.9498, lr_0 = 1.0857e-04
+Validation rmse = 62.135915
+Epoch 23
+Validation rmse = 62.501062
+Epoch 24
+Loss = 8.3235e-01, PNorm = 34.2072, GNorm = 5.2495, lr_0 = 1.0000e-04
+Validation rmse = 62.055661
+Epoch 25
+Validation rmse = 61.768807
+Epoch 26
+Validation rmse = 62.462611
+Epoch 27
+Loss = 7.9149e-01, PNorm = 34.2186, GNorm = 1.8359, lr_0 = 1.0000e-04
+Validation rmse = 61.277604
+Epoch 28
+Validation rmse = 61.307065
+Epoch 29
+Loss = 9.7035e-01, PNorm = 34.2291, GNorm = 2.6123, lr_0 = 1.0000e-04
+Validation rmse = 62.017667
+Model 0 best validation rmse = 61.277604 on epoch 27
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Model 0 provided with no test set, no metric evaluation will be performed.
+Ensemble test rmse = nan
+1-fold cross validation
+	Seed 0 ==> test rmse = nan
+Overall test rmse = nan +/- nan
+Elapsed time = 0:00:16

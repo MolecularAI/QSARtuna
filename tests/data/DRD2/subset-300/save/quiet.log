@@ -1,0 +1,8 @@
+Fold 0
+Model 0 best validation rmse = 61.277604 on epoch 27
+Model 0 provided with no test set, no metric evaluation will be performed.
+Ensemble test rmse = nan
+1-fold cross validation
+	Seed 0 ==> test rmse = nan
+Overall test rmse = nan +/- nan
+Elapsed time = 0:00:16
