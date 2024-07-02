@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.utils.enums package &mdash; QSARtuna 3.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QSARtuna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deduplicator.html">List of available deduplicators</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QSARtuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">optunaz.utils.enums package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/optunaz.utils.enums.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="optunaz-utils-enums-package">
+<h1>optunaz.utils.enums package<a class="headerlink" href="#optunaz-utils-enums-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-optunaz.utils.enums.building_configuration_enum">
+<span id="optunaz-utils-enums-building-configuration-enum-module"></span><h2>optunaz.utils.enums.building_configuration_enum module<a class="headerlink" href="#module-optunaz.utils.enums.building_configuration_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.building_configuration_enum.</span></span><span class="sig-name descname"><span class="pre">BuildingConfigurationEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/building_configuration_enum.html#BuildingConfigurationEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum" title="optunaz.utils.enums.configuration_enum.ConfigurationEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigurationEnum</span></code></a></p>
+<p>This “Enum” serves to store all the strings used in parsing the building configurations. Note, that validity
+checks are not performed, but referred to JSON Schema validations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.GENERAL_HYPERPARAMETERS">
+<span class="sig-name descname"><span class="pre">GENERAL_HYPERPARAMETERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hyper_parameters'</span></em><a class="headerlink" href="#optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.GENERAL_HYPERPARAMETERS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.GENERAL_REGRESSOR">
+<span class="sig-name descname"><span class="pre">GENERAL_REGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'regressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.GENERAL_REGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.GENERAL_CLASSIFIER">
+<span class="sig-name descname"><span class="pre">GENERAL_CLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'classifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.GENERAL_CLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.METADATA">
+<span class="sig-name descname"><span class="pre">METADATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'metadata'</span></em><a class="headerlink" href="#optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.METADATA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.METADATA_BESTTRIAL">
+<span class="sig-name descname"><span class="pre">METADATA_BESTTRIAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'best_trial'</span></em><a class="headerlink" href="#optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.METADATA_BESTTRIAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.METADATA_BESTVALUE">
+<span class="sig-name descname"><span class="pre">METADATA_BESTVALUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'best_value'</span></em><a class="headerlink" href="#optunaz.utils.enums.building_configuration_enum.BuildingConfigurationEnum.METADATA_BESTVALUE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.configuration_enum">
+<span id="optunaz-utils-enums-configuration-enum-module"></span><h2>optunaz.utils.enums.configuration_enum module<a class="headerlink" href="#module-optunaz.utils.enums.configuration_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.configuration_enum.</span></span><span class="sig-name descname"><span class="pre">ConfigurationEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/configuration_enum.html#ConfigurationEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This “Enum” serves to store all the strings used in parsing all configurations. Note, that validity
+checks are not performed, but referred to JSON Schema validations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.GENERAL_DISABLED">
+<span class="sig-name descname"><span class="pre">GENERAL_DISABLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'disabled'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.GENERAL_DISABLED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.GENERAL_PARAMETERS">
+<span class="sig-name descname"><span class="pre">GENERAL_PARAMETERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'parameters'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.GENERAL_PARAMETERS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.TASK">
+<span class="sig-name descname"><span class="pre">TASK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'task'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.TASK" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.TASK_OPTIMIZATION">
+<span class="sig-name descname"><span class="pre">TASK_OPTIMIZATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'optimization'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.TASK_OPTIMIZATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.TASK_BUILDING">
+<span class="sig-name descname"><span class="pre">TASK_BUILDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'building'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.TASK_BUILDING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA">
+<span class="sig-name descname"><span class="pre">DATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'data'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_INPUTCOLUMN">
+<span class="sig-name descname"><span class="pre">DATA_INPUTCOLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'input_column'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_INPUTCOLUMN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_RESPONSECOLUMN">
+<span class="sig-name descname"><span class="pre">DATA_RESPONSECOLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'response_column'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_RESPONSECOLUMN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_TRAINING">
+<span class="sig-name descname"><span class="pre">DATA_TRAINING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'training'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_TRAINING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_TEST">
+<span class="sig-name descname"><span class="pre">DATA_TEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'test'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DATA_TEST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'descriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_AVALON">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_AVALON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Avalon'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_AVALON" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_AVALON_NBITS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_AVALON_NBITS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nBits'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_AVALON_NBITS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFP">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ECFP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ECFP'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFP_RADIUS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ECFP_RADIUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'radius'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFP_RADIUS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFP_NBITS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ECFP_NBITS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nBits'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFP_NBITS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFPCOUNTS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ECFPCOUNTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ECFP_counts'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFPCOUNTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFPCOUNTS_RADIUS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ECFPCOUNTS_RADIUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'radius'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFPCOUNTS_RADIUS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFPCOUNTS_USEFEATURES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ECFPCOUNTS_USEFEATURES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'useFeatures'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ECFPCOUNTS_USEFEATURES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PATHFP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PathFP'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_MAXPATH">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PATHFP_MAXPATH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'maxPath'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_MAXPATH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_FPSIZE">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PATHFP_FPSIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fpSize'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_FPSIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_MACCSKEYS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_MACCSKEYS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MACCS_keys'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_MACCSKEYS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_PHYSCHEM">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_UNSC_PHYSCHEM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UnscaledPhyschemDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_PHYSCHEM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PHYSCHEM">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PHYSCHEM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PhyschemDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PHYSCHEM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PHYSCHEM_RDKITNAMES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PHYSCHEM_RDKITNAMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rdkit_names'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PHYSCHEM_RDKITNAMES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_JAZZY">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_UNSC_JAZZY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UnscaledJazzyDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_JAZZY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_JAZZY">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_JAZZY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'JazzyDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_JAZZY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_JAZZY_JAZZYNAMES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_JAZZY_JAZZYNAMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'jazzy_names'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_JAZZY_JAZZYNAMES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PRECOMPUTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PrecomputedDescriptorFromFile'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_FILE">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PRECOMPUTED_FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'file'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_FILE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_INPUT_COLUMNN">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PRECOMPUTED_INPUT_COLUMNN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'input_column'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_INPUT_COLUMNN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'response_column'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_ZSCALES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_UNSC_ZSCALES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UnscaledZScalesDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_ZSCALES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ZSCALES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ZSCALES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ZScalesDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ZSCALES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SMILES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SmilesFromFile'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SMILES_AND_SI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SmilesAndSideInfoFromFile'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI_FILE">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SMILES_AND_SI_FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'file'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI_FILE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI_INPUT_COLUMN">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SMILES_AND_SI_INPUT_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'input_column'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI_INPUT_COLUMN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'aux_weight_pc'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SCALED">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SCALED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ScaledDescriptor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SCALED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SCALED_DESCRIPTOR">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SCALED_DESCRIPTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'descriptor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SCALED_DESCRIPTOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SCALED_DESCRIPTOR_PARAMETERS">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_SCALED_DESCRIPTOR_PARAMETERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'parameters'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_SCALED_DESCRIPTOR_PARAMETERS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_COMPOSITE">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_COMPOSITE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CompositeDescriptor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_COMPOSITE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS">
+<span class="sig-name descname"><span class="pre">SETTINGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'settings'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_MODE">
+<span class="sig-name descname"><span class="pre">SETTINGS_MODE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mode'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_MODE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_MODE_REGRESSION">
+<span class="sig-name descname"><span class="pre">SETTINGS_MODE_REGRESSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'regression'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_MODE_REGRESSION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_MODE_CLASSIFICATION">
+<span class="sig-name descname"><span class="pre">SETTINGS_MODE_CLASSIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'classification'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_MODE_CLASSIFICATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_CROSS_VALIDATION">
+<span class="sig-name descname"><span class="pre">SETTINGS_CROSS_VALIDATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cross_validation'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_CROSS_VALIDATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_DIRECTION">
+<span class="sig-name descname"><span class="pre">SETTINGS_DIRECTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'direction'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_DIRECTION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_N_TRIALS">
+<span class="sig-name descname"><span class="pre">SETTINGS_N_TRIALS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_trials'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_N_TRIALS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_N_JOBS">
+<span class="sig-name descname"><span class="pre">SETTINGS_N_JOBS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_jobs'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_N_JOBS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_SHUFFLE">
+<span class="sig-name descname"><span class="pre">SETTINGS_SHUFFLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'shuffle'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.SETTINGS_SHUFFLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'algorithms'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOW">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_LOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'low'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOW" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_HIGH">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_HIGH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'high'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_HIGH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_Q">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_Q</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'q'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_Q" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_INTERFACE_SKLEARN">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_INTERFACE_SKLEARN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sklearn'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_INTERFACE_SKLEARN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_INTERFACE_XGBOOST">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_INTERFACE_XGBOOST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'xgboost'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_INTERFACE_XGBOOST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RFREGRESSOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_RFREGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RandomForestRegressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RFREGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RFCLASSIFIER">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_RFCLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RandomForestClassifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RFCLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RF_MAX_FEATURES">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_RF_MAX_FEATURES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max_features'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RF_MAX_FEATURES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RF_MAX_DEPTH">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_RF_MAX_DEPTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max_depth'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RF_MAX_DEPTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RF_N_ESTIMATORS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_RF_N_ESTIMATORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_estimators'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RF_N_ESTIMATORS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_SVR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SVR'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVR_C">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_SVR_C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVR_C" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVR_GAMMA">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_SVR_GAMMA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gamma'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVR_GAMMA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVC">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_SVC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SVC'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVC_C">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_SVC_C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVC_C" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVC_GAMMA">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_SVC_GAMMA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gamma'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_SVC_GAMMA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LASSO">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_LASSO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Lasso'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LASSO" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LASSO_ALPHA">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_LASSO_ALPHA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alpha'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LASSO_ALPHA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSCLASSIFIER">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORSCLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KNeighborsClassifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSCLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSREGRESSOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORSREGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KNeighborsRegressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSREGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_N_NEIGHBORS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORS_N_NEIGHBORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_neighbors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_N_NEIGHBORS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_METRIC">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORS_METRIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'metric'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_METRIC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_WEIGHTS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORS_WEIGHTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'weights'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_WEIGHTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RIDGE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_RIDGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ridge'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RIDGE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RIDGE_ALPHA">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_RIDGE_ALPHA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alpha'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RIDGE_ALPHA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PLSREGRESSION">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PLSREGRESSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PLSRegression'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PLSREGRESSION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PLSREGRESSION_N_COMPONENTS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PLSREGRESSION_N_COMPONENTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_components'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PLSREGRESSION_N_COMPONENTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOGISTICREGRESSION">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_LOGISTICREGRESSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LogisticRegression'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOGISTICREGRESSION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOGISTICREGRESSION_SOLVER">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_LOGISTICREGRESSION_SOLVER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'solver'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOGISTICREGRESSION_SOLVER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOGISTICREGRESSION_C">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_LOGISTICREGRESSION_C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LOGISTICREGRESSION_C" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_ADABOOSTCLASSIFIER">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_ADABOOSTCLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AdaBoostClassifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_ADABOOSTCLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_estimators'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'learning_rate'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_XGBREGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'XGBregressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR_MAX_DEPTH">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_XGBREGRESSOR_MAX_DEPTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max_depth'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR_MAX_DEPTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_estimators'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR_LEARNING_RATE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_XGBREGRESSOR_LEARNING_RATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'learning_rate'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_XGBREGRESSOR_LEARNING_RATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PRF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PRFClassifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_MAX_FEATURES">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PRF_MAX_FEATURES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max_features'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_MAX_FEATURES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_MAX_DEPTH">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PRF_MAX_DEPTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max_depth'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_MAX_DEPTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_N_ESTIMATORS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PRF_N_ESTIMATORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_estimators'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_N_ESTIMATORS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_MINPYSUMLEAF">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PRF_MINPYSUMLEAF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'min_py_sum_leaf'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_MINPYSUMLEAF" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_USE_PY_GINI">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PRF_USE_PY_GINI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'use_py_gini'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_USE_PY_GINI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_USE_PY_LEAFS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_PRF_USE_PY_LEAFS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'use_py_leafs'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_PRF_USE_PY_LEAFS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BaseChemProp'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_REGRESSOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_REGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ChemPropRegressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_REGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HYPEROPT_REGRESSOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_HYPEROPT_REGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ChemPropHyperoptRegressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HYPEROPT_REGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_CLASSIFIER">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_CLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ChemPropClassifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_CLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HYPEROPT_CLASSIFIER">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_HYPEROPT_CLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ChemPropHyperoptClassifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HYPEROPT_CLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_ACTIVATION">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_ACTIVATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'activation'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_ACTIVATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_AGGREGATION">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_AGGREGATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'aggregation'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_AGGREGATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_AGGREGATION_NORM">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_AGGREGATION_NORM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'aggregation_norm'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_AGGREGATION_NORM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_BATCH_SIZE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_BATCH_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batch_size'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_BATCH_SIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_DEPTH">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_DEPTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'depth'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_DEPTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_DROPOUT">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_DROPOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dropout'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_DROPOUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_EPOCHS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_EPOCHS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'epochs'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_EPOCHS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ensemble_size'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'features_generator'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ffn_hidden_size'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ffn_num_layers'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FRZN">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_FRZN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'frzn'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FRZN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'final_lr_ratio_exp'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HIDDEN_SIZE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_HIDDEN_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hidden_size'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HIDDEN_SIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_NUM_ITERS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_NUM_ITERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'num_iters'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_NUM_ITERS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'init_lr_ratio_exp'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_MAX_LR_EXP">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max_lr_exp'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_MAX_LR_EXP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pretrained_model'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'search_parameter_level'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'startup_random_iters'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'warmup_epochs_ratio'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CALIBRATEDCLASSIFIERCV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CalibratedClassifierCVWithVA'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_ENSEMBLE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CALIBRATEDCLASSIFIERCV_ENSEMBLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ensemble'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_ENSEMBLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'estimator'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_METHOD">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CALIBRATEDCLASSIFIERCV_METHOD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'method'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_METHOD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_folds'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'calibrated_params'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_MAPIE">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_MAPIE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Mapie'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_MAPIE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_MAPIE_ALPHA">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_MAPIE_ALPHA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mapie_alpha'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_MAPIE_ALPHA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.interface_enum">
+<span id="optunaz-utils-enums-interface-enum-module"></span><h2>optunaz.utils.enums.interface_enum module<a class="headerlink" href="#module-optunaz.utils.enums.interface_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.interface_enum.InterfaceEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.interface_enum.</span></span><span class="sig-name descname"><span class="pre">InterfaceEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/interface_enum.html#InterfaceEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.interface_enum.InterfaceEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This “Enum” serves as storage for the interface specifications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.interface_enum.InterfaceEnum.SKLEARN_SET">
+<span class="sig-name descname"><span class="pre">SKLEARN_SET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'AdaBoostClassifier',</span> <span class="pre">'Lasso',</span> <span class="pre">'LogisticRegression',</span> <span class="pre">'PLSRegression',</span> <span class="pre">'RandomForestClassifier',</span> <span class="pre">'RandomForestRegressor',</span> <span class="pre">'Ridge',</span> <span class="pre">'SVC',</span> <span class="pre">'SVR'}</span></em><a class="headerlink" href="#optunaz.utils.enums.interface_enum.InterfaceEnum.SKLEARN_SET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.interface_enum.InterfaceEnum.XGBOOST_SET">
+<span class="sig-name descname"><span class="pre">XGBOOST_SET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'XGBregressor'}</span></em><a class="headerlink" href="#optunaz.utils.enums.interface_enum.InterfaceEnum.XGBOOST_SET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.interface_enum.InterfaceEnum.CHEMPROP_SET">
+<span class="sig-name descname"><span class="pre">CHEMPROP_SET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'BaseChemProp',</span> <span class="pre">'ChemPropClassifier',</span> <span class="pre">'ChemPropRegressor'}</span></em><a class="headerlink" href="#optunaz.utils.enums.interface_enum.InterfaceEnum.CHEMPROP_SET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.interface_enum.InterfaceEnum.PRF_SET">
+<span class="sig-name descname"><span class="pre">PRF_SET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'PRFClassifier'}</span></em><a class="headerlink" href="#optunaz.utils.enums.interface_enum.InterfaceEnum.PRF_SET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.interface_enum.InterfaceEnum.CALIBRATED_SET">
+<span class="sig-name descname"><span class="pre">CALIBRATED_SET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'CalibratedClassifierCVWithVA',</span> <span class="pre">'Mapie'}</span></em><a class="headerlink" href="#optunaz.utils.enums.interface_enum.InterfaceEnum.CALIBRATED_SET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.model_runner_enum">
+<span id="optunaz-utils-enums-model-runner-enum-module"></span><h2>optunaz.utils.enums.model_runner_enum module<a class="headerlink" href="#module-optunaz.utils.enums.model_runner_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.model_runner_enum.</span></span><span class="sig-name descname"><span class="pre">ModelRunnerDataframeEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/model_runner_enum.html#ModelRunnerDataframeEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This “Enum” serves as storage for the column names used in the dataframe construction in the ModelRunner.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.Y_PRED">
+<span class="sig-name descname"><span class="pre">Y_PRED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'y_pred'</span></em><a class="headerlink" href="#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.Y_PRED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.Y_TRUE">
+<span class="sig-name descname"><span class="pre">Y_TRUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'y_true'</span></em><a class="headerlink" href="#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.Y_TRUE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.SET">
+<span class="sig-name descname"><span class="pre">SET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'set'</span></em><a class="headerlink" href="#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.SET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.TRAIN">
+<span class="sig-name descname"><span class="pre">TRAIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'train'</span></em><a class="headerlink" href="#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.TRAIN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.TEST">
+<span class="sig-name descname"><span class="pre">TEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'test'</span></em><a class="headerlink" href="#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.TEST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.SMILES">
+<span class="sig-name descname"><span class="pre">SMILES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'smiles'</span></em><a class="headerlink" href="#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum.SMILES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.objective_enum">
+<span id="optunaz-utils-enums-objective-enum-module"></span><h2>optunaz.utils.enums.objective_enum module<a class="headerlink" href="#module-optunaz.utils.enums.objective_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.objective_enum.ObjectiveEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.objective_enum.</span></span><span class="sig-name descname"><span class="pre">ObjectiveEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/objective_enum.html#ObjectiveEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.objective_enum.ObjectiveEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This “Enum” serves to store all the strings appearing in the objective function (and its return values).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.objective_enum.ObjectiveEnum.ATTRIBUTE_TRIAL_TRAIN_SCORE">
+<span class="sig-name descname"><span class="pre">ATTRIBUTE_TRIAL_TRAIN_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'train_score'</span></em><a class="headerlink" href="#optunaz.utils.enums.objective_enum.ObjectiveEnum.ATTRIBUTE_TRIAL_TRAIN_SCORE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.objective_enum.ObjectiveEnum.EXTRA_COLUMN_BESTHIT">
+<span class="sig-name descname"><span class="pre">EXTRA_COLUMN_BESTHIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bestHit'</span></em><a class="headerlink" href="#optunaz.utils.enums.objective_enum.ObjectiveEnum.EXTRA_COLUMN_BESTHIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.optimization_configuration_enum">
+<span id="optunaz-utils-enums-optimization-configuration-enum-module"></span><h2>optunaz.utils.enums.optimization_configuration_enum module<a class="headerlink" href="#module-optunaz.utils.enums.optimization_configuration_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.optimization_configuration_enum.OptimizationConfigurationEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.optimization_configuration_enum.</span></span><span class="sig-name descname"><span class="pre">OptimizationConfigurationEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/optimization_configuration_enum.html#OptimizationConfigurationEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.optimization_configuration_enum.OptimizationConfigurationEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum" title="optunaz.utils.enums.configuration_enum.ConfigurationEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigurationEnum</span></code></a></p>
+<p>This “Enum” serves to store all the strings used in parsing the optimization configurations. Note, that validity
+checks are not performed, but referred to JSON Schema validations.</p>
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.prediction_configuration_enum">
+<span id="optunaz-utils-enums-prediction-configuration-enum-module"></span><h2>optunaz.utils.enums.prediction_configuration_enum module<a class="headerlink" href="#module-optunaz.utils.enums.prediction_configuration_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.prediction_configuration_enum.PredictionConfigurationEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.prediction_configuration_enum.</span></span><span class="sig-name descname"><span class="pre">PredictionConfigurationEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/prediction_configuration_enum.html#PredictionConfigurationEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.prediction_configuration_enum.PredictionConfigurationEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum" title="optunaz.utils.enums.configuration_enum.ConfigurationEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigurationEnum</span></code></a></p>
+<p>This “Enum” serves to store all the strings used in parsing the prediction configurations. Note, that validity
+checks are not performed, but referred to JSON Schema validations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.prediction_configuration_enum.PredictionConfigurationEnum.DATA_DATASET">
+<span class="sig-name descname"><span class="pre">DATA_DATASET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dataset'</span></em><a class="headerlink" href="#optunaz.utils.enums.prediction_configuration_enum.PredictionConfigurationEnum.DATA_DATASET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.return_values_enum">
+<span id="optunaz-utils-enums-return-values-enum-module"></span><h2>optunaz.utils.enums.return_values_enum module<a class="headerlink" href="#module-optunaz.utils.enums.return_values_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.return_values_enum.</span></span><span class="sig-name descname"><span class="pre">SklearnReturnValueEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/return_values_enum.html#SklearnReturnValueEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This “Enum” serves as storage for the return value keys using “sklearn”.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_FIT_TIME">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_FIT_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fit_time'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_FIT_TIME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_SCORE_TIME">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_SCORE_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'score_time'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_SCORE_TIME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_TEST_SCORE">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_TEST_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'test_score'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_TEST_SCORE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_TRAIN_SCORE">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_TRAIN_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'train_score'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum.CROSS_VALIDATE_TRAIN_SCORE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.return_values_enum.</span></span><span class="sig-name descname"><span class="pre">XGBoostReturnValueEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/return_values_enum.html#XGBoostReturnValueEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This “Enum” serves as storage for the return value keys using “XGBoost”.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_FIT_TIME">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_FIT_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fit_time'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_FIT_TIME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_SCORE_TIME">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_SCORE_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'score_time'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_SCORE_TIME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_TEST_SCORE">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_TEST_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'test_score'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_TEST_SCORE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_TRAIN_SCORE">
+<span class="sig-name descname"><span class="pre">CROSS_VALIDATE_TRAIN_SCORE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'train_score'</span></em><a class="headerlink" href="#optunaz.utils.enums.return_values_enum.XGBoostReturnValueEnum.CROSS_VALIDATE_TRAIN_SCORE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums.visualization_enum">
+<span id="optunaz-utils-enums-visualization-enum-module"></span><h2>optunaz.utils.enums.visualization_enum module<a class="headerlink" href="#module-optunaz.utils.enums.visualization_enum" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.visualization_enum.</span></span><span class="sig-name descname"><span class="pre">VisualizationEnum</span></span><a class="reference internal" href="_modules/optunaz/utils/enums/visualization_enum.html#VisualizationEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This “Enum” serves to store all the strings used to specify optional visualizations. Note, that validity
+checks are not performed, but referred to JSON Schema validations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_REGRESSOR">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_REGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'regressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_REGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_CLASSIFIER">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_CLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'classifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_CLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION">
+<span class="sig-name descname"><span class="pre">VISUALIZATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'visualization'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_USE_XVFB">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_USE_XVFB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'use_xvfb'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_USE_XVFB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_OUTPUT_FOLDER">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_OUTPUT_FOLDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'output_folder'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_OUTPUT_FOLDER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_FILE_FORMAT">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_FILE_FORMAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'file_format'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_FILE_FORMAT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_PLOTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plots'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_HISTORY">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_PLOTS_HISTORY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plot_history'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_HISTORY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_CONTOUR">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_PLOTS_CONTOUR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plot_contour'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_CONTOUR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_PARALLEL_COORDINATE">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_PLOTS_PARALLEL_COORDINATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plot_parallel_coordinate'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_PARALLEL_COORDINATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_SLICE">
+<span class="sig-name descname"><span class="pre">VISUALIZATION_PLOTS_SLICE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plot_slice'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_PLOTS_SLICE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.OPTUNA_SYSTEM_ATTRS_NUMBER">
+<span class="sig-name descname"><span class="pre">OPTUNA_SYSTEM_ATTRS_NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_number'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.OPTUNA_SYSTEM_ATTRS_NUMBER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.OPTUNA_SYSTEM_ATTRS_INTERMEDIATE_VALUES">
+<span class="sig-name descname"><span class="pre">OPTUNA_SYSTEM_ATTRS_INTERMEDIATE_VALUES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'intermediate_values'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.OPTUNA_SYSTEM_ATTRS_INTERMEDIATE_VALUES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.visualization_enum.VisualizationEnum.OPTUNA_SYSTEM_ATTRS_TRIAL_ID">
+<span class="sig-name descname"><span class="pre">OPTUNA_SYSTEM_ATTRS_TRIAL_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trial_id'</span></em><a class="headerlink" href="#optunaz.utils.enums.visualization_enum.VisualizationEnum.OPTUNA_SYSTEM_ATTRS_TRIAL_ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.enums">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-optunaz.utils.enums" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.StudyUserAttrs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.</span></span><span class="sig-name descname"><span class="pre">StudyUserAttrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/enums.html#StudyUserAttrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.StudyUserAttrs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Dict keys for User Parameters of Optuna Study objects.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.StudyUserAttrs.OPTCONFIG">
+<span class="sig-name descname"><span class="pre">OPTCONFIG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'optconfig'</span></em><a class="headerlink" href="#optunaz.utils.enums.StudyUserAttrs.OPTCONFIG" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.TrialUserAttrs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.</span></span><span class="sig-name descname"><span class="pre">TrialUserAttrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/enums.html#TrialUserAttrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.TrialUserAttrs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Dict keys for User Parameters of Optuna Trial objects.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.TrialUserAttrs.TRAIN_SCORES">
+<span class="sig-name descname"><span class="pre">TRAIN_SCORES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'train_scores'</span></em><a class="headerlink" href="#optunaz.utils.enums.TrialUserAttrs.TRAIN_SCORES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.TrialUserAttrs.TEST_SCORES">
+<span class="sig-name descname"><span class="pre">TEST_SCORES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'test_scores'</span></em><a class="headerlink" href="#optunaz.utils.enums.TrialUserAttrs.TEST_SCORES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.TrialParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.</span></span><span class="sig-name descname"><span class="pre">TrialParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/enums.html#TrialParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.TrialParams" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Dict keys for Parameters of Optuna Trial objects.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.TrialParams.DESCRIPTOR">
+<span class="sig-name descname"><span class="pre">DESCRIPTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'descriptor'</span></em><a class="headerlink" href="#optunaz.utils.enums.TrialParams.DESCRIPTOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.TrialParams.ALGORITHM_NAME">
+<span class="sig-name descname"><span class="pre">ALGORITHM_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'algorithm_name'</span></em><a class="headerlink" href="#optunaz.utils.enums.TrialParams.ALGORITHM_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.TrialParams.ALGORITHM_HASH">
+<span class="sig-name descname"><span class="pre">ALGORITHM_HASH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'algorithm_hash'</span></em><a class="headerlink" href="#optunaz.utils.enums.TrialParams.ALGORITHM_HASH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.enums.MlflowLogParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.enums.</span></span><span class="sig-name descname"><span class="pre">MlflowLogParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/enums.html#MlflowLogParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.enums.MlflowLogParams" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Dict keys for Parameters of MLflow Logs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.MlflowLogParams.TRIAL_NUMBER">
+<span class="sig-name descname"><span class="pre">TRIAL_NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trial_number'</span></em><a class="headerlink" href="#optunaz.utils.enums.MlflowLogParams.TRIAL_NUMBER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

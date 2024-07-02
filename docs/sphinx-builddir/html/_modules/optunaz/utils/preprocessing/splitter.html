@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.utils.preprocessing.splitter &mdash; QSARtuna 3.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            QSARtuna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../deduplicator.html">List of available deduplicators</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">QSARtuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../utils.html">optunaz.utils</a></li>
+      <li class="breadcrumb-item active">optunaz.utils.preprocessing.splitter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for optunaz.utils.preprocessing.splitter</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sklearn</span>
+<span class="kn">import</span> <span class="nn">sklearn.model_selection</span>
+<span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">apischema.metadata</span> <span class="kn">import</span> <span class="n">none_as_undefined</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StratifiedShuffleSplit</span><span class="p">,</span>
+    <span class="n">ShuffleSplit</span><span class="p">,</span>
+    <span class="n">PredefinedSplit</span><span class="p">,</span>
+    <span class="n">StratifiedGroupKFold</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Annotated</span>  <span class="c1"># Python 3.7</span>
+
+
+<div class="viewcode-block" id="SklearnSplitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.SklearnSplitter">[docs]</a><span class="k">class</span> <span class="nc">SklearnSplitter</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface definition for scikit-learn cross-validation splitter.</span>
+
+<span class="sd">    Scikit-learn does not define a class that describes the splitter interface.</span>
+<span class="sd">    Instead, scikit-learn describes in text that splitter should have two methods:</span>
+<span class="sd">    &#39;get_n_splits&#39; and &#39;split&#39;.</span>
+
+<span class="sd">    This class describes this splitter interface as an abstract Python class,</span>
+<span class="sd">    for convenience and better type checking.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SklearnSplitter.get_n_splits"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.SklearnSplitter.get_n_splits">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_n_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SklearnSplitter.split"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.SklearnSplitter.split">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="Splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Splitter">[docs]</a><span class="k">class</span> <span class="nc">Splitter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Splitter for input data.</span>
+
+<span class="sd">    This is the base class for classes that split input data into train and test.</span>
+
+<span class="sd">    See also CvSplitter for making multiple cross-validation splits.</span>
+
+<span class="sd">    Splitter and CvSplitter are used to define valid input choices</span>
+<span class="sd">    for splitting data into train-test sets,</span>
+<span class="sd">    and for splitting train data into cross-validation splits</span>
+<span class="sd">    in scikit-learn cross_validate function.</span>
+<span class="sd">    These two sets of options might be different</span>
+<span class="sd">    (although underlying implementations might be merged).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Splitter.split"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Splitter.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Splits input and returns indices for train and test sets.</span>
+
+<span class="sd">        Returns two numpy arrays:</span>
+<span class="sd">        one with indices of train set,</span>
+<span class="sd">        and one with indices of test set.</span>
+
+<span class="sd">        Note that scikit-learn splitters return an Iterator</span>
+<span class="sd">        that yields (train, test) tuples for multiple splits,</span>
+<span class="sd">        here we return only one split.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default impl:</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sklearn_splitter</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
+        <span class="n">first_split</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">first_split</span></div>
+
+<div class="viewcode-block" id="Splitter.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Splitter.get_sklearn_splitter">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SklearnSplitter</span><span class="p">:</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="Random"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.Random">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Random</span><span class="p">(</span><span class="n">Splitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random split.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Random&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Random&quot;</span>
+    <span class="n">fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Fraction of samples to use for test set&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Seed for random number generator&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Seed for random number generator, for repeatable splits.&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="Random.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Random.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShuffleSplit</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ShuffleSplit</span><span class="p">(</span>
+            <span class="n">n_splits</span><span class="o">=</span><span class="n">n_splits</span><span class="p">,</span>
+            <span class="n">test_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">,</span>
+            <span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Temporal"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.Temporal">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Temporal</span><span class="p">(</span><span class="n">Splitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Temporal split.</span>
+
+<span class="sd">    Assumes that the data is sorted,</span>
+<span class="sd">    with the oldest entries in the beginning of the file,</span>
+<span class="sd">    and the newest entries added at the end.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Temporal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Temporal&quot;</span>
+    <span class="n">fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Fraction of samples to use for test set&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="Temporal.split"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.Temporal.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">))</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">train_size</span><span class="p">)</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">train_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span></div>
+
+<div class="viewcode-block" id="Temporal.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Temporal.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SklearnSplitter</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Stratified"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.Stratified">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Stratified</span><span class="p">(</span><span class="n">Splitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real-valued Stratified Shuffle Split.</span>
+
+<span class="sd">    This is similar to scikit-learn StratifiedShuffleSplit,</span>
+<span class="sd">    but uses histogram binning for real-valued inputs.</span>
+
+<span class="sd">    If inputs are integers (or strings),</span>
+<span class="sd">    this splitter reverts to StratifiedShuffleSplit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Stratified&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Stratified&quot;</span>
+
+    <span class="n">fraction</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">float</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test fraction&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Fraction of samples to use for test set.&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">int</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Random seed&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Random seed, for repeatable splits.&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">bins</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Binning algorithm&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Algorithm to use for determining histogram bin edges,&quot;</span>
+            <span class="s2">&quot; see numpy.histogram for possible options, or use default &#39;fd&#39;&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fd&quot;</span>
+
+<div class="viewcode-block" id="Stratified.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Stratified.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SklearnSplitter</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">HistogramStratifiedShuffleSplit</span><span class="p">(</span>
+            <span class="n">n_splits</span><span class="o">=</span><span class="n">n_splits</span><span class="p">,</span>
+            <span class="n">test_fraction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">,</span>
+            <span class="n">bins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NoSplitting"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.NoSplitting">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NoSplitting</span><span class="p">(</span><span class="n">Splitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;No splitting.</span>
+
+<span class="sd">    Do not perform any splitting.</span>
+<span class="sd">    Returns all input data as training set,</span>
+<span class="sd">    and returns an empty test set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;NoSplitting&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NoSplitting&quot;</span>
+
+<div class="viewcode-block" id="NoSplitting.split"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.NoSplitting.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># Empty.</span>
+        <span class="k">return</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span></div>
+
+<div class="viewcode-block" id="NoSplitting.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.NoSplitting.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SklearnSplitter</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="KFold"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.KFold">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">KFold</span><span class="p">(</span><span class="n">Splitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;KFold.</span>
+
+<span class="sd">    Split dataset into k consecutive folds (without shuffling by default).</span>
+
+<span class="sd">    Each fold is then used once as a validation,</span>
+<span class="sd">    while the k - 1 remaining folds form the training set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;KFold&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;KFold&quot;</span>
+    <span class="n">shuffle</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Shuffle&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether to shuffle the data before splitting into batches.&quot;</span>
+            <span class="s2">&quot; Note that the samples within each split will not be shuffled.&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Random state&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;When shuffle is True,&quot;</span>
+            <span class="s2">&quot; random_state affects the ordering of the indices,&quot;</span>
+            <span class="s2">&quot; which controls the randomness of each fold.&quot;</span>
+            <span class="s2">&quot; Otherwise, this parameter has no effect.&quot;</span>
+            <span class="s2">&quot; Pass an int for reproducible output across multiple function calls.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="KFold.split"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.KFold.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="KFold.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.KFold.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">model_selection</span><span class="o">.</span><span class="n">KFold</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">model_selection</span><span class="o">.</span><span class="n">KFold</span><span class="p">(</span>
+            <span class="n">n_splits</span><span class="o">=</span><span class="n">n_splits</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="c1"># rectify error with numpy trying to allocate too large linspace</span>
+<div class="viewcode-block" id="fd_bin"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.fd_bin">[docs]</a><span class="k">def</span> <span class="nf">fd_bin</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Empty bin merging histogram based on:</span>
+<span class="sd">    https://github.com/numpy/numpy/issues/11879 and</span>
+<span class="sd">    https://github.com/numpy/numpy/issues/10297</span>
+
+<span class="sd">    The modification avoids this via merging adjacent empty bins&quot;&quot;&quot;</span>
+    <span class="n">a_unsorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">left_cap</span><span class="p">,</span> <span class="n">right_cap</span> <span class="o">=</span> <span class="n">a_unsorted</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">a_unsorted</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a_unsorted</span><span class="p">)</span> <span class="o">-</span> <span class="n">left_cap</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">histograms</span><span class="o">.</span><span class="n">_hist_bin_fd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span>
+    <span class="n">left_edges</span> <span class="o">=</span> <span class="n">a</span> <span class="o">//</span> <span class="n">fd</span> <span class="o">*</span> <span class="n">fd</span>
+    <span class="n">right_edges</span> <span class="o">=</span> <span class="n">left_edges</span> <span class="o">+</span> <span class="n">fd</span>
+    <span class="n">new_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">left_edges</span><span class="p">,</span> <span class="n">right_edges</span><span class="p">)))</span> <span class="o">+</span> <span class="n">left_cap</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_bins</span><span class="p">,</span> <span class="n">right_cap</span> <span class="o">+</span> <span class="n">fd</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="stratify"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.stratify">[docs]</a><span class="k">def</span> <span class="nf">stratify</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fd&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stratifies (splits into groups) the values in &#39;y&#39;.</span>
+
+<span class="sd">    If input &#39;y&#39; is real-valued (numpy.dtype.kind == &#39;f&#39;),</span>
+<span class="sd">    this function bins the values based on computed histogram edges.</span>
+
+<span class="sd">    For all other types of inputs,</span>
+<span class="sd">    this function returns the original array,</span>
+<span class="sd">    since downstream algorithms can natively deal with integer and categorical data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Bin the values</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="o">==</span> <span class="s2">&quot;fd_merge&quot;</span><span class="p">:</span>
+        <span class="c1"># implement fd avoiding this issue: https://github.com/numpy/numpy/issues/11879</span>
+        <span class="n">samples_per_bin</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">fd_bin</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">samples_per_bin</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+
+    <span class="c1"># Extend the first and the last bin by a tiny amount, to include every observation.</span>
+    <span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+
+    <span class="c1"># Drop the bins with too few observations.</span>
+    <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">samples_per_bin</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">samples_per_bin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Get the bin indices (bin-IDs) for each value.</span>
+    <span class="n">bin_idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bin_idxs</span></div>
+
+
+<div class="viewcode-block" id="HistogramStratifiedShuffleSplit"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HistogramStratifiedShuffleSplit</span><span class="p">(</span><span class="n">SklearnSplitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HistogramStratifiedShuffleSplit</span>
+
+<span class="sd">    StratifiedShuffleSplit for real-valued inputs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Backend/sklearn part.</span>
+
+    <span class="n">test_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">bins</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fd&quot;</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+
+<div class="viewcode-block" id="HistogramStratifiedShuffleSplit.get_n_splits"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.get_n_splits">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_splits</span></div>
+
+<div class="viewcode-block" id="HistogramStratifiedShuffleSplit.split"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Here we stratify &#39;y&#39; ourselves when it is floating-point (&quot;np.inexact&quot;).</span>
+        <span class="c1"># Then we delegate the actual splitting to StratifiedShuffleSplit (SSS).</span>
+        <span class="c1"># If elements in y are integer or string, SSS handles them natively.</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+            <span class="n">y_sss</span> <span class="o">=</span> <span class="n">stratify</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y_sss</span> <span class="o">=</span> <span class="n">y</span>
+
+        <span class="n">sss</span> <span class="o">=</span> <span class="n">StratifiedShuffleSplit</span><span class="p">(</span>
+            <span class="n">n_splits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_splits</span><span class="p">,</span>
+            <span class="n">test_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_fraction</span><span class="p">,</span>
+            <span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sss</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_sss</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GroupingSplitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.GroupingSplitter">[docs]</a><span class="k">class</span> <span class="nc">GroupingSplitter</span><span class="p">(</span><span class="n">Splitter</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Splitter for methods using the group method</span>
+
+<span class="sd">    This is the base class for the Predefined and ScaffoldSplit classes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GroupingSplitter.groups"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.GroupingSplitter.groups">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">smiles_col</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="o">...</span></div></div>
+
+
+<div class="viewcode-block" id="Predefined"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.Predefined">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Predefined</span><span class="p">(</span><span class="n">GroupingSplitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Predefined split.</span>
+
+<span class="sd">    Splits data based predefined labels in a column. Integers can be used, and `-1` flags datapoints for use only in</span>
+<span class="sd">    the training set. Data points with missing (NaN) values will be removed from train or test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">column_name</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Column Name&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Name of the column with labels for splits. Use `-1` to denote datapoints for the train set&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Predefined&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Predefined&quot;</span>
+
+<div class="viewcode-block" id="Predefined.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Predefined.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SklearnSplitter</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Predefined.split"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.Predefined.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="k">assert</span> <span class="n">groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;`groups` should be supplied for Predefined splitter&quot;</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">PredefinedSplit</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">(</span>
+                <span class="s2">&quot;Predefined split not valid, check configuration and data&quot;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Predefined.groups"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Predefined.groups">[docs]</a>    <span class="k">def</span> <span class="nf">groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">smiles_col</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">column_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Predefined split should be supplied with a `column_name` with labels&quot;</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">smiles_col</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+        <span class="c1"># maintain the `-1` manually defined training set, if it is present</span>
+        <span class="k">if</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">groups</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="c1"># otherwise convert the users&#39; column to a category code to ensure compatibility</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">groups</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="butina_cluster"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.butina_cluster">[docs]</a><span class="k">def</span> <span class="nf">butina_cluster</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clusters the scaffolds based on Butina and returns the scaffold grouping labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">optunaz.descriptors</span> <span class="kn">import</span> <span class="n">ECFP</span><span class="p">,</span> <span class="n">descriptor_from_config</span>
+    <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">DataStructs</span>
+    <span class="kn">from</span> <span class="nn">rdkit.ML.Cluster</span> <span class="kn">import</span> <span class="n">Butina</span>
+    <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">effective_n_jobs</span>
+
+    <span class="c1"># deduplicate the scaffolds and generate fingerprints</span>
+    <span class="n">n_cores</span> <span class="o">=</span> <span class="n">effective_n_jobs</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">distinct_smiles</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">fps</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span>
+        <span class="n">distinct_smiles</span><span class="p">,</span>
+        <span class="n">ECFP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">nBits</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">returnRdkit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">return_failed_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># butina cluster the fingerprints.</span>
+    <span class="c1"># See https://www.rdkit.org/docs/source/rdkit.ML.Cluster.Butina.html for details</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_cores</span><span class="p">,</span> <span class="n">prefer</span><span class="o">=</span><span class="s2">&quot;threads&quot;</span><span class="p">)(</span>
+        <span class="n">delayed</span><span class="p">(</span><span class="n">DataStructs</span><span class="o">.</span><span class="n">BulkTanimotoSimilarity</span><span class="p">)(</span><span class="n">fps</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fps</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">returnDistance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fps</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">Butina</span><span class="o">.</span><span class="n">ClusterData</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fps</span><span class="p">),</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">isDistData</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">distinct_groups</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fps</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">cluster</span><span class="p">:</span>
+            <span class="n">distinct_groups</span><span class="p">[</span><span class="n">member</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+
+    <span class="c1"># return unique list of the scaffold grouping as a dict</span>
+    <span class="n">group_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">distinct_smiles</span><span class="p">,</span> <span class="n">distinct_groups</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">groups</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">group_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ScaffoldSplit"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.ScaffoldSplit">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ScaffoldSplit</span><span class="p">(</span><span class="n">GroupingSplitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stratified Group K Fold based on chemical scaffold.</span>
+
+<span class="sd">    Splits data based chemical (Murcko) scaffolds for the compounds in the user input data.</span>
+<span class="sd">    This emulates the real-world scenario when models are applied to novel chemical space</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">bins</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Binning algorithm&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Algorithm to use for determining histogram bin edges,&quot;</span>
+            <span class="s2">&quot; see numpy.histogram for possible options, or use default &#39;fd&#39;&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fd&quot;</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+    <span class="n">make_scaffold_generic</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Make scaffold generic&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Makes Murcko scaffolds generic by removing hetero-atoms&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">butina_cluster</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">float</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Cluster threshold&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Butina clustering to aggregate scaffolds into shared folds. Elements within this &quot;</span>
+            <span class="s2">&quot;cluster range are considered neighbors, increasing test difficulty. `0.0` turns Butina &quot;</span>
+            <span class="s2">&quot;clustering off&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mf">0.4</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ScaffoldSplit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ScaffoldSplit&quot;</span>
+
+<div class="viewcode-block" id="ScaffoldSplit.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.ScaffoldSplit.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SklearnSplitter</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ScaffoldSplit.get_n_splits"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.ScaffoldSplit.get_n_splits">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ScaffoldSplit.split"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.ScaffoldSplit.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="k">assert</span> <span class="n">groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;ScaffoldSplit expects scaffold groups supplied with the `split` function. This &quot;</span>
+            <span class="s2">&quot;can be assisted with the `group` function of ScaffoldSplit. &quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Similar to Histogram split, deal with continuous or binary y</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+            <span class="n">y_sss</span> <span class="o">=</span> <span class="n">stratify</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y_sss</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="c1"># Butina cluster if distance is greater than 0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">butina_cluster</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">butina_cluster</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">butina_cluster</span><span class="p">)</span>
+        <span class="n">sgkf</span> <span class="o">=</span> <span class="n">StratifiedGroupKFold</span><span class="p">(</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">sgkf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_sss</span><span class="p">,</span> <span class="n">groups</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ScaffoldSplit.groups"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.ScaffoldSplit.groups">[docs]</a>    <span class="k">def</span> <span class="nf">groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">smiles_col</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate scaffold smiles from a smiles column&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">optunaz.descriptors</span> <span class="kn">import</span> <span class="n">descriptor_from_config</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_scaffold_generic</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">optunaz.descriptors</span> <span class="kn">import</span> <span class="n">GenericScaffold</span>
+
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;scaffold&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">smiles_col</span><span class="p">],</span> <span class="n">GenericScaffold</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span> <span class="n">return_failed_idx</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">optunaz.descriptors</span> <span class="kn">import</span> <span class="n">Scaffold</span>
+
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;scaffold&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">smiles_col</span><span class="p">],</span> <span class="n">Scaffold</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span> <span class="n">return_failed_idx</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">smiles_col</span><span class="p">)[</span><span class="s2">&quot;scaffold&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div></div>
+
+
+<span class="n">AnyCvSplitter</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Stratified</span><span class="p">,</span> <span class="n">Random</span><span class="p">]</span>
+
+<span class="n">AnyInputDataSplitter</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">Random</span><span class="p">,</span> <span class="n">Temporal</span><span class="p">,</span> <span class="n">Stratified</span><span class="p">,</span> <span class="n">NoSplitting</span><span class="p">,</span> <span class="n">Predefined</span><span class="p">,</span> <span class="n">ScaffoldSplit</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

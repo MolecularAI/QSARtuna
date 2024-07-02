@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.utils.enums.configuration_enum &mdash; QSARtuna 3.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            QSARtuna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../deduplicator.html">List of available deduplicators</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">QSARtuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../utils.html">optunaz.utils</a></li>
+          <li class="breadcrumb-item"><a href="../enums.html">optunaz.utils.enums</a></li>
+      <li class="breadcrumb-item active">optunaz.utils.enums.configuration_enum</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for optunaz.utils.enums.configuration_enum</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="ConfigurationEnum"><a class="viewcode-back" href="../../../../optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum">[docs]</a><span></span><span class="k">class</span> <span class="nc">ConfigurationEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This &quot;Enum&quot; serves to store all the strings used in parsing all configurations. Note, that validity</span>
+<span class="sd">    checks are not performed, but referred to JSON Schema validations.&quot;&quot;&quot;</span>
+
+    <span class="c1"># all that are general keywords</span>
+    <span class="n">GENERAL_DISABLED</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span>
+    <span class="n">GENERAL_PARAMETERS</span> <span class="o">=</span> <span class="s2">&quot;parameters&quot;</span>
+
+    <span class="c1"># all that has to do with the actual task</span>
+    <span class="c1"># ---------</span>
+    <span class="n">TASK</span> <span class="o">=</span> <span class="s2">&quot;task&quot;</span>
+    <span class="n">TASK_OPTIMIZATION</span> <span class="o">=</span> <span class="s2">&quot;optimization&quot;</span>
+    <span class="n">TASK_BUILDING</span> <span class="o">=</span> <span class="s2">&quot;building&quot;</span>
+
+    <span class="c1"># all that has to do with data IO</span>
+    <span class="c1"># ---------</span>
+    <span class="n">DATA</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+    <span class="n">DATA_INPUTCOLUMN</span> <span class="o">=</span> <span class="s2">&quot;input_column&quot;</span>
+    <span class="n">DATA_RESPONSECOLUMN</span> <span class="o">=</span> <span class="s2">&quot;response_column&quot;</span>
+    <span class="n">DATA_TRAINING</span> <span class="o">=</span> <span class="s2">&quot;training&quot;</span>
+    <span class="n">DATA_TEST</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+
+    <span class="c1"># all that has to do with descriptor calculation</span>
+    <span class="c1"># ---------</span>
+    <span class="n">DESCRIPTORS</span> <span class="o">=</span> <span class="s2">&quot;descriptors&quot;</span>
+
+    <span class="c1"># Avalon</span>
+    <span class="n">DESCRIPTORS_AVALON</span> <span class="o">=</span> <span class="s2">&quot;Avalon&quot;</span>
+    <span class="n">DESCRIPTORS_AVALON_NBITS</span> <span class="o">=</span> <span class="s2">&quot;nBits&quot;</span>
+
+    <span class="c1"># ECFP</span>
+    <span class="n">DESCRIPTORS_ECFP</span> <span class="o">=</span> <span class="s2">&quot;ECFP&quot;</span>
+    <span class="n">DESCRIPTORS_ECFP_RADIUS</span> <span class="o">=</span> <span class="s2">&quot;radius&quot;</span>
+    <span class="n">DESCRIPTORS_ECFP_NBITS</span> <span class="o">=</span> <span class="s2">&quot;nBits&quot;</span>
+
+    <span class="c1"># ECFP_counts</span>
+    <span class="n">DESCRIPTORS_ECFPCOUNTS</span> <span class="o">=</span> <span class="s2">&quot;ECFP_counts&quot;</span>
+    <span class="n">DESCRIPTORS_ECFPCOUNTS_RADIUS</span> <span class="o">=</span> <span class="s2">&quot;radius&quot;</span>
+    <span class="n">DESCRIPTORS_ECFPCOUNTS_USEFEATURES</span> <span class="o">=</span> <span class="s2">&quot;useFeatures&quot;</span>
+
+    <span class="c1"># PathFP</span>
+    <span class="n">DESCRIPTORS_PATHFP</span> <span class="o">=</span> <span class="s2">&quot;PathFP&quot;</span>
+    <span class="n">DESCRIPTORS_PATHFP_MAXPATH</span> <span class="o">=</span> <span class="s2">&quot;maxPath&quot;</span>
+    <span class="n">DESCRIPTORS_PATHFP_FPSIZE</span> <span class="o">=</span> <span class="s2">&quot;fpSize&quot;</span>
+
+    <span class="c1"># MACCS_keys</span>
+    <span class="n">DESCRIPTORS_MACCSKEYS</span> <span class="o">=</span> <span class="s2">&quot;MACCS_keys&quot;</span>
+
+    <span class="c1"># Physchem</span>
+    <span class="n">DESCRIPTORS_UNSC_PHYSCHEM</span> <span class="o">=</span> <span class="s2">&quot;UnscaledPhyschemDescriptors&quot;</span>
+    <span class="n">DESCRIPTORS_PHYSCHEM</span> <span class="o">=</span> <span class="s2">&quot;PhyschemDescriptors&quot;</span>
+    <span class="n">DESCRIPTORS_PHYSCHEM_RDKITNAMES</span> <span class="o">=</span> <span class="s2">&quot;rdkit_names&quot;</span>
+
+    <span class="c1"># Jazzy</span>
+    <span class="n">DESCRIPTORS_UNSC_JAZZY</span> <span class="o">=</span> <span class="s2">&quot;UnscaledJazzyDescriptors&quot;</span>
+    <span class="n">DESCRIPTORS_JAZZY</span> <span class="o">=</span> <span class="s2">&quot;JazzyDescriptors&quot;</span>
+    <span class="n">DESCRIPTORS_JAZZY_JAZZYNAMES</span> <span class="o">=</span> <span class="s2">&quot;jazzy_names&quot;</span>
+
+    <span class="c1"># Precomputed</span>
+    <span class="n">DESCRIPTORS_PRECOMPUTED</span> <span class="o">=</span> <span class="s2">&quot;PrecomputedDescriptorFromFile&quot;</span>
+    <span class="n">DESCRIPTORS_PRECOMPUTED_FILE</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span>
+    <span class="n">DESCRIPTORS_PRECOMPUTED_INPUT_COLUMNN</span> <span class="o">=</span> <span class="s2">&quot;input_column&quot;</span>
+    <span class="n">DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN</span> <span class="o">=</span> <span class="s2">&quot;response_column&quot;</span>
+
+    <span class="c1"># ZScales</span>
+    <span class="n">DESCRIPTORS_UNSC_ZSCALES</span> <span class="o">=</span> <span class="s2">&quot;UnscaledZScalesDescriptors&quot;</span>
+    <span class="n">DESCRIPTORS_ZSCALES</span> <span class="o">=</span> <span class="s2">&quot;ZScalesDescriptors&quot;</span>
+
+    <span class="c1"># Smiles</span>
+    <span class="n">DESCRIPTORS_SMILES</span> <span class="o">=</span> <span class="s2">&quot;SmilesFromFile&quot;</span>
+    <span class="n">DESCRIPTORS_SMILES_AND_SI</span> <span class="o">=</span> <span class="s2">&quot;SmilesAndSideInfoFromFile&quot;</span>
+    <span class="n">DESCRIPTORS_SMILES_AND_SI_FILE</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span>
+    <span class="n">DESCRIPTORS_SMILES_AND_SI_INPUT_COLUMN</span> <span class="o">=</span> <span class="s2">&quot;input_column&quot;</span>
+    <span class="n">DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC</span> <span class="o">=</span> <span class="s2">&quot;aux_weight_pc&quot;</span>
+
+    <span class="c1"># Scaled</span>
+    <span class="n">DESCRIPTORS_SCALED</span> <span class="o">=</span> <span class="s2">&quot;ScaledDescriptor&quot;</span>
+    <span class="n">DESCRIPTORS_SCALED_DESCRIPTOR</span> <span class="o">=</span> <span class="s2">&quot;descriptor&quot;</span>
+    <span class="n">DESCRIPTORS_SCALED_DESCRIPTOR_PARAMETERS</span> <span class="o">=</span> <span class="s2">&quot;parameters&quot;</span>
+
+    <span class="c1"># Composite</span>
+    <span class="n">DESCRIPTORS_COMPOSITE</span> <span class="o">=</span> <span class="s2">&quot;CompositeDescriptor&quot;</span>
+
+    <span class="c1"># all that has to do with general optimization parameters</span>
+    <span class="c1"># ---------</span>
+    <span class="n">SETTINGS</span> <span class="o">=</span> <span class="s2">&quot;settings&quot;</span>
+    <span class="n">SETTINGS_MODE</span> <span class="o">=</span> <span class="s2">&quot;mode&quot;</span>
+    <span class="n">SETTINGS_MODE_REGRESSION</span> <span class="o">=</span> <span class="s2">&quot;regression&quot;</span>
+    <span class="n">SETTINGS_MODE_CLASSIFICATION</span> <span class="o">=</span> <span class="s2">&quot;classification&quot;</span>
+    <span class="n">SETTINGS_CROSS_VALIDATION</span> <span class="o">=</span> <span class="s2">&quot;cross_validation&quot;</span>
+    <span class="n">SETTINGS_DIRECTION</span> <span class="o">=</span> <span class="s2">&quot;direction&quot;</span>
+    <span class="n">SETTINGS_N_TRIALS</span> <span class="o">=</span> <span class="s2">&quot;n_trials&quot;</span>
+    <span class="n">SETTINGS_N_JOBS</span> <span class="o">=</span> <span class="s2">&quot;n_jobs&quot;</span>
+    <span class="n">SETTINGS_SHUFFLE</span> <span class="o">=</span> <span class="s2">&quot;shuffle&quot;</span>
+
+    <span class="c1"># all that has to do with algorithms, general keywords</span>
+    <span class="c1"># ---------</span>
+    <span class="n">ALGORITHMS</span> <span class="o">=</span> <span class="s2">&quot;algorithms&quot;</span>
+    <span class="n">ALGORITHMS_LOW</span> <span class="o">=</span> <span class="s2">&quot;low&quot;</span>
+    <span class="n">ALGORITHMS_HIGH</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span>
+    <span class="n">ALGORITHMS_Q</span> <span class="o">=</span> <span class="s2">&quot;q&quot;</span>
+
+    <span class="c1"># different interfaces available</span>
+    <span class="n">ALGORITHMS_INTERFACE_SKLEARN</span> <span class="o">=</span> <span class="s2">&quot;sklearn&quot;</span>
+    <span class="n">ALGORITHMS_INTERFACE_XGBOOST</span> <span class="o">=</span> <span class="s2">&quot;xgboost&quot;</span>
+
+    <span class="c1"># algorithm: RandomForest specific</span>
+    <span class="n">ALGORITHMS_RFREGRESSOR</span> <span class="o">=</span> <span class="s2">&quot;RandomForestRegressor&quot;</span>
+    <span class="n">ALGORITHMS_RFCLASSIFIER</span> <span class="o">=</span> <span class="s2">&quot;RandomForestClassifier&quot;</span>
+    <span class="n">ALGORITHMS_RF_MAX_FEATURES</span> <span class="o">=</span> <span class="s2">&quot;max_features&quot;</span>
+    <span class="n">ALGORITHMS_RF_MAX_DEPTH</span> <span class="o">=</span> <span class="s2">&quot;max_depth&quot;</span>
+    <span class="n">ALGORITHMS_RF_N_ESTIMATORS</span> <span class="o">=</span> <span class="s2">&quot;n_estimators&quot;</span>
+
+    <span class="c1"># algorithm: SVR</span>
+    <span class="n">ALGORITHMS_SVR</span> <span class="o">=</span> <span class="s2">&quot;SVR&quot;</span>
+    <span class="n">ALGORITHMS_SVR_C</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+    <span class="n">ALGORITHMS_SVR_GAMMA</span> <span class="o">=</span> <span class="s2">&quot;gamma&quot;</span>
+
+    <span class="c1"># algorithm: SVC</span>
+    <span class="n">ALGORITHMS_SVC</span> <span class="o">=</span> <span class="s2">&quot;SVC&quot;</span>
+    <span class="n">ALGORITHMS_SVC_C</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+    <span class="n">ALGORITHMS_SVC_GAMMA</span> <span class="o">=</span> <span class="s2">&quot;gamma&quot;</span>
+
+    <span class="c1"># algorithm: Lasso</span>
+    <span class="n">ALGORITHMS_LASSO</span> <span class="o">=</span> <span class="s2">&quot;Lasso&quot;</span>
+    <span class="n">ALGORITHMS_LASSO_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;alpha&quot;</span>
+
+    <span class="c1"># algorithm: KNeighbors</span>
+    <span class="n">ALGORITHMS_KNEIGHBORSCLASSIFIER</span> <span class="o">=</span> <span class="s2">&quot;KNeighborsClassifier&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORSREGRESSOR</span> <span class="o">=</span> <span class="s2">&quot;KNeighborsRegressor&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORS_N_NEIGHBORS</span> <span class="o">=</span> <span class="s2">&quot;n_neighbors&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORS_METRIC</span> <span class="o">=</span> <span class="s2">&quot;metric&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORS_WEIGHTS</span> <span class="o">=</span> <span class="s2">&quot;weights&quot;</span>
+
+    <span class="c1"># algorithm: Ridge</span>
+    <span class="n">ALGORITHMS_RIDGE</span> <span class="o">=</span> <span class="s2">&quot;Ridge&quot;</span>
+    <span class="n">ALGORITHMS_RIDGE_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;alpha&quot;</span>
+
+    <span class="c1"># algorithm: PLSRegression</span>
+    <span class="n">ALGORITHMS_PLSREGRESSION</span> <span class="o">=</span> <span class="s2">&quot;PLSRegression&quot;</span>
+    <span class="n">ALGORITHMS_PLSREGRESSION_N_COMPONENTS</span> <span class="o">=</span> <span class="s2">&quot;n_components&quot;</span>
+
+    <span class="c1"># algorithm: LogisticRegression</span>
+    <span class="n">ALGORITHMS_LOGISTICREGRESSION</span> <span class="o">=</span> <span class="s2">&quot;LogisticRegression&quot;</span>
+    <span class="n">ALGORITHMS_LOGISTICREGRESSION_SOLVER</span> <span class="o">=</span> <span class="s2">&quot;solver&quot;</span>
+    <span class="n">ALGORITHMS_LOGISTICREGRESSION_C</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+
+    <span class="c1"># algorithm: AdaBoostClassifier</span>
+    <span class="n">ALGORITHMS_ADABOOSTCLASSIFIER</span> <span class="o">=</span> <span class="s2">&quot;AdaBoostClassifier&quot;</span>
+    <span class="n">ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS</span> <span class="o">=</span> <span class="s2">&quot;n_estimators&quot;</span>
+    <span class="n">ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE</span> <span class="o">=</span> <span class="s2">&quot;learning_rate&quot;</span>
+
+    <span class="c1"># algorithm: XGBregressor specific</span>
+    <span class="n">ALGORITHMS_XGBREGRESSOR</span> <span class="o">=</span> <span class="s2">&quot;XGBregressor&quot;</span>
+    <span class="n">ALGORITHMS_XGBREGRESSOR_MAX_DEPTH</span> <span class="o">=</span> <span class="s2">&quot;max_depth&quot;</span>
+    <span class="n">ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS</span> <span class="o">=</span> <span class="s2">&quot;n_estimators&quot;</span>
+    <span class="n">ALGORITHMS_XGBREGRESSOR_LEARNING_RATE</span> <span class="o">=</span> <span class="s2">&quot;learning_rate&quot;</span>
+
+    <span class="c1"># algorithm: ProbabilisticRandomForest specific</span>
+    <span class="n">ALGORITHMS_PRF</span> <span class="o">=</span> <span class="s2">&quot;PRFClassifier&quot;</span>
+    <span class="n">ALGORITHMS_PRF_MAX_FEATURES</span> <span class="o">=</span> <span class="s2">&quot;max_features&quot;</span>
+    <span class="n">ALGORITHMS_PRF_MAX_DEPTH</span> <span class="o">=</span> <span class="s2">&quot;max_depth&quot;</span>
+    <span class="n">ALGORITHMS_PRF_N_ESTIMATORS</span> <span class="o">=</span> <span class="s2">&quot;n_estimators&quot;</span>
+    <span class="n">ALGORITHMS_PRF_MINPYSUMLEAF</span> <span class="o">=</span> <span class="s2">&quot;min_py_sum_leaf&quot;</span>
+    <span class="n">ALGORITHMS_PRF_USE_PY_GINI</span> <span class="o">=</span> <span class="s2">&quot;use_py_gini&quot;</span>
+    <span class="n">ALGORITHMS_PRF_USE_PY_LEAFS</span> <span class="o">=</span> <span class="s2">&quot;use_py_leafs&quot;</span>
+
+    <span class="c1"># algorithm: ChemProp specific</span>
+    <span class="n">ALGORITHMS_CHEMPROP</span> <span class="o">=</span> <span class="s2">&quot;BaseChemProp&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_REGRESSOR</span> <span class="o">=</span> <span class="s2">&quot;ChemPropRegressor&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_HYPEROPT_REGRESSOR</span> <span class="o">=</span> <span class="s2">&quot;ChemPropHyperoptRegressor&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_CLASSIFIER</span> <span class="o">=</span> <span class="s2">&quot;ChemPropClassifier&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_HYPEROPT_CLASSIFIER</span> <span class="o">=</span> <span class="s2">&quot;ChemPropHyperoptClassifier&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_ACTIVATION</span> <span class="o">=</span> <span class="s2">&quot;activation&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_AGGREGATION</span> <span class="o">=</span> <span class="s2">&quot;aggregation&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_AGGREGATION_NORM</span> <span class="o">=</span> <span class="s2">&quot;aggregation_norm&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_BATCH_SIZE</span> <span class="o">=</span> <span class="s2">&quot;batch_size&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_DEPTH</span> <span class="o">=</span> <span class="s2">&quot;depth&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_DROPOUT</span> <span class="o">=</span> <span class="s2">&quot;dropout&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span> <span class="o">=</span> <span class="s2">&quot;epochs&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span> <span class="o">=</span> <span class="s2">&quot;ensemble_size&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span> <span class="o">=</span> <span class="s2">&quot;features_generator&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE</span> <span class="o">=</span> <span class="s2">&quot;ffn_hidden_size&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS</span> <span class="o">=</span> <span class="s2">&quot;ffn_num_layers&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_FRZN</span> <span class="o">=</span> <span class="s2">&quot;frzn&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span> <span class="o">=</span> <span class="s2">&quot;final_lr_ratio_exp&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_HIDDEN_SIZE</span> <span class="o">=</span> <span class="s2">&quot;hidden_size&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_NUM_ITERS</span> <span class="o">=</span> <span class="s2">&quot;num_iters&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP</span> <span class="o">=</span> <span class="s2">&quot;init_lr_ratio_exp&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span> <span class="o">=</span> <span class="s2">&quot;max_lr_exp&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL</span> <span class="o">=</span> <span class="s2">&quot;pretrained_model&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL</span> <span class="o">=</span> <span class="s2">&quot;search_parameter_level&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS</span> <span class="o">=</span> <span class="s2">&quot;startup_random_iters&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO</span> <span class="o">=</span> <span class="s2">&quot;warmup_epochs_ratio&quot;</span>
+
+    <span class="c1"># algorithm: CalibratedClassifierCV specific</span>
+    <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV</span> <span class="o">=</span> <span class="s2">&quot;CalibratedClassifierCVWithVA&quot;</span>
+    <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_ENSEMBLE</span> <span class="o">=</span> <span class="s2">&quot;ensemble&quot;</span>
+    <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR</span> <span class="o">=</span> <span class="s2">&quot;estimator&quot;</span>
+    <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_METHOD</span> <span class="o">=</span> <span class="s2">&quot;method&quot;</span>
+    <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS</span> <span class="o">=</span> <span class="s2">&quot;n_folds&quot;</span>
+    <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS</span> <span class="o">=</span> <span class="s2">&quot;calibrated_params&quot;</span>
+
+    <span class="c1"># algorithm: Mapie specific</span>
+    <span class="n">ALGORITHMS_MAPIE</span> <span class="o">=</span> <span class="s2">&quot;Mapie&quot;</span>
+    <span class="n">ALGORITHMS_MAPIE_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;mapie_alpha&quot;</span>
+
+    <span class="c1"># try to find the internal value and return</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span>
+
+    <span class="c1"># prohibit any attempt to set any values</span>
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No changes allowed.&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

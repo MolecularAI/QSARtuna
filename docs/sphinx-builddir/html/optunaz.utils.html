@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>optunaz.utils package &mdash; QSARtuna 3.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QSARtuna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deduplicator.html">List of available deduplicators</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QSARtuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">optunaz.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/optunaz.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="optunaz-utils-package">
+<h1>optunaz.utils package<a class="headerlink" href="#optunaz-utils-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="optunaz.utils.enums.html">optunaz.utils.enums package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.building_configuration_enum">optunaz.utils.enums.building_configuration_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.configuration_enum">optunaz.utils.enums.configuration_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.interface_enum">optunaz.utils.enums.interface_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.model_runner_enum">optunaz.utils.enums.model_runner_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.objective_enum">optunaz.utils.enums.objective_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.optimization_configuration_enum">optunaz.utils.enums.optimization_configuration_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.prediction_configuration_enum">optunaz.utils.enums.prediction_configuration_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.return_values_enum">optunaz.utils.enums.return_values_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums.visualization_enum">optunaz.utils.enums.visualization_enum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.enums.html#module-optunaz.utils.enums">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optunaz.utils.preprocessing.html">optunaz.utils.preprocessing package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.preprocessing.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.preprocessing.html#module-optunaz.utils.preprocessing.deduplicator">optunaz.utils.preprocessing.deduplicator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.preprocessing.html#module-optunaz.utils.preprocessing.splitter">optunaz.utils.preprocessing.splitter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.preprocessing.html#module-optunaz.utils.preprocessing.transform">optunaz.utils.preprocessing.transform module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.preprocessing.html#module-optunaz.utils.preprocessing">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-optunaz.utils.files_paths">
+<span id="optunaz-utils-files-paths-module"></span><h2>optunaz.utils.files_paths module<a class="headerlink" href="#module-optunaz.utils.files_paths" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.files_paths.move_up_directory">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.files_paths.</span></span><span class="sig-name descname"><span class="pre">move_up_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/files_paths.html#move_up_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.files_paths.move_up_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Function, to move up “n” directories for a given “path”.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.files_paths.attach_root_path">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.files_paths.</span></span><span class="sig-name descname"><span class="pre">attach_root_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/files_paths.html#attach_root_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.files_paths.attach_root_path" title="Permalink to this definition"></a></dt>
+<dd><p>Function to attach the root path of the module for a given “path”.</p>
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.load_json">
+<span id="optunaz-utils-load-json-module"></span><h2>optunaz.utils.load_json module<a class="headerlink" href="#module-optunaz.utils.load_json" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.load_json.loadJSON">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.load_json.</span></span><span class="sig-name descname"><span class="pre">loadJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/load_json.html#loadJSON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.load_json.loadJSON" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-optunaz.utils.mlflow">
+<span id="optunaz-utils-mlflow-module"></span><h2>optunaz.utils.mlflow module<a class="headerlink" href="#module-optunaz.utils.mlflow" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.add_ellipsis">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.mlflow.</span></span><span class="sig-name descname"><span class="pre">add_ellipsis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/mlflow.html#add_ellipsis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.mlflow.add_ellipsis" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.shorten_names">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.mlflow.</span></span><span class="sig-name descname"><span class="pre">shorten_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/mlflow.html#shorten_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.mlflow.shorten_names" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.MLflowCallback">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.mlflow.</span></span><span class="sig-name descname"><span class="pre">MLflowCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial_number_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optconfig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/mlflow.html#MLflowCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.mlflow.MLflowCallback" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Callback to track Optuna trials with MLflow.</p>
+<p>This callback adds Optuna-tracked information to MLflow.
+The MLflow experiment will be named after the Optuna study name.
+MLflow runs will be named after Optuna trial numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.MLflowCallback.trial_number_offset">
+<span class="sig-name descname"><span class="pre">trial_number_offset</span></span><a class="headerlink" href="#optunaz.utils.mlflow.MLflowCallback.trial_number_offset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.MLflowCallback.tracking_uri">
+<span class="sig-name descname"><span class="pre">tracking_uri</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.mlflow.MLflowCallback.tracking_uri" title="Permalink to this definition"></a></dt>
+<dd><p>The URI of the MLflow tracking server.
+Please refer to <a class="reference external" href="https://www.mlflow.org/docs/latest/python_api/mlflow.html#mlflow.set_tracking_uri">mlflow.set_tracking_uri</a>
+for more details.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.MLflowCallback.optconfig">
+<span class="sig-name descname"><span class="pre">optconfig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.utils.mlflow.MLflowCallback.optconfig" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.MLflowCallback.prepare_tags">
+<span class="sig-name descname"><span class="pre">prepare_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/mlflow.html#MLflowCallback.prepare_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.mlflow.MLflowCallback.prepare_tags" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the tags for MLflow.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.utils.mlflow.MLflowCallback.tmp_buildconfig">
+<span class="sig-name descname"><span class="pre">tmp_buildconfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/mlflow.html#MLflowCallback.tmp_buildconfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.mlflow.MLflowCallback.tmp_buildconfig" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a temporary file with build configuration, and returns a path to it.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.schema">
+<span id="optunaz-utils-schema-module"></span><h2>optunaz.utils.schema module<a class="headerlink" href="#module-optunaz.utils.schema" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.create_dependency">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">create_dependency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#create_dependency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.create_dependency" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.remove_schema_properties">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">remove_schema_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#remove_schema_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.remove_schema_properties" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.add_boolean_guards_for_schema_properties">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">add_boolean_guards_for_schema_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#add_boolean_guards_for_schema_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.add_boolean_guards_for_schema_properties" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.replacekey">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">replacekey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#replacekey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.replacekey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.replacevalue">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">replacevalue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#replacevalue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.replacevalue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.addsibling">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">addsibling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#addsibling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.addsibling" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.delsibling">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">delsibling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">siblings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#delsibling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.delsibling" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.getref">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">getref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#getref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.getref" title="Permalink to this definition"></a></dt>
+<dd><p>Recursively returns nested items from a dict.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.copytitle">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">copytitle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#copytitle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.copytitle" title="Permalink to this definition"></a></dt>
+<dd><p>Copies “title” from “$ref” into oneOf.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.replaceenum">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">replaceenum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#replaceenum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.replaceenum" title="Permalink to this definition"></a></dt>
+<dd><p>Replace singleton enums with const.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.schema.addtitles">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.schema.</span></span><span class="sig-name descname"><span class="pre">addtitles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/schema.html#addtitles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.schema.addtitles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-optunaz.utils.tracking">
+<span id="optunaz-utils-tracking-module"></span><h2>optunaz.utils.tracking module<a class="headerlink" href="#module-optunaz.utils.tracking" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.get_authorization_header">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">get_authorization_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#get_authorization_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.get_authorization_header" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">TrackingData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_cv_test_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildconfig</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#TrackingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.TrackingData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass defining internal tracking format</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData.trial_number">
+<span class="sig-name descname"><span class="pre">trial_number</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.trial_number" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData.trial_value">
+<span class="sig-name descname"><span class="pre">trial_value</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.trial_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData.scoring">
+<span class="sig-name descname"><span class="pre">scoring</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.scoring" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData.trial_state">
+<span class="sig-name descname"><span class="pre">trial_state</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.trial_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData.all_cv_test_scores">
+<span class="sig-name descname"><span class="pre">all_cv_test_scores</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.all_cv_test_scores" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData.buildconfig">
+<span class="sig-name descname"><span class="pre">buildconfig</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.buildconfig" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.removeprefix">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">removeprefix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#removeprefix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.removeprefix" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.round_scores">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">round_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#round_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.round_scores" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.InternalTrackingCallback">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">InternalTrackingCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optconfig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_number_offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#InternalTrackingCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.InternalTrackingCallback" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Callback to track (log) progress using internal tracking format</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.InternalTrackingCallback.optconfig">
+<span class="sig-name descname"><span class="pre">optconfig</span></span><a class="headerlink" href="#optunaz.utils.tracking.InternalTrackingCallback.optconfig" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.InternalTrackingCallback.trial_number_offset">
+<span class="sig-name descname"><span class="pre">trial_number_offset</span></span><a class="headerlink" href="#optunaz.utils.tracking.InternalTrackingCallback.trial_number_offset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Datapoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">Datapoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#Datapoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.Datapoint" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Datapoint.smiles">
+<span class="sig-name descname"><span class="pre">smiles</span></span><a class="headerlink" href="#optunaz.utils.tracking.Datapoint.smiles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Datapoint.expected">
+<span class="sig-name descname"><span class="pre">expected</span></span><a class="headerlink" href="#optunaz.utils.tracking.Datapoint.expected" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Datapoint.predicted">
+<span class="sig-name descname"><span class="pre">predicted</span></span><a class="headerlink" href="#optunaz.utils.tracking.Datapoint.predicted" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">BuildTrackingData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response_column_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#BuildTrackingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass defining internal tracking format</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData.response_column_name">
+<span class="sig-name descname"><span class="pre">response_column_name</span></span><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData.response_column_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData.test_scores">
+<span class="sig-name descname"><span class="pre">test_scores</span></span><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData.test_scores" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData.test_points">
+<span class="sig-name descname"><span class="pre">test_points</span></span><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData.test_points" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.track_build">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">track_build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildconfig</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#track_build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.track_build" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-optunaz.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-optunaz.utils" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.mkdict">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.</span></span><span class="sig-name descname"><span class="pre">mkdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils.html#mkdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.mkdict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.load_df_from_file">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.</span></span><span class="sig-name descname"><span class="pre">load_df_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils.html#load_df_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.load_df_from_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.remove_failed_idx">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.</span></span><span class="sig-name descname"><span class="pre">remove_failed_idx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">failed_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auxs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils.html#remove_failed_idx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.remove_failed_idx" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.utils.md5_hash">
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.</span></span><span class="sig-name descname"><span class="pre">md5_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils.html#md5_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.md5_hash" title="Permalink to this definition"></a></dt>
+<dd><p>MD5 hash of an optimisation algorithm or a model metadata dictionary</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

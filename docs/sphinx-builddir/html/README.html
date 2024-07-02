@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA) &mdash; QSARtuna 3.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Preprocessing data for QSARtuna" href="notebooks/preprocess_data.html" />
+    <link rel="prev" title="Welcome to QSARtuna Documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            QSARtuna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Intro and Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-three-step-process">The three-step process</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#json-based-command-line-interface">JSON-based Command-line interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-file">Configuration file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-via-singulartity">Running via singulartity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submitting-to-slurm">Submitting to SLURM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-the-model">Using the model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-inspect">Optional: inspect</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#run-from-python-jupyter-notebook">Run from Python/Jupyter Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deduplicator.html">List of available deduplicators</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QSARtuna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az-and-qptuna">
+<h1>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA)<a class="headerlink" href="#qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az-and-qptuna" title="Permalink to this heading"></a></h1>
+<p>Build predictive models for CompChem with hyperparameters optimized by <a class="reference external" href="https://optuna.org/">Optuna</a>.</p>
+<p>Developed with Uncertainty Quantification and model explainability in mind.</p>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this heading"></a></h2>
+<p>This library searches
+for the best ML algorithm
+and molecular descriptor
+for the given data.</p>
+<p>The search itself
+is done using <a class="reference external" href="https://optuna.org/">Optuna</a>.</p>
+<p>Developed models employ
+the latest state-of-the-art
+uncertainty estimation and
+explainability python packages</p>
+<p>Further documentation in the GitHub pages <a class="reference external" href="https://molecularai.github.io/QSARtuna/">here</a>.</p>
+<p>QSARtuna Publication available <a class="reference external" href="https://doi.org/10.1021/acs.jcim.4c00457">here</a>.</p>
+<section id="the-three-step-process">
+<h3>The three-step process<a class="headerlink" href="#the-three-step-process" title="Permalink to this heading"></a></h3>
+<p>QSARtuna is structured around three steps:</p>
+<ol class="simple">
+<li><p><em>Hyperparameter Optimization:</em>
+Train many models with different parameters using Optuna.
+Only the training dataset is used here.
+Training is usually done with cross-validation.</p></li>
+<li><p><em>Build (Training):</em>
+Pick the best model from Optimization,
+and optionally evaluate its performance on the test dataset.</p></li>
+<li><p><em>“Prod-build:”</em>
+Re-train the best-performing model on the merged training and test datasets.
+This step has a drawback that there is no data left to evaluate the resulting model,
+but it has a big benefit that this final model is trained on the all available data.</p></li>
+</ol>
+</section>
+</section>
+<section id="json-based-command-line-interface">
+<h2>JSON-based Command-line interface<a class="headerlink" href="#json-based-command-line-interface" title="Permalink to this heading"></a></h2>
+<p>Let’s look at a trivial example of modelling molecular weight
+using a training set of 50 molecules.</p>
+<section id="configuration-file">
+<h3>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this heading"></a></h3>
+<p>We start with a configuration file in <a class="reference external" href="https://en.wikipedia.org/wiki/JSON">JSON format</a>.
+It contains four main sections:</p>
+<ul class="simple">
+<li><p><strong>data</strong> - location of the data file, columns to use.</p></li>
+<li><p><strong>settings</strong> - details about the optimization run.</p></li>
+<li><p><strong>descriptors</strong> - which molecular descriptors to use.</p></li>
+<li><p><strong>algorithms</strong> - which ML algorithms to use.</p></li>
+</ul>
+<p>Below is the example of such a file</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optimization&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;training_dataset_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tests/data/DRD2/subset-50/train.csv&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;input_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;response_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;molwt&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cross_validation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;maximize&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;n_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;n_startup_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;descriptors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ECFP&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;nBits&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2048</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MACCS_keys&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;algorithms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RandomForestRegressor&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;max_depth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;n_estimators&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">250</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;max_features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ridge&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lasso&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;XGBRegressor&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;max_depth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;n_estimators&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;learning_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Data section specifies location of the dataset file.
+In this example it specifies a relative path to the <code class="docutils literal notranslate"><span class="pre">tests/data</span></code> folder.</p>
+<p>Settings section specifies that:</p>
+<ul class="simple">
+<li><p>we are building a regression model,</p></li>
+<li><p>we want to use 5-fold cross-validation,</p></li>
+<li><p>we want to maximize the value of the objective function (maximization is the standard for scikit-learn models),</p></li>
+<li><p>we want to have a total of 100 trials,</p></li>
+<li><p>and the first 30 trials (”startup trials”) should be random exploration (to not get stuck early on in one local minimum).</p></li>
+</ul>
+<p>We specify two descriptors and four algorithm,
+and optimization is free to pair any specified descriptor with any of the algorithms.</p>
+<p>When we have our data and our configuration, it is time to start the optimization.</p>
+</section>
+<section id="running-via-singulartity">
+<h3>Running via singulartity<a class="headerlink" href="#running-via-singulartity" title="Permalink to this heading"></a></h3>
+<p>QSARtuna can be deployed using <a class="reference external" href="https://sylabs.io/guides/3.7/user-guide/index.html">Singularity</a> container.</p>
+<p>To run commands inside the container, Singularity uses the following syntax:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;container.sif&gt;<span class="w"> </span>&lt;command&gt;
+</pre></div>
+</div>
+<p>We can run three-step-process from command line with the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/projects/cc/mai/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config<span class="w"> </span>examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
+</pre></div>
+</div>
+<p>Since optimization can be a long process,
+we should avoid running it on the login node,
+and we should submit it to the SLURM queue instead.</p>
+</section>
+<section id="submitting-to-slurm">
+<h3>Submitting to SLURM<a class="headerlink" href="#submitting-to-slurm" title="Permalink to this heading"></a></h3>
+<p>We can submit our script to the queue by giving <code class="docutils literal notranslate"><span class="pre">sbatch</span></code> the following script:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+<span class="c1">#SBATCH --nodes=1</span>
+<span class="c1">#SBATCH --ntasks=1</span>
+<span class="c1">#SBATCH --cpus-per-task=5</span>
+<span class="c1">#SBATCH --mem-per-cpu=4G</span>
+<span class="c1">#SBATCH --time=100:0:0</span>
+<span class="c1">#SBATCH --partition core</span>
+
+<span class="c1"># This script illustrates how to run one configuration from QSARtuna examples.</span>
+<span class="c1"># The example we use is in examples/optimization/regression_drd2_50.json.</span>
+
+<span class="c1"># The example we chose uses relative paths to data files, change directory.</span>
+<span class="nb">cd</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/OptunaAZ-versions/OptunaAZ_latest
+
+singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config<span class="o">{</span>project_folder<span class="o">}</span>/examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
+</pre></div>
+</div>
+<p>When the script is complete, it will create pickled model files inside your home directory under <code class="docutils literal notranslate"><span class="pre">~/qsartuna-target/</span></code>.</p>
+</section>
+<section id="using-the-model">
+<h3>Using the model<a class="headerlink" href="#using-the-model" title="Permalink to this heading"></a></h3>
+<p>When the model is built, run inference:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--model-file<span class="w"> </span>target/merged.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-smiles-csv-column<span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>target/prediction.csv
+</pre></div>
+</div>
+<p>Note that QSARtuna_latest.sif points to the most recent version of QSARtuna.</p>
+<p>Legacy models require the inference with the same QSARtuna version used to train the model.
+This can be specified by modifying the above command and supplying
+<code class="docutils literal notranslate"><span class="pre">/projects/cc/mai/containers/QSARtuna_&lt;version&gt;.sif</span></code> (replace <version> with the version of QSARtuna).</p>
+<p>E.g:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_2.5.1.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--model-file<span class="w"> </span><span class="m">2</span>.5.1_model.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-smiles-csv-column<span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>target/prediction.csv
+</pre></div>
+</div>
+<p>would generate predictions for a model trained with QSARtuna 2.5.1.</p>
+</section>
+<section id="optional-inspect">
+<h3>Optional: inspect<a class="headerlink" href="#optional-inspect" title="Permalink to this heading"></a></h3>
+<p>To inspect performance of different models tried during optimization,
+use <a class="reference external" href="https://www.mlflow.org/docs/latest/tracking.html">MLFlow Tracking UI</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>mlflow
+mlflow<span class="w"> </span>ui
+</pre></div>
+</div>
+<p>Then open mlflow link your browser.</p>
+<p><img alt="mlflow select experiment" src="_images/mlflow-select-experiment.png" /></p>
+<p>If you run <code class="docutils literal notranslate"><span class="pre">mlflow</span> <span class="pre">ui</span></code> on SCP,
+you can forward your mlflow port
+with a separate SSH session started on your local (”non-SCP”) machine:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>-N<span class="w"> </span>-L<span class="w"> </span>localhost:5000:localhost:5000<span class="w"> </span>user@login.intranet.net
+</pre></div>
+</div>
+<p>(”-L” forwards ports, and “-N” just to not execute any commands).</p>
+<p>In the MLFlow Tracking UI, select experiment to the left,
+it is named after the input file path.
+Then select all runs/trials in the experiment, and choose “Compare”.
+You will get a comparison page for selected runs/trials in the experiment.</p>
+<p><img alt="mlflow inspecting trials" src="_images/mlflow-inspecting-trials.png" /></p>
+<p>Comparison page will show MLFlow Runs (called Trials in Optuna),
+as well as their Parameters and Metrics.
+At the bottom there are plots.
+For X-axis, select “trial_number”.
+For Y-axis, start with “optimization_objective_cvmean_r2”.</p>
+<p>You can get more details by clicking individual runs.
+There you can access run/trial build (training) configuration.</p>
+</section>
+</section>
+<section id="run-from-python-jupyter-notebook">
+<h2>Run from Python/Jupyter Notebook<a class="headerlink" href="#run-from-python-jupyter-notebook" title="Permalink to this heading"></a></h2>
+<p>Create conda environment with Jupyter and Install QSARtuna there:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>purge
+module<span class="w"> </span>load<span class="w"> </span>Miniconda3
+conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>my_env_with_qsartuna<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10.10<span class="w"> </span>jupyter<span class="w"> </span>pip
+conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qsartuna
+module<span class="w"> </span>purge<span class="w">  </span><span class="c1"># Just in case.</span>
+which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Check. Should output path that contains &quot;my_env_with_qsartuna&quot;.</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>https://github.com/MolecularAI/QSARtuna/releases/download/3.1.0/qsartuna-3.1.0.tar.gz
+</pre></div>
+</div>
+<p>Then you can use QSARtuna inside your Notebook:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qsartuna.three_step_opt_build_merge</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">optimize</span><span class="p">,</span>
+    <span class="n">buildconfig_best</span><span class="p">,</span>
+    <span class="n">build_best</span><span class="p">,</span>
+    <span class="n">build_merged</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">qsartuna.config</span> <span class="kn">import</span> <span class="n">ModelMode</span><span class="p">,</span> <span class="n">OptimizationDirection</span>
+<span class="kn">from</span> <span class="nn">qsartuna.config.optconfig</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OptimizationConfig</span><span class="p">,</span>
+    <span class="n">SVR</span><span class="p">,</span>
+    <span class="n">RandomForest</span><span class="p">,</span>
+    <span class="n">Ridge</span><span class="p">,</span>
+    <span class="n">Lasso</span><span class="p">,</span>
+    <span class="n">PLS</span><span class="p">,</span>
+    <span class="n">XGBregressor</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">qsartuna.datareader</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">qsartuna.descriptors</span> <span class="kn">import</span> <span class="n">ECFP</span><span class="p">,</span> <span class="n">MACCS_keys</span><span class="p">,</span> <span class="n">ECFP_counts</span>
+
+<span class="c1">##</span>
+<span class="c1"># Prepare hyperparameter optimization configuration.</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">OptimizationConfig</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
+        <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;molwt&quot;</span><span class="p">,</span>
+        <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;tests/data/DRD2/subset-50/train.csv&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">descriptors</span><span class="o">=</span><span class="p">[</span><span class="n">ECFP</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span> <span class="n">ECFP_counts</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span> <span class="n">MACCS_keys</span><span class="o">.</span><span class="n">new</span><span class="p">()],</span>
+    <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">SVR</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span>
+        <span class="n">RandomForest</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span>
+        <span class="n">Ridge</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span>
+        <span class="n">Lasso</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span>
+        <span class="n">PLS</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span>
+        <span class="n">XGBregressor</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span>
+    <span class="p">],</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">OptimizationConfig</span><span class="o">.</span><span class="n">Settings</span><span class="p">(</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">,</span>
+        <span class="n">cross_validation</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">n_trials</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">direction</span><span class="o">=</span><span class="n">OptimizationDirection</span><span class="o">.</span><span class="n">MAXIMIZATION</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1">##</span>
+<span class="c1"># Run Optuna Study.</span>
+<span class="n">study</span> <span class="o">=</span> <span class="n">optimize</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">study_name</span><span class="o">=</span><span class="s2">&quot;my_study&quot;</span><span class="p">)</span>
+
+<span class="c1">##</span>
+<span class="c1"># Get the best Trial from the Study and make a Build (Training) configuration for it.</span>
+<span class="n">buildconfig</span> <span class="o">=</span> <span class="n">buildconfig_best</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>
+<span class="c1"># Optional: write out JSON of the best configuration.</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">buildconfig</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1">##</span>
+<span class="c1"># Build (re-Train) and save the best model.</span>
+<span class="n">build_best</span><span class="p">(</span><span class="n">buildconfig</span><span class="p">,</span> <span class="s2">&quot;target/best.pkl&quot;</span><span class="p">)</span>
+
+<span class="c1">##</span>
+<span class="c1"># Build (Train) and save the model on the merged train+test data.</span>
+<span class="n">build_merged</span><span class="p">(</span><span class="n">buildconfig</span><span class="p">,</span> <span class="s2">&quot;target/merged.pkl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to QSARtuna Documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/preprocess_data.html" class="btn btn-neutral float-right" title="Preprocessing data for QSARtuna" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, AstraZeneca.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
