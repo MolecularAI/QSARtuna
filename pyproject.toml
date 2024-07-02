@@ -28,13 +28,9 @@ jazzy = "0.0.13"
 shap = "0.41.0"
 MAPIE = "0.6.4"
 protobuf = "4.25.3" # 5.26.0 causes an error
-
-[tool.poetry.group.optimization.dependencies]
 mlflow = "^1.19"
 sqlalchemy = "1.4.46"
 optuna = "^3.1.1"
-
-[tool.poetry.group.dev.dependencies]
 pydantic = "1.10.17"
 coverage = ">5.1, <7.0"
 matplotlib = "3.7.1"
@@ -51,8 +47,6 @@ autodoc-pydantic = "^1.8.0"
 sphinx-pydantic = "^0.1.1"
 pandoc = "^2.3"
 plotly = "5.15.0"
-
-[tool.poetry.group.peptide.dependencies]
 peptides = "0.3.2"
 chemistry-adapters = "0.0.2"
 
