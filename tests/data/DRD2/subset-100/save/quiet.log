@@ -1,0 +1,24 @@
+Fold 0
+Model 0 best validation rmse = 58.604257 on epoch 0
+Model 0 test rmse = 59.531005
+Ensemble test rmse = 59.531005
+1-fold cross validation
+	Seed 0 ==> test rmse = 59.531005
+Overall test rmse = 59.531005 +/- 0.000000
+Elapsed time = 0:00:07
+Fold 0
+Model 0 best validation rmse = 59.069447 on epoch 0
+Model 0 provided with no test set, no metric evaluation will be performed.
+Ensemble test rmse = nan
+1-fold cross validation
+	Seed 0 ==> test rmse = nan
+Overall test rmse = nan +/- nan
+Elapsed time = 0:00:06
+Fold 0
+Model 0 best validation rmse = 59.069446 on epoch 0
+Model 0 provided with no test set, no metric evaluation will be performed.
+Ensemble test rmse = nan
+1-fold cross validation
+	Seed 0 ==> test rmse = nan
+Overall test rmse = nan +/- nan
+Elapsed time = 0:00:18
