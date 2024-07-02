@@ -15,6 +15,8 @@ from optunaz.config.optconfig import (
     SVC,
     AdaBoostClassifier,
     CalibratedClassifierCVWithVA,
+    KNeighborsClassifier,
+    KNeighborsRegressor,
 )
 from optunaz.datareader import Dataset
 from optunaz.descriptors import (
@@ -23,6 +25,7 @@ from optunaz.descriptors import (
     ECFP_counts,
     PhyschemDescriptors,
     SmilesFromFile,
+    UnscaledZScalesDescriptors,
 )
 from optunaz.objective import NoValidDescriptors
 
@@ -93,6 +96,7 @@ def optconfig_regression(file_drd2_50):
         descriptors=[ECFP.new(), ECFP_counts.new(), MACCS_keys.new()],
         algorithms=[
             SVR.new(),
+            KNeighborsRegressor.new(),
             RandomForestRegressor.new(
                 n_estimators=RandomForestRegressor.Parameters.RandomForestRegressorParametersNEstimators(
                     low=4, high=4
@@ -147,6 +151,7 @@ def optconfig_classification(file_drd2_50):
         ),
         descriptors=[ECFP.new(), ECFP_counts.new(), MACCS_keys.new()],
         algorithms=[
+            KNeighborsClassifier.new(),
             SVC.new(),
             RandomForestClassifier.new(
                 n_estimators=RandomForestClassifier.Parameters.RandomForestClassifierParametersNEstimators(
@@ -339,3 +344,28 @@ def test_optconfig_calibrated(file_drd2_50):
         ),
     )
     optunaz.three_step_opt_build_merge.optimize(config, "test_calibration")
+
+
+@pytest.fixture
+def peptide_toxinpred3(shared_datadir):
+    return str(shared_datadir / "peptide" / "toxinpred3" / "train.csv")
+
+
+def test_optconfig_peptide(peptide_toxinpred3):
+    config = OptimizationConfig(
+        data=Dataset(
+            input_column="Smiles",
+            response_column="Class",
+            response_type="classification",
+            training_dataset_file=peptide_toxinpred3,
+        ),
+        descriptors=[ECFP.new(), UnscaledZScalesDescriptors.new()],
+        algorithms=[SVC.new()],
+        settings=OptimizationConfig.Settings(
+            mode=ModelMode.CLASSIFICATION,
+            cross_validation=2,
+            n_trials=3,
+            direction=OptimizationDirection.MAXIMIZATION,
+        ),
+    )
+    optunaz.three_step_opt_build_merge.optimize(config, "test_peptide")

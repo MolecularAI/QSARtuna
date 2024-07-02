@@ -73,6 +73,26 @@ def confChemProp(shared_datadir):
 
 
 @pytest.fixture
+def conf_peptide(shared_datadir):
+    conf = load_json.loadJSON(
+        path=os.path.join(
+            files_paths.move_up_directory(__file__, 1),
+            "examples",
+            "optimization",
+            "peptide_classification.json",
+        )
+    )
+    conf["data"]["training_dataset_file"] = str(
+        shared_datadir / "peptide/toxinpred3/train.csv"
+    )
+    conf["data"]["test_dataset_file"] = str(
+        shared_datadir / "peptide/toxinpred3/test.csv"
+    )
+
+    return conf
+
+
+@pytest.fixture
 def train_with_fp(shared_datadir):
     return str(shared_datadir / "precomputed_descriptor" / "train_with_fp.csv")
 
@@ -147,6 +167,27 @@ def test_ECFP_count(conf):
     study.optimize(obj, n_trials=1)
 
 
+def test_PathFP(conf):
+    # overwrite descriptor specification
+    confDict = conf
+    confDict[_OC.DESCRIPTORS] = [
+        {
+            "name": _OC.DESCRIPTORS_PATHFP,
+            _OC.GENERAL_PARAMETERS: {
+                _OC.DESCRIPTORS_PATHFP_MAXPATH: 2,
+                _OC.DESCRIPTORS_PATHFP_FPSIZE: 1024,
+            },
+        }
+    ]
+
+    # generate optimization configuration and execute it
+    conf = deserialize(OptimizationConfig, confDict)
+    train_smiles, train_y, _, _, _, _ = conf.data.get_sets()
+    obj = Objective(optconfig=conf, train_smiles=train_smiles, train_y=train_y)
+    study = optuna.create_study(direction=conf.settings.direction)
+    study.optimize(obj, n_trials=1)
+
+
 def test_MACCS_keys(conf):
     # overwrite descriptor specification
     confDict = conf
@@ -203,6 +244,21 @@ def test_JazzyDescriptors(conf):
     # generate optimization configuration and execute it
     conf = deserialize(OptimizationConfig, confDict)
     conf.Settings.n_jobs = 1
+    train_smiles, train_y, _, _, _, _ = conf.data.get_sets()
+    obj = Objective(optconfig=conf, train_smiles=train_smiles, train_y=train_y)
+    study = optuna.create_study(direction=conf.settings.direction)
+    study.optimize(obj, n_trials=1)
+
+
+def test_ZScales(conf_peptide):
+    # overwrite descriptor specification
+    confDict = conf_peptide
+    confDict[_OC.DESCRIPTORS] = [
+        {"name": _OC.DESCRIPTORS_ZSCALES, _OC.GENERAL_PARAMETERS: {}}
+    ]
+
+    # generate optimization configuration and execute it
+    conf = deserialize(OptimizationConfig, confDict)
     train_smiles, train_y, _, _, _, _ = conf.data.get_sets()
     obj = Objective(optconfig=conf, train_smiles=train_smiles, train_y=train_y)
     study = optuna.create_study(direction=conf.settings.direction)
@@ -368,7 +424,9 @@ def test_CompositeDescriptor(conf):
     conf = deserialize(OptimizationConfig, confDict)
     conf.set_cache()
     train_smiles, train_y, _, _, _, _ = conf.data.get_sets()
-    obj = Objective(optconfig=conf, train_smiles=train_smiles, train_y=train_y, cache=conf._cache)
+    obj = Objective(
+        optconfig=conf, train_smiles=train_smiles, train_y=train_y, cache=conf._cache
+    )
     study = optuna.create_study(direction=conf.settings.direction)
     study.optimize(obj, n_trials=1)
 
@@ -385,6 +443,7 @@ def test_AllDescriptorsAsCompositeDescriptor(conf, train_with_fp):
                     {"name": _OC.DESCRIPTORS_PHYSCHEM, _OC.GENERAL_PARAMETERS: {}},
                     {"name": _OC.DESCRIPTORS_JAZZY, _OC.GENERAL_PARAMETERS: {}},
                     {"name": _OC.DESCRIPTORS_ECFPCOUNTS, _OC.GENERAL_PARAMETERS: {}},
+                    {"name": _OC.DESCRIPTORS_PATHFP, _OC.GENERAL_PARAMETERS: {}},
                     {"name": _OC.DESCRIPTORS_AVALON, _OC.GENERAL_PARAMETERS: {}},
                     {"name": _OC.DESCRIPTORS_MACCSKEYS, _OC.GENERAL_PARAMETERS: {}},
                     {

@@ -9,7 +9,6 @@ import pandas as pd
 import pytest
 from apischema import serialize, deserialize
 
-from optunaz.algorithms import chem_prop  # need to import here, otherwise get SIGTERM
 from optunaz import optbuild
 from optunaz.config import ModelMode, OptimizationDirection
 from optunaz.config.buildconfig import BuildConfig
@@ -20,6 +19,7 @@ from optunaz.config.optconfig import (
     CalibratedClassifierCVWithVA,
     Mapie,
     ChemPropHyperoptRegressor,
+    ChemPropRegressor,
     RandomForestRegressor,
 )
 
@@ -29,12 +29,25 @@ from optunaz.descriptors import (
     SmilesFromFile,
 )
 from optunaz import predict
+from optunaz.utils.preprocessing.transform import LogBase, LogNegative
 
 
 @pytest.fixture
 def file_drd2_50(shared_datadir):
     """Returns 50 molecules from DRD2 dataset."""
     return str(shared_datadir / "DRD2" / "subset-50" / "train.csv")
+
+
+@pytest.fixture
+def file_drd2_50_err(shared_datadir):
+    """Returns 50 molecules from DRD2 dataset."""
+    return str(shared_datadir / "DRD2" / "subset-50" / "train_with_errors.csv")
+
+
+@pytest.fixture
+def pretrained_cp(shared_datadir):
+    """Returns 50 molecules from DRD2 dataset."""
+    return str(shared_datadir / "DRD2" / "drd2_reg.pkl")
 
 
 def optconfig_CalibratedClassifierCVWithVA(file_drd2_50, method, estimator, descriptor):
@@ -244,6 +257,10 @@ def optconfig_chemprop(file_drd2_50, estimator, descriptor):
             response_column="molwt",
             response_type="regression",
             training_dataset_file=file_drd2_50,
+            log_transform=True,
+            log_transform_base=LogBase.LOG10,
+            log_transform_negative=LogNegative.TRUE,
+            log_transform_unit_conversion=2,
         ),
         descriptors=[descriptor],
         algorithms=[
@@ -263,16 +280,9 @@ def optconfig_chemprop(file_drd2_50, estimator, descriptor):
     "estimator,descriptor",
     [
         (
-            ChemPropHyperoptRegressor.new(
+            ChemPropRegressor.new(
                 epochs=4,
                 ensemble_size=4,
-            ),
-            SmilesFromFile.new(),
-        ),
-        (
-            ChemPropHyperoptRegressor.new(
-                epochs=4,
-                ensemble_size=1,
             ),
             SmilesFromFile.new(),
         ),
@@ -280,6 +290,7 @@ def optconfig_chemprop(file_drd2_50, estimator, descriptor):
 )
 def test_cp_uncertainty(
     file_drd2_50,
+    file_drd2_50_err,
     shared_datadir,
     estimator,
     descriptor,
@@ -314,7 +325,7 @@ def test_cp_uncertainty(
         "--model-file",
         str(shared_datadir / "best.pkl"),
         "--input-smiles-csv-file",
-        file_drd2_50,
+        file_drd2_50_err,
         "--input-smiles-csv-column",
         "canonical",
         "--output-prediction-csv-file",
@@ -327,4 +338,28 @@ def test_cp_uncertainty(
     predictions = pd.read_csv(
         str(shared_datadir / "outprediction"), usecols=["Prediction_uncert"]
     )
-    assert len(predictions.dropna()) == 50
+    assert len(predictions.dropna()) == 47
+
+
+def test_pretrained_uncertainty(
+    file_drd2_50, file_drd2_50_err, shared_datadir, pretrained_cp
+):
+    predict_args = [
+        "prog",
+        "--model-file",
+        str(pretrained_cp),
+        "--input-smiles-csv-file",
+        file_drd2_50_err,
+        "--input-smiles-csv-column",
+        "canonical",
+        "--output-prediction-csv-file",
+        str(shared_datadir / "outprediction"),
+        "--predict-uncertainty",
+    ]
+    with patch.object(sys, "argv", predict_args):
+        predict.main()
+
+    predictions = pd.read_csv(
+        str(shared_datadir / "outprediction"), usecols=["Prediction_uncert"]
+    )
+    assert len(predictions.dropna()) == 47
