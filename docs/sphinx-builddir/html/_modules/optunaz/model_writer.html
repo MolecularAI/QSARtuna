@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.model_writer &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.model_writer &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -80,14 +82,11 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">types</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">ModelMode</span>
 <span class="kn">from</span> <span class="nn">optunaz.utils</span> <span class="kn">import</span> <span class="n">md5_hash</span>
@@ -96,129 +95,10 @@
 <span class="kn">from</span> <span class="nn">optunaz.descriptors</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">descriptor_from_config</span><span class="p">,</span>
     <span class="n">AnyDescriptor</span><span class="p">,</span>
-    <span class="n">SmilesBasedDescriptor</span><span class="p">,</span>
     <span class="n">SmilesAndSideInfoFromFile</span><span class="p">,</span>
     <span class="n">SmilesFromFile</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">serialize</span>
-
-
-<div class="viewcode-block" id="ModelPersistenceMode"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.ModelPersistenceMode">[docs]</a><span class="k">class</span> <span class="nc">ModelPersistenceMode</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">SKLEARN_WITH_OPTUNAZ</span> <span class="o">=</span> <span class="s2">&quot;sklearn_with_optunaz&quot;</span></div>
-    <span class="c1"># Other options: upload to PIP? ONNX?</span>
-
-
-<div class="viewcode-block" id="predict"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.predict">[docs]</a><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span>
-    <span class="n">estimator</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n">ModelMode</span><span class="p">,</span>
-    <span class="n">descriptor</span><span class="p">:</span> <span class="n">AnyDescriptor</span><span class="p">,</span>
-    <span class="n">smiles</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-    <span class="n">uncert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">explain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns prediction for a given SMILES string or a list of strings.</span>
-
-<span class="sd">    For classification models,</span>
-<span class="sd">    returns probability of class True (the second class)</span>
-<span class="sd">    instead of just a binary value.</span>
-
-<span class="sd">    Returns: 1d numpy array, with numpy.nan for invalid SMILES.</span>
-
-<span class="sd">    Deprecated, use &#39;QSARtunaModel.predict_from_smiles()&#39; instead.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Single SMILES string - wrap into list.</span>
-        <span class="n">smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">smiles</span><span class="p">]</span>
-
-    <span class="c1"># Scikit-learn predicts in &quot;batches&quot; by taking a 2d numpy array as input. Our input can contain None if SMILES</span>
-    <span class="c1"># are invalid, ruining the whole batch. Instead of sending a batch, we run prediction one-by-one for each molecule.</span>
-    <span class="k">def</span> <span class="nf">predict_one</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
-        <span class="c1"># Scikit-learn models can not handle None or NaN as inputs.</span>
-        <span class="c1"># Treat them separately here.</span>
-        <span class="k">if</span> <span class="n">fp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>  <span class="c1"># 1d array with one element, NaN.</span>
-
-        <span class="c1"># Scikit-learn wants 2d array, since 1d array is ambiguous (is it one observation with N features, or is it N</span>
-        <span class="c1"># observations with 1 feature each). Reshape here to one row.</span>
-        <span class="n">fp2d</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">uncert</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict_uncert</span><span class="p">(</span><span class="n">fp2d</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">explain</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">optunaz.explainability</span> <span class="kn">import</span> <span class="n">ExplainPreds</span>
-
-            <span class="k">return</span> <span class="n">ExplainPreds</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">fp2d</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">:</span>
-            <span class="c1"># Call flatten() as a workaround for 1d vs 2d output issue:</span>
-            <span class="c1"># https://github.com/scikit-learn/scikit-learn/issues/5058</span>
-            <span class="c1"># See also https://stackoverflow.com/a/56013213</span>
-            <span class="k">return</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">fp2d</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># For classification, return probability of the second class (index 1).</span>
-            <span class="c1"># Second class is supposed to be True or &quot;active&quot; or &quot;1&quot;.</span>
-            <span class="k">return</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">fp2d</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
-
-    <span class="c1"># ChemProp models write query inputs to file and do their own batching.</span>
-    <span class="c1"># We send all for prediction in this function for this reason.</span>
-    <span class="k">def</span> <span class="nf">predict_all</span><span class="p">(</span><span class="n">smiles_</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">uncert</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict_uncert</span><span class="p">(</span><span class="n">smiles_</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">explain</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">optunaz.explainability</span> <span class="kn">import</span> <span class="n">ExplainPreds</span>
-
-            <span class="k">return</span> <span class="n">ExplainPreds</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">smiles_</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">smiles_</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">smiles_</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
-
-    <span class="c1"># ChemProp predictions/Smiles descriptors go to predict_all</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">SmilesBasedDescriptor</span><span class="p">)</span> <span class="ow">or</span> <span class="n">explain</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">predict_all</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
-    <span class="c1"># All other descriptors/estimators go to predict_one</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">list_of_fps</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span>
-            <span class="n">smiles</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">return_failed_idx</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="n">list_of_predictions</span> <span class="o">=</span> <span class="p">[</span><span class="n">predict_one</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">list_of_fps</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">list_of_predictions</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="predict_from_smiles_and_descriptor"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.predict_from_smiles_and_descriptor">[docs]</a><span class="k">def</span> <span class="nf">predict_from_smiles_and_descriptor</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">mode</span><span class="p">:</span> <span class="n">ModelMode</span><span class="p">,</span> <span class="n">uncert</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">explain</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns prediction for a given SMILES string or a list of strings.</span>
-
-<span class="sd">    For classification models,</span>
-<span class="sd">    returns probability of class True (the second class)</span>
-<span class="sd">    instead of just a binary value.</span>
-
-<span class="sd">    This function will become a method of the predictive model.</span>
-
-<span class="sd">    Deprecated, use &#39;QSARtunaModel.predict_from_smiles()&#39; instead.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_descriptor</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">uncert</span><span class="p">,</span> <span class="n">explain</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="add_predict_from_smiles"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.add_predict_from_smiles">[docs]</a><span class="k">def</span> <span class="nf">add_predict_from_smiles</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">:</span> <span class="n">AnyDescriptor</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">ModelMode</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds method &#39;predict_from_smiles&#39; to a predictive model.</span>
-
-<span class="sd">    Deprecated, use &#39;QSARtunaModel.predict_from_smiles()&#39; instead.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># side info replaced so side info not required for inference</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">SmilesAndSideInfoFromFile</span><span class="p">):</span>
-        <span class="n">descriptor</span> <span class="o">=</span> <span class="n">SmilesFromFile</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
-    <span class="c1"># Add descriptor - to store in the model for convenience.</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">mol_descriptor</span> <span class="o">=</span> <span class="n">descriptor</span>
-
-    <span class="k">def</span> <span class="nf">predict_from_smiles_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">mode_</span><span class="o">=</span><span class="n">mode</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">predict_from_smiles_and_descriptor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">mode_</span><span class="p">)</span>
-
-    <span class="n">model</span><span class="o">.</span><span class="n">predict_from_smiles</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">predict_from_smiles_method</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">model</span></div>
 
 
 <div class="viewcode-block" id="Predictor"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.Predictor">[docs]</a><span class="k">class</span> <span class="nc">Predictor</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
@@ -277,7 +157,7 @@
         <span class="n">explain</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">transform</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
         <span class="n">aux_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns model predictions for the input SMILES strings.</span>
 
 <span class="sd">        If some input smiles are invalid for the descriptor,</span>
@@ -285,22 +165,21 @@
 <span class="sd">        those None values are not sent to the model;</span>
 <span class="sd">        instead, NaN is used as predicted values for those invalid SMILES.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Single SMILES string - wrap into list.</span>
             <span class="n">smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">smiles</span><span class="p">]</span>
 
         <span class="n">descriptors</span><span class="p">,</span> <span class="n">failed_idx</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">descriptor</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">d_idx</span> <span class="k">for</span> <span class="n">d_idx</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span> <span class="k">if</span> <span class="n">d_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">failed_idx</span><span class="p">]</span>
+        <span class="p">)</span>  <span class="c1"># Mask of valid entries.</span>
         <span class="k">if</span> <span class="n">aux</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a_idx</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span> <span class="k">if</span> <span class="n">a_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">failed_idx</span><span class="p">]</span>
-            <span class="p">)</span>
+            <span class="n">aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">aux</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aux_transform</span><span class="p">,</span> <span class="n">AnyAuxTransformer</span><span class="p">):</span>
                 <span class="n">aux</span> <span class="o">=</span> <span class="n">aux_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">aux</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">aux</span> <span class="o">=</span> <span class="n">aux</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">aux</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">descriptors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">descriptors</span><span class="p">,</span> <span class="n">aux</span><span class="p">))</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">d_idx</span> <span class="k">for</span> <span class="n">d_idx</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span> <span class="k">if</span> <span class="n">d_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">failed_idx</span>
-        <span class="p">]</span>  <span class="c1"># Mask of valid entries.</span>
 
         <span class="c1"># First, initialize output with NaN, in case there are invalid entries.</span>
         <span class="c1"># Later we will overwrite valid entries with model predictions.</span>
@@ -311,34 +190,61 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">output</span>
 
-        <span class="k">if</span> <span class="n">uncert</span><span class="p">:</span>
-            <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_uncert</span><span class="p">(</span><span class="n">descriptors</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">explain</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">explain</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">optunaz.explainability</span> <span class="kn">import</span> <span class="n">ExplainPreds</span>
 
             <span class="k">return</span> <span class="n">ExplainPreds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span> <span class="n">descriptors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">descriptor</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">uncert</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span> <span class="s2">&quot;num_workers&quot;</span><span class="p">):</span>
+                <span class="n">predictions</span><span class="p">,</span> <span class="n">unc_predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_uncert</span><span class="p">(</span>
+                    <span class="n">descriptors</span>
+                <span class="p">)</span>
+                <span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">unc_predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_uncert</span><span class="p">(</span><span class="n">descriptors</span><span class="p">)</span>
+            <span class="n">unc_output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">unc_predictions</span> <span class="o">=</span> <span class="n">unc_predictions</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">:</span>
             <span class="c1"># Call flatten() as a workaround for 1d vs 2d output issue:</span>
             <span class="c1"># https://github.com/scikit-learn/scikit-learn/issues/5058</span>
             <span class="c1"># See also https://stackoverflow.com/a/56013213</span>
-            <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">descriptors</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span> <span class="s2">&quot;num_workers&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">uncert</span><span class="p">:</span>
+                <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">descriptors</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-            <span class="c1"># if transform is default, we use self.transform from optconfig, which can also be None</span>
+            <span class="c1"># If transform is &quot;default&quot;, we use self.transform from optconfig, which is allowed to be None</span>
+            <span class="c1"># Setting transform to False would avoid transforming</span>
             <span class="k">if</span> <span class="n">transform</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">ModelDataTransform</span><span class="p">):</span>
+                    <span class="c1"># Allow PTR to reverse transform, if set</span>
+                    <span class="n">predictions</span> <span class="o">=</span> <span class="n">perform_ptr</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">predictions</span>
+                    <span class="p">)</span>
+                    <span class="c1"># Log transform can then be performed</span>
                     <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">reverse_transform</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">uncert</span><span class="p">:</span>
+                        <span class="n">unc_predictions</span> <span class="o">=</span> <span class="n">perform_ptr</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">unc_predictions</span>
+                        <span class="p">)</span>
+                        <span class="n">unc_predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">reverse_transform</span><span class="p">(</span>
+                            <span class="n">unc_predictions</span>
+                        <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">transform</span> <span class="o">!=</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No transform function for model&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># For classification, return probability of the second class (index 1).</span>
             <span class="c1"># Second class is supposed to be True or &quot;active&quot; or &quot;1&quot;.</span>
-            <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">descriptors</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span> <span class="s2">&quot;num_workers&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">uncert</span><span class="p">:</span>
+                <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">descriptors</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Overwrite valid entries with model predictions.</span>
         <span class="n">output</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span>
 
-        <span class="k">return</span> <span class="n">output</span></div></div>
+        <span class="k">if</span> <span class="n">uncert</span><span class="p">:</span>
+            <span class="n">unc_output</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">unc_predictions</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">unc_output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">output</span></div></div>
 
 
 <div class="viewcode-block" id="get_metadata"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.get_metadata">[docs]</a><span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="n">buildconfig</span><span class="p">,</span> <span class="n">train_scores</span><span class="p">,</span> <span class="n">test_scores</span><span class="p">):</span>
@@ -365,8 +271,8 @@
 
 
 <div class="viewcode-block" id="get_transform"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.get_transform">[docs]</a><span class="k">def</span> <span class="nf">get_transform</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="c1"># return modeldatatransform when applied, to reverse the transform (as long as not PTR)</span>
-    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">log_transform</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">probabilistic_threshold_representation</span><span class="p">:</span>
+    <span class="c1"># return modeldatatransform when applied for a reverse transform</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">log_transform</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">optunaz.utils.preprocessing.transform</span> <span class="kn">import</span> <span class="n">ModelDataTransform</span>
 
         <span class="n">transform</span> <span class="o">=</span> <span class="n">ModelDataTransform</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
@@ -375,6 +281,26 @@
             <span class="n">conversion</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">log_transform_unit_conversion</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">transform</span></div>
+
+
+<div class="viewcode-block" id="perform_ptr"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.perform_ptr">[docs]</a><span class="k">def</span> <span class="nf">perform_ptr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">predictions</span><span class="p">):</span>
+    <span class="c1"># return PTR transform when applied for a reverse transform</span>
+    <span class="n">build_data</span> <span class="o">=</span> <span class="n">serialize</span><span class="p">(</span><span class="n">metadata</span><span class="p">)[</span><span class="s2">&quot;buildconfig&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">build_data</span><span class="p">[</span><span class="s2">&quot;probabilistic_threshold_representation&quot;</span><span class="p">]:</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">build_data</span><span class="p">[</span><span class="s2">&quot;probabilistic_threshold_representation_threshold&quot;</span><span class="p">]</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">build_data</span><span class="p">[</span><span class="s2">&quot;probabilistic_threshold_representation_std&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">ModelDataTransform</span><span class="p">):</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">std</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">optunaz.utils.preprocessing.transform</span> <span class="kn">import</span> <span class="n">PTRTransform</span>
+
+        <span class="n">ptr_transform</span> <span class="o">=</span> <span class="n">PTRTransform</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">=</span><span class="n">std</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ptr_transform</span><span class="o">.</span><span class="n">reverse_transform</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">predictions</span></div>
 
 
 <div class="viewcode-block" id="wrap_model"><a class="viewcode-back" href="../../optunaz.html#optunaz.model_writer.wrap_model">[docs]</a><span class="k">def</span> <span class="nf">wrap_model</span><span class="p">(</span>
@@ -394,13 +320,7 @@
     <span class="n">filename</span><span class="p">,</span>
     <span class="n">train_scores</span><span class="p">,</span>
     <span class="n">test_scores</span><span class="p">,</span>
-    <span class="n">persist_as</span><span class="p">:</span> <span class="n">ModelPersistenceMode</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="c1"># Argument &#39;persist_as&#39; became unused as of now.</span>
-    <span class="c1"># We can deprecate/drop it,</span>
-    <span class="c1"># or keep it in case we add other persistence modes,</span>
-    <span class="c1"># like &quot;upload to PIP&quot; or &quot;ONNX&quot;.</span>
-
     <span class="n">descriptor</span> <span class="o">=</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">descriptor</span>
     <span class="c1"># side info replaced so side info not required for inference</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">SmilesAndSideInfoFromFile</span><span class="p">):</span>
@@ -419,7 +339,10 @@
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">wrap_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">aux_transform</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
 
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">pass</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>

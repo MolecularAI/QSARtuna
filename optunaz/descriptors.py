@@ -4,7 +4,7 @@ import logging
 import os
 import pathlib
 from dataclasses import dataclass, field
-from typing import List, Union, Type, Optional, Any, Tuple
+from typing import List, Union, Type, Optional, Any, Tuple, Dict
 from functools import partial
 
 import apischema
@@ -23,14 +23,16 @@ from rdkit.Chem.Scaffolds.MurckoScaffold import (
     MakeScaffoldGeneric,
 )
 from rdkit.Avalon import pyAvalonTools
-from rdkit.Chem import AllChem, Descriptors, MACCSkeys
+from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdFingerprintGenerator
 from rdkit.DataStructs.cDataStructs import (
     ExplicitBitVect,
     SparseBitVect,
     UIntSparseIntVect,
 )
+
 from rdkit.ML.Descriptors.MoleculeDescriptors import MolecularDescriptorCalculator
-from jazzy.api import molecular_vector_from_smiles, JazzyError
+from jazzy.api import molecular_vector_from_smiles
+from jazzy.exception import JazzyError
 from sklearn import preprocessing
 from typing_extensions import Literal, Annotated
 from joblib import Parallel, delayed, effective_n_jobs
@@ -138,13 +140,19 @@ class MolDescriptor(NameParameterDataclass, abc.ABC):
 
         Can be used to generate descriptors in parallel and/or with a cache"""
 
+        def try_cache(mol, cache=cache):
+            try:
+                return cache.cache(self.calculate_from_smi)(mol)
+            except (FileNotFoundError, OSError):  # handle when cleared cache not found
+                return self.calculate_from_smi(mol)
+
         if cache is not None:
             # Scaled and Composite descriptors accept cache in order to sub-cache nested calculate_from_smi
             if "cache" in self.calculate_from_smi.__code__.co_varnames:
                 _calculate_from_smi = partial(self.calculate_from_smi, cache=cache)
             # All other descriptors cache calculate_from_smi directly
             else:
-                _calculate_from_smi = cache.cache(self.calculate_from_smi)
+                _calculate_from_smi = partial(try_cache, cache=cache)
             if n_cores is None:
                 if hasattr(cache, "n_cores"):
                     n_cores = effective_n_jobs(cache.n_cores)
@@ -334,6 +342,46 @@ class ECFP_counts(RdkitDescriptor):
 
 
 @dataclass
+class PathFP(RdkitDescriptor):
+    """PathFP
+
+    Path fingerprint based on RDKit FP Generator.\n
+
+    This is a Path fingerprint.
+    """
+
+    @apischema.type_name("PathFPParams")
+    @dataclass
+    class Parameters:
+        maxPath: Annotated[
+            int,
+            schema(
+                min=1,
+                title="maxPath",
+                description="Maximum path for the fingerprint",
+            ),
+        ] = field(default=3)
+        fpSize: Annotated[
+            int,
+            schema(
+                min=1,
+                title="fpSize",
+                description="Number size of the fingerprint, sometimes also called bit size.",
+            ),
+        ] = field(default=2048)
+
+    name: Literal["PathFP"]
+    parameters: Parameters
+
+    def calculate_from_mol(self, mol: Chem.Mol):
+        rdkit_gen = rdFingerprintGenerator.GetRDKitFPGenerator(
+            maxPath=self.parameters.maxPath, fpSize=self.parameters.fpSize
+        )
+        fp = rdkit_gen.GetFingerprint(mol)
+        return numpy_from_rdkit(fp, dtype=np.int8)
+
+
+@dataclass
 class MACCS_keys(RdkitDescriptor):
     """MACCS
 
@@ -462,6 +510,7 @@ class UnscaledJazzyDescriptors(MolDescriptor):
     @dataclass
     class Parameters:
         jazzy_names: Optional[List[str]] = None
+        jazzy_filters: Optional[Dict] = None
 
     name: Literal["UnscaledJazzyDescriptors"] = "UnscaledJazzyDescriptors"
     parameters: Parameters = Parameters()
@@ -470,10 +519,9 @@ class UnscaledJazzyDescriptors(MolDescriptor):
         mol = Chem.MolFromSmiles(smi)
         if mol is None:
             return True
-        PRE_FILTERS = [("NumHAcceptors", 25), ("NumHDonors", 25), ("MolWt", 1000)]
         return any(
             getattr(Descriptors, descriptor)(mol) > threshold
-            for descriptor, threshold in PRE_FILTERS
+            for descriptor, threshold in self.parameters.jazzy_filters.items()
         )
 
     def _jazzy_descriptors(self, smi):
@@ -492,14 +540,18 @@ class UnscaledJazzyDescriptors(MolDescriptor):
             self.parameters.jazzy_names = sorted(
                 list(molecular_vector_from_smiles("C", minimisation_method="MMFF94"))
             )
+        if self.parameters.jazzy_filters is None:
+            self.parameters.jazzy_filters = {
+                "NumHAcceptors": 25,
+                "NumHDonors": 25,
+                "MolWt": 1000,
+            }
 
     def calculate_from_smi(self, smi: str) -> np.ndarray | None:
-        from jazzy.utils import JazzyError
-
         try:
             d = self._jazzy_descriptors(smi)
             d = [d[jazzy_name] for jazzy_name in self.parameters.jazzy_names]
-        except (JazzyError, TypeError, np.ComplexWarning):
+        except (JazzyError, TypeError):
             return None
         if np.isnan(d).any():
             return None
@@ -508,13 +560,38 @@ class UnscaledJazzyDescriptors(MolDescriptor):
 
 
 @dataclass
+class UnscaledZScalesDescriptors(MolDescriptor):
+    """Unscaled Z-Scales.
+
+    Compute the Z-scales of a peptide SMILES.
+    """
+
+    @apischema.type_name("UnscaledZScalesDescParams")
+    @dataclass
+    class Parameters:
+        pass
+
+    name: Literal["UnscaledZScalesDescriptors"] = "UnscaledZScalesDescriptors"
+    parameters: Parameters = Parameters()
+
+    def calculate_from_smi(self, smi: str) -> list[str | list[None]] | None:
+        from chemistry_adapters import AminoAcidAdapter
+        from peptides import Peptide
+
+        try:
+            sequence = AminoAcidAdapter().convert_smiles_to_amino_acid_sequence(smi)
+            fp = list(Peptide(sequence).z_scales())
+        except KeyError:
+            return None  # SMILES to aa sequence failed
+        return fp
+
+
+@dataclass
 class PrecomputedDescriptorFromFile(MolDescriptor):
     """Precomputed descriptors.
 
-    Experimental implementation of precomputed descriptors.
-
     Users can supply a CSV file of feature vectors to use as descriptors, with headers on the first line. Each row
-    corresponds to a compound in the training set, followed by a column containing comma-separated vectors describing
+    corresponds to a compound in the training set, followed by a column that may have comma-separated vectors describing
     that molecule.
     """
 
@@ -550,14 +627,17 @@ class PrecomputedDescriptorFromFile(MolDescriptor):
     def calculate_from_smi(self, smi: str) -> np.ndarray:
         file = self.parameters.file
         df = pd.read_csv(file, skipinitialspace=True)
-        rows = df[df[self.parameters.input_column].str.replace(">>", ".") == smi]
+        rows = df[df[self.parameters.input_column].str.replace(">>", ".") == smi][
+            [self.parameters.input_column, self.parameters.response_column]
+        ].drop_duplicates()
         if len(rows) < 1:
-            raise ValueError(
+            logger.warning(
                 f"Could not find descriptor for {smi} in file {self.parameters.file}."
             )
+            return None
         if len(rows) > 1:
             logger.warning(
-                f"Multiple descriptors found for {smi}, taking the first one."
+                f"Multiple (conflicting) descriptors found for {smi}, taking the first one."
             )
         descriptor_iloc = rows[self.parameters.response_column].iloc[0]
         try:
@@ -679,10 +759,12 @@ AnyUnscaledDescriptor = Union[
     Avalon,
     ECFP,
     ECFP_counts,
+    PathFP,
     MACCS_keys,
     PrecomputedDescriptorFromFile,
     UnscaledPhyschemDescriptors,
     UnscaledJazzyDescriptors,
+    UnscaledZScalesDescriptors,
 ]
 
 
@@ -838,6 +920,7 @@ class JazzyDescriptors(ScaledDescriptor):
     @dataclass
     class Parameters:
         jazzy_names: Optional[List[str]] = None
+        jazzy_filters: Optional[Dict] = None
         scaler: Union[
             FittedSklearnScaler,
             UnfittedSklearnScaler,
@@ -853,9 +936,19 @@ class JazzyDescriptors(ScaledDescriptor):
             self.parameters.jazzy_names = sorted(
                 list(molecular_vector_from_smiles("C", minimisation_method="MMFF94"))
             )
+
+        if self.parameters.jazzy_filters is None:
+            self.parameters.jazzy_filters = {
+                "NumHAcceptors": 25,
+                "NumHDonors": 25,
+                "MolWt": 1200,
+            }
+
         self.parameters.descriptor = UnscaledJazzyDescriptors.new(
-            jazzy_names=self.parameters.jazzy_names
+            jazzy_names=self.parameters.jazzy_names,
+            jazzy_filters=self.parameters.jazzy_filters,
         )
+
         if (
             isinstance(self.parameters.scaler, UnfittedSklearnScaler)
             and self.parameters.scaler.mol_data.file_path is not None
@@ -866,13 +959,49 @@ class JazzyDescriptors(ScaledDescriptor):
                 logger.warning("JazzyDescriptors scaling failed")
 
 
+@dataclass
+class ZScalesDescriptors(ScaledDescriptor):
+    """Scaled Z-Scales descriptors.
+
+    Z-scales were proposed in Sandberg et al (1998) based on physicochemical properties of proteogenic and
+    non-proteogenic amino acids, including NMR data and thin-layer chromatography (TLC) data. Refer to
+    doi:10.1021/jm9700575 for the original publication. These descriptors capture 1. lipophilicity, 2. steric
+    properties (steric bulk and polarizability), 3. electronic properties (polarity and charge),
+    4. electronegativity (heat of formation, electrophilicity and hardness) and 5. another electronegativity.
+    This fingerprint is the computed average of Z-scales of all the amino acids in the peptide.
+    """
+
+    @apischema.type_name("ZScalesDescParams")
+    @dataclass
+    class Parameters:
+        scaler: Union[
+            FittedSklearnScaler,
+            UnfittedSklearnScaler,
+        ] = UnfittedSklearnScaler()
+        descriptor: AnyUnscaledDescriptor = UnscaledZScalesDescriptors
+
+    name: Literal["ZScalesDescriptors"] = "ZScalesDescriptors"
+    parameters: Parameters = Parameters()
+
+    def __post_init__(self):
+        self.parameters.descriptor = UnscaledZScalesDescriptors.new()
+
+        if (
+            isinstance(self.parameters.scaler, UnfittedSklearnScaler)
+            and self.parameters.scaler.mol_data.file_path is not None
+        ):
+            try:
+                self._ensure_scaler_is_fitted()
+            except ScalingFittingError:
+                logger.warning("ZScales scaling failed")
+
+
 CompositeCompatibleDescriptor = Union[
     AnyUnscaledDescriptor,
     ScaledDescriptor,
     PhyschemDescriptors,
     JazzyDescriptors,
-    UnscaledPhyschemDescriptors,
-    UnscaledJazzyDescriptors,
+    ZScalesDescriptors,
 ]
 
 
@@ -897,7 +1026,7 @@ class CompositeDescriptor(MolDescriptor):
             ds = []
             for d in self.parameters.descriptors:
                 try:
-                    # Copmosite descriptors comprising scaled descriptors pass through cache
+                    # Composite descriptors comprising scaled descriptors pass through cache
                     ds.append(d.calculate_from_smi(smi, cache=cache))
                 except TypeError:
                     # All other descriptors use the cache directly and do not expect cache as parameter
@@ -1025,24 +1154,16 @@ def descriptor_from_config(
         raise NoValidSmiles(
             f"Descriptor {descriptor} cannot generate empty smiles: {smiles}"
         )
-    if isinstance(descriptor, SmilesBasedDescriptor):
-        if return_failed_idx:
-            return (
-                np.array(
-                    [descriptor.calculate_from_smi(smi) for smi in smiles], dtype=object
-                ),
-                [],
-            )
-        else:
-            return [descriptor.calculate_from_smi(smi) for smi in smiles]
-    else:
-        descriptors = descriptor.parallel_compute_descriptor(smiles, cache=cache)
+    descriptors = descriptor.parallel_compute_descriptor(smiles, cache=cache)
     if return_failed_idx:
         list_of_arrays = []
         failed_idx = []
         for d_idx, d in enumerate(descriptors):
-            # we use pd.isnull instead of np.isnan here since np gives TypeError for objects/strings
-            if d is not None and not pd.isnull(np.array(d)).any():
+            if d is None:
+                failed_idx.append(d_idx)
+            elif isinstance(descriptor, SmilesBasedDescriptor):
+                list_of_arrays.append(d)
+            elif not pd.isnull(np.array(d)).any():
                 list_of_arrays.append(d)
             else:
                 failed_idx.append(d_idx)

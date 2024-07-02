@@ -10,6 +10,7 @@
 
 import numpy as np
 
+
 # Some elementary functions to speak the same language as the paper
 # (at some point we'll just replace the occurrence of the calls with the function body itself)
 def push(x, stack):

@@ -48,6 +48,17 @@
       }
     },
     {
+      "name": "KNeighborsRegressor",
+      "parameters": {
+        "n_neighbors": {
+          "low": 1,
+          "high": 3
+        },
+        "weights": ["uniform", "distance"],
+        "metric": ["minkowski", "euclidean", "manhattan"]
+      }
+    },
+    {
       "name": "SVR",
       "parameters": {
         "C": {

@@ -37,6 +37,17 @@
         "max_features": ["sqrt", "log2"]
       }
     },
+    {
+      "name": "KNeighborsClassifier",
+      "parameters": {
+        "n_neighbors": {
+          "low": 1,
+          "high": 3
+        },
+        "weights": ["uniform", "distance"],
+        "metric": ["minkowski", "euclidean", "manhattan"]
+      }
+    },
     { "name": "SVC",
       "parameters": {
         "C": {

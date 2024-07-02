@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 import hashlib
 
+
 def mkdict(obj: Any) -> Dict:
     # To recursively convert nested dataclasses to dict, use json machinery.
 
@@ -52,6 +53,7 @@ def remove_failed_idx(failed_idx, y_, smis, auxs) -> tuple[Any, Any, Any]:
     else:
         auxs = None
     return y_, smis, auxs
+
 
 def md5_hash(dictionary: Dict[str, Any]) -> str:
     """MD5 hash of an optimisation algorithm or a model metadata dictionary"""

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.utils &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -83,6 +85,7 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
+
 
 <div class="viewcode-block" id="mkdict"><a class="viewcode-back" href="../../optunaz.utils.html#optunaz.utils.mkdict">[docs]</a><span class="k">def</span> <span class="nf">mkdict</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="c1"># To recursively convert nested dataclasses to dict, use json machinery.</span>
@@ -130,6 +133,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">auxs</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">y_</span><span class="p">,</span> <span class="n">smis</span><span class="p">,</span> <span class="n">auxs</span></div>
+
 
 <div class="viewcode-block" id="md5_hash"><a class="viewcode-back" href="../../optunaz.utils.html#optunaz.utils.md5_hash">[docs]</a><span class="k">def</span> <span class="nf">md5_hash</span><span class="p">(</span><span class="n">dictionary</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MD5 hash of an optimisation algorithm or a model metadata dictionary&quot;&quot;&quot;</span>

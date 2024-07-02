@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils.enums.configuration_enum &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.utils.enums.configuration_enum &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -118,6 +120,11 @@
     <span class="n">DESCRIPTORS_ECFPCOUNTS_RADIUS</span> <span class="o">=</span> <span class="s2">&quot;radius&quot;</span>
     <span class="n">DESCRIPTORS_ECFPCOUNTS_USEFEATURES</span> <span class="o">=</span> <span class="s2">&quot;useFeatures&quot;</span>
 
+    <span class="c1"># PathFP</span>
+    <span class="n">DESCRIPTORS_PATHFP</span> <span class="o">=</span> <span class="s2">&quot;PathFP&quot;</span>
+    <span class="n">DESCRIPTORS_PATHFP_MAXPATH</span> <span class="o">=</span> <span class="s2">&quot;maxPath&quot;</span>
+    <span class="n">DESCRIPTORS_PATHFP_FPSIZE</span> <span class="o">=</span> <span class="s2">&quot;fpSize&quot;</span>
+
     <span class="c1"># MACCS_keys</span>
     <span class="n">DESCRIPTORS_MACCSKEYS</span> <span class="o">=</span> <span class="s2">&quot;MACCS_keys&quot;</span>
 
@@ -136,6 +143,10 @@
     <span class="n">DESCRIPTORS_PRECOMPUTED_FILE</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span>
     <span class="n">DESCRIPTORS_PRECOMPUTED_INPUT_COLUMNN</span> <span class="o">=</span> <span class="s2">&quot;input_column&quot;</span>
     <span class="n">DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN</span> <span class="o">=</span> <span class="s2">&quot;response_column&quot;</span>
+
+    <span class="c1"># ZScales</span>
+    <span class="n">DESCRIPTORS_UNSC_ZSCALES</span> <span class="o">=</span> <span class="s2">&quot;UnscaledZScalesDescriptors&quot;</span>
+    <span class="n">DESCRIPTORS_ZSCALES</span> <span class="o">=</span> <span class="s2">&quot;ZScalesDescriptors&quot;</span>
 
     <span class="c1"># Smiles</span>
     <span class="n">DESCRIPTORS_SMILES</span> <span class="o">=</span> <span class="s2">&quot;SmilesFromFile&quot;</span>
@@ -196,6 +207,13 @@
     <span class="n">ALGORITHMS_LASSO</span> <span class="o">=</span> <span class="s2">&quot;Lasso&quot;</span>
     <span class="n">ALGORITHMS_LASSO_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;alpha&quot;</span>
 
+    <span class="c1"># algorithm: KNeighbors</span>
+    <span class="n">ALGORITHMS_KNEIGHBORSCLASSIFIER</span> <span class="o">=</span> <span class="s2">&quot;KNeighborsClassifier&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORSREGRESSOR</span> <span class="o">=</span> <span class="s2">&quot;KNeighborsRegressor&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORS_N_NEIGHBORS</span> <span class="o">=</span> <span class="s2">&quot;n_neighbors&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORS_METRIC</span> <span class="o">=</span> <span class="s2">&quot;metric&quot;</span>
+    <span class="n">ALGORITHMS_KNEIGHBORS_WEIGHTS</span> <span class="o">=</span> <span class="s2">&quot;weights&quot;</span>
+
     <span class="c1"># algorithm: Ridge</span>
     <span class="n">ALGORITHMS_RIDGE</span> <span class="o">=</span> <span class="s2">&quot;Ridge&quot;</span>
     <span class="n">ALGORITHMS_RIDGE_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;alpha&quot;</span>
@@ -246,11 +264,13 @@
     <span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span> <span class="o">=</span> <span class="s2">&quot;features_generator&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE</span> <span class="o">=</span> <span class="s2">&quot;ffn_hidden_size&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS</span> <span class="o">=</span> <span class="s2">&quot;ffn_num_layers&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_FRZN</span> <span class="o">=</span> <span class="s2">&quot;frzn&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span> <span class="o">=</span> <span class="s2">&quot;final_lr_ratio_exp&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_HIDDEN_SIZE</span> <span class="o">=</span> <span class="s2">&quot;hidden_size&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_NUM_ITERS</span> <span class="o">=</span> <span class="s2">&quot;num_iters&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP</span> <span class="o">=</span> <span class="s2">&quot;init_lr_ratio_exp&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span> <span class="o">=</span> <span class="s2">&quot;max_lr_exp&quot;</span>
+    <span class="n">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL</span> <span class="o">=</span> <span class="s2">&quot;pretrained_model&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL</span> <span class="o">=</span> <span class="s2">&quot;search_parameter_level&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS</span> <span class="o">=</span> <span class="s2">&quot;startup_random_iters&quot;</span>
     <span class="n">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO</span> <span class="o">=</span> <span class="s2">&quot;warmup_epochs_ratio&quot;</span>
@@ -265,7 +285,7 @@
 
     <span class="c1"># algorithm: Mapie specific</span>
     <span class="n">ALGORITHMS_MAPIE</span> <span class="o">=</span> <span class="s2">&quot;Mapie&quot;</span>
-    <span class="n">ALGORITHMS_MAPIE_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;alpha&quot;</span>
+    <span class="n">ALGORITHMS_MAPIE_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;mapie_alpha&quot;</span>
 
     <span class="c1"># try to find the internal value and return</span>
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>

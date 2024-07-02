@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.three_step_opt_build_merge &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.three_step_opt_build_merge &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -78,6 +80,7 @@
   <h1>Source code for optunaz.three_step_opt_build_merge</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">math</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">serialize</span>
@@ -93,10 +96,9 @@
     <span class="n">ChemPropClassifier</span><span class="p">,</span>
     <span class="n">ChemPropRegressor</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">optunaz.model_writer</span> <span class="kn">import</span> <span class="n">save_model</span><span class="p">,</span> <span class="n">ModelPersistenceMode</span>
+<span class="kn">from</span> <span class="nn">optunaz.model_writer</span> <span class="kn">import</span> <span class="n">save_model</span>
 <span class="kn">from</span> <span class="nn">optunaz.objective</span> <span class="kn">import</span> <span class="n">Objective</span>
-<span class="kn">from</span> <span class="nn">optunaz.utils.enums</span> <span class="kn">import</span> <span class="n">StudyUserAttrs</span>
-<span class="kn">from</span> <span class="nn">optunaz.utils.mlflow</span> <span class="kn">import</span> <span class="n">MLflowCallback</span>
+<span class="kn">from</span> <span class="nn">optunaz.utils.enums</span> <span class="kn">import</span> <span class="n">StudyUserAttrs</span><span class="p">,</span> <span class="n">TrialParams</span>
 <span class="kn">from</span> <span class="nn">optunaz.utils.tracking</span> <span class="kn">import</span> <span class="n">InternalTrackingCallback</span><span class="p">,</span> <span class="n">track_build</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -139,7 +141,10 @@
 <span class="sd">    A Check is performed to ensure any parameters outside valid Optuna subspace are popped from fixed parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">optunaz.algorithms.chem_prop</span> <span class="kn">import</span> <span class="n">BaseChemProp</span>
+    <span class="kn">from</span> <span class="nn">optunaz.config.build_from_opt</span> <span class="kn">import</span> <span class="n">encode_name</span>
+    <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
+    <span class="n">_encode_name</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">encode_name</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">hash</span><span class="p">)</span>
     <span class="n">base_cp</span> <span class="o">=</span> <span class="n">BaseChemProp</span><span class="p">()</span>
     <span class="n">fixed_params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">param</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">base_cp</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
@@ -157,7 +162,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">fixed_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">thisattr</span><span class="p">]:</span>
                 <span class="n">fixed_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">fixed_params</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;algorithm_name&quot;</span><span class="p">:</span> <span class="n">alg</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span></div>
+    <span class="n">fixed_params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">_encode_name</span><span class="p">(</span><span class="n">param</span><span class="p">):</span> <span class="n">value</span> <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fixed_params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>  <span class="c1"># add algo hash</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="o">**</span><span class="n">fixed_params</span><span class="p">,</span>
+        <span class="o">**</span><span class="p">{</span>
+            <span class="s2">&quot;algorithm_name&quot;</span><span class="p">:</span> <span class="n">alg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">alg</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">TrialParams</span><span class="o">.</span><span class="n">ALGORITHM_HASH</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">alg</span><span class="o">.</span><span class="n">hash</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="run_study"><a class="viewcode-back" href="../../optunaz.html#optunaz.three_step_opt_build_merge.run_study">[docs]</a><span class="k">def</span> <span class="nf">run_study</span><span class="p">(</span>
@@ -211,6 +225,8 @@
         <span class="n">study</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span><span class="s2">&quot;cache&quot;</span><span class="p">,</span> <span class="n">objective</span><span class="o">.</span><span class="n">cache</span><span class="p">)</span>
     <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">optconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">track_to_mlflow</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">optunaz.utils.mlflow</span> <span class="kn">import</span> <span class="n">MLflowCallback</span>
+
         <span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">MLflowCallback</span><span class="p">(</span><span class="n">optconfig</span><span class="o">=</span><span class="n">optconfig</span><span class="p">,</span> <span class="n">trial_number_offset</span><span class="o">=</span><span class="n">trial_number_offset</span><span class="p">)</span>
         <span class="p">)</span>
@@ -295,15 +311,19 @@
                 <span class="p">)</span>
                 <span class="c1"># manually set the distributions to avoid dynamic subspace error</span>
                 <span class="k">for</span> <span class="n">st_idx</span><span class="p">,</span> <span class="n">st</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">get_trials</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">distributions</span><span class="p">[</span><span class="s2">&quot;descriptor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="n">descript_dist</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">distributions</span><span class="p">[</span><span class="s2">&quot;algorithm_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="n">algo_dist</span>
-                    <span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">[</span><span class="n">st_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span>
-                <span class="c1"># set parameters for next chemprop study</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">distributions</span><span class="p">[</span><span class="s2">&quot;descriptor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="n">descript_dist</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">distributions</span><span class="p">[</span><span class="s2">&quot;algorithm_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="n">algo_dist</span>
+                        <span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">[</span><span class="n">st_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="k">pass</span>  <span class="c1"># skip trials that did not get a descriptor or algorithm choice</span>
+                <span class="c1"># set parameters for next chemprop study (currently share n chemprop trials with</span>
                 <span class="k">if</span> <span class="n">cfg_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_chemprop_shared_trials</span> <span class="o">=</span> <span class="n">n_chemprop_trials</span> <span class="o">/</span> <span class="mi">2</span>
                     <span class="n">studies</span> <span class="o">=</span> <span class="n">study</span>
                     <span class="n">trial_number_offset</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">get_trials</span><span class="p">())</span>
-                    <span class="n">n_startup_trials</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="n">n_trials</span> <span class="o">=</span> <span class="n">n_chemprop_trials</span>
+                    <span class="n">n_startup_trials</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">n_chemprop_shared_trials</span><span class="p">)</span>
+                    <span class="n">n_trials</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_chemprop_shared_trials</span><span class="p">)</span>
                 <span class="c1"># add the chemprop results to the existing study</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">studies</span><span class="o">.</span><span class="n">add_trials</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">)</span>
@@ -338,7 +358,6 @@
 <div class="viewcode-block" id="build_best"><a class="viewcode-back" href="../../optunaz.html#optunaz.three_step_opt_build_merge.build_best">[docs]</a><span class="k">def</span> <span class="nf">build_best</span><span class="p">(</span>
     <span class="n">buildconfig</span><span class="p">:</span> <span class="n">BuildConfig</span><span class="p">,</span>
     <span class="n">outfname</span><span class="p">,</span>
-    <span class="n">persist_as</span><span class="p">:</span> <span class="n">ModelPersistenceMode</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Memory</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Step 2. Build. Train a model with the best hyperparameters.&quot;&quot;&quot;</span>
@@ -350,7 +369,6 @@
         <span class="n">outfname</span><span class="p">,</span>
         <span class="n">train_scores</span><span class="p">,</span>
         <span class="n">test_scores</span><span class="p">,</span>
-        <span class="n">persist_as</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># print model characteristics</span>
@@ -368,7 +386,6 @@
 <div class="viewcode-block" id="build_merged"><a class="viewcode-back" href="../../optunaz.html#optunaz.three_step_opt_build_merge.build_merged">[docs]</a><span class="k">def</span> <span class="nf">build_merged</span><span class="p">(</span>
     <span class="n">buildconfig</span><span class="p">:</span> <span class="n">BuildConfig</span><span class="p">,</span>
     <span class="n">outfname</span><span class="p">,</span>
-    <span class="n">persist_as</span><span class="p">:</span> <span class="n">ModelPersistenceMode</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Memory</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Step 3. Merge datasets and re-train the model.&quot;&quot;&quot;</span>
@@ -382,7 +399,6 @@
         <span class="n">outfname</span><span class="p">,</span>
         <span class="n">train_scores</span><span class="p">,</span>
         <span class="n">test_scores</span><span class="p">,</span>
-        <span class="n">persist_as</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Print model characteristics.</span>

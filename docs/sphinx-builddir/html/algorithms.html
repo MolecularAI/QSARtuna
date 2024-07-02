@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Available algorithms &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>Available algorithms &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Available descriptors" href="descriptors.html" />
-    <link rel="prev" title="QSARtuna CLI Tutorial" href="notebooks/QSARtuna_Tutorial.html" /> 
+    <link rel="prev" title="QSARtuna CLI Tutorial" href="notebooks/QSARtuna_Tutorial.html" />
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,6 +52,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">List of available ML algorithms</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#adaboostclassifier">AdaBoostClassifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lasso">Lasso</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kneighborsclassifier">KNeighborsClassifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kneighborsregressor">KNeighborsRegressor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logisticregression">LogisticRegression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plsregression">PLSRegression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#randomforestclassifier">RandomForestClassifier</a></li>
@@ -65,12 +67,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#chempropclassifier">ChemPropClassifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#chemprophyperoptclassifier">ChemPropHyperoptClassifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#chemprophyperoptregressor">ChemPropHyperoptRegressor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chemprophyperoptregressorpretrained">ChemPropHyperoptRegressorPretrained</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#calibratedclassifiercvwithva">CalibratedClassifierCVWithVA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapie">Mapie</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -182,6 +187,72 @@ upon which the given solution is dependent.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.optconfig.Lasso.Parameters.LassoParametersAlpha">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LassoParametersAlpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#Lasso.Parameters.LassoParametersAlpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.Lasso.Parameters.LassoParametersAlpha" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="kneighborsclassifier">
+<h2>KNeighborsClassifier<a class="headerlink" href="#kneighborsclassifier" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.KNeighborsClassifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.optconfig.</span></span><span class="sig-name descname"><span class="pre">KNeighborsClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#KNeighborsClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.KNeighborsClassifier" title="Permalink to this definition"></a></dt>
+<dd><p>KNeighborsClassifier.</p>
+<p>Classifier implementing the k-nearest neighbors vote.</p>
+<p>The principle behind nearest neighbor methods is to find a predefined number of training samples closest in
+distance to the new point, and predict the label from these. The number of samples is a user-defined constant
+for k-nearest neighbor learning. Despite its simplicity, nearest neighbors is successful in a large number of
+classification problems</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.KNeighborsClassifier.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_neighbors=KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors(low=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high=10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#KNeighborsClassifier.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.KNeighborsClassifier.Parameters" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_neighbors</strong> (<a class="reference internal" href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors" title="optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors"><em>KNeighborsClassifierParametersN_Neighbors</em></a>) – Number of neighbors to use by default for kneighbors queries. - title: N Neighbors</p></li>
+<li><p><strong>weights</strong> (<em>List</em>) – Weight function used in prediction - title: Weights</p></li>
+<li><p><strong>metric</strong> (<em>List</em>) – Metric to use for distance computation.The default of “minkowski” results in the standard Euclidean distance - title: Metric</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KNeighborsClassifierParametersN_Neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="kneighborsregressor">
+<h2>KNeighborsRegressor<a class="headerlink" href="#kneighborsregressor" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.KNeighborsRegressor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.optconfig.</span></span><span class="sig-name descname"><span class="pre">KNeighborsRegressor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#KNeighborsRegressor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.KNeighborsRegressor" title="Permalink to this definition"></a></dt>
+<dd><p>KNeighborsRegressor.</p>
+<p>Regressor implementing the k-nearest neighbors vote.</p>
+<p>The principle behind nearest neighbor methods is to find a predefined number of training samples closest in
+distance to the new point, and predict the label from these. The number of samples is a user-defined constant
+for k-nearest neighbor learning. Despite its simplicity, nearest neighbors is successful in a large number of
+classification problems</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.KNeighborsRegressor.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_neighbors=KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors(low=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high=10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#KNeighborsRegressor.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.KNeighborsRegressor.Parameters" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_neighbors</strong> (<a class="reference internal" href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors" title="optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors"><em>KNeighborsRegressorParametersN_Neighbors</em></a>) – Number of neighbors to use by default for kneighbors queries. - title: N Neighbors</p></li>
+<li><p><strong>weights</strong> (<em>List</em>) – Weight function used in prediction - title: Weights</p></li>
+<li><p><strong>metric</strong> (<em>List</em>) – Metric to use for distance computation.The default of “minkowski” results in the standard Euclidean distance - title: Metric</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KNeighborsRegressorParametersN_Neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -782,6 +853,35 @@ by using sensible defaults from the authors; to do this run ChemProp with Num_It
 </dd></dl>
 
 </section>
+<section id="chemprophyperoptregressorpretrained">
+<h2>ChemPropHyperoptRegressorPretrained<a class="headerlink" href="#chemprophyperoptregressorpretrained" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.ChemPropRegressorPretrained">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.optconfig.</span></span><span class="sig-name descname"><span class="pre">ChemPropRegressorPretrained</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#ChemPropRegressorPretrained"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.ChemPropRegressorPretrained" title="Permalink to this definition"></a></dt>
+<dd><p>Chemprop Regressor from a pretrined model</p>
+<p>Pretraining can be carried out by supplying previously trained QSARtuna ChemProp PKL model.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs=ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs(low=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high=30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q=1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frzn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pretrained_model=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#ChemPropRegressorPretrained.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epochs</strong> (<a class="reference internal" href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs" title="optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs"><em>ChemPropParametersEpochs</em></a>) – Number of epochs to fine-tune the pretrained model on new data - title: epochs</p></li>
+<li><p><strong>frzn</strong> (<em>List</em>) – Decide which layers of the MPNN or FFN to freeze during transfer learning. - title: Frozen layers</p></li>
+<li><p><strong>pretrained_model</strong> (<em>str</em>) – Path to a pretrained QSARtuna pkl model - title: Pretrained Model</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ChemPropParametersEpochs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="calibratedclassifiercvwithva">
 <h2>CalibratedClassifierCVWithVA<a class="headerlink" href="#calibratedclassifiercvwithva" title="Permalink to this heading"></a></h2>
 <dl class="py class">
@@ -797,7 +897,7 @@ then used for calibration. For prediction, the base estimator, trained using all
 offers uncertainty prediction based on p0 vs. p1 discordance.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">estimator=typing.Union[optunaz.config.optconfig.AdaBoostClassifier,</span> <span class="pre">optunaz.config.optconfig.LogisticRegression,</span> <span class="pre">optunaz.config.optconfig.RandomForestClassifier,</span> <span class="pre">optunaz.config.optconfig.SVC,</span> <span class="pre">optunaz.config.optconfig.ChemPropClassifier,</span> <span class="pre">optunaz.config.optconfig.ChemPropHyperoptClassifier],</span> <span class="pre">ensemble=&lt;CalibratedClassifierCVEnsemble.TRUE:</span> <span class="pre">'True'&gt;,</span> <span class="pre">method=&lt;CalibratedClassifierCVMethod.ISOTONIC:</span> <span class="pre">'isotonic'&gt;,</span> <span class="pre">n_folds=2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CalibratedClassifierCVWithVA.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">estimator=typing.Union[optunaz.config.optconfig.AdaBoostClassifier,</span> <span class="pre">optunaz.config.optconfig.KNeighborsClassifier,</span> <span class="pre">optunaz.config.optconfig.LogisticRegression,</span> <span class="pre">optunaz.config.optconfig.RandomForestClassifier,</span> <span class="pre">optunaz.config.optconfig.SVC,</span> <span class="pre">optunaz.config.optconfig.ChemPropClassifier,</span> <span class="pre">optunaz.config.optconfig.ChemPropHyperoptClassifier],</span> <span class="pre">ensemble=&lt;CalibratedClassifierCVEnsemble.TRUE:</span> <span class="pre">'True'&gt;,</span> <span class="pre">method=&lt;CalibratedClassifierCVMethod.ISOTONIC:</span> <span class="pre">'isotonic'&gt;,</span> <span class="pre">n_folds=2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CalibratedClassifierCVWithVA.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -824,12 +924,12 @@ encompass both aleatoric and epistemic uncertainties and are backed by strong th
 conformal prediction methods.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.optconfig.Mapie.Parameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">typing.Union[optunaz.config.optconfig.Lasso,</span> <span class="pre">optunaz.config.optconfig.PLSRegression,</span> <span class="pre">optunaz.config.optconfig.RandomForestRegressor,</span> <span class="pre">optunaz.config.optconfig.Ridge,</span> <span class="pre">optunaz.config.optconfig.SVR,</span> <span class="pre">optunaz.config.optconfig.XGBRegressor,</span> <span class="pre">optunaz.config.optconfig.PRFClassifier]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#Mapie.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.Mapie.Parameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">typing.Union[optunaz.config.optconfig.Lasso,</span> <span class="pre">optunaz.config.optconfig.PLSRegression,</span> <span class="pre">optunaz.config.optconfig.RandomForestRegressor,</span> <span class="pre">optunaz.config.optconfig.KNeighborsRegressor,</span> <span class="pre">optunaz.config.optconfig.Ridge,</span> <span class="pre">optunaz.config.optconfig.SVR,</span> <span class="pre">optunaz.config.optconfig.XGBRegressor,</span> <span class="pre">optunaz.config.optconfig.PRFClassifier]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapie_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#Mapie.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.Mapie.Parameters" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>estimator</strong> (<em>Union</em>) – Base estimator to use - title: Estimator</p></li>
-<li><p><strong>alpha</strong> (<em>float</em>) – Alpha used to generate uncertainty estimates - minimum: 0.01, maximum: 0.99, title: Uncertainty alpha</p></li>
+<li><p><strong>mapie_alpha</strong> (<em>float</em>) – Alpha used to generate uncertainty estimates - minimum: 0.01, maximum: 0.99, title: Uncertainty alpha</p></li>
 </ul>
 </dd>
 </dl>

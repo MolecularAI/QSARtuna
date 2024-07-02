@@ -1,6 +1,7 @@
 import json
 from joblib import effective_n_jobs
 from typing import Union
+from functools import partial
 
 from apischema import deserialize, serialize
 from optuna import Study
@@ -21,12 +22,21 @@ from optunaz.utils.enums.configuration_enum import ConfigurationEnum
 _CE = ConfigurationEnum()
 
 
-def set_build_cache(study: Study, optconfig: OptimizationConfig):
+def set_build_cache(study: Study, optconfig: OptimizationConfig) -> Memory | None:
     """Set the cache to preexisting one from Optimisation, when the number of cores supports this"""
     if effective_n_jobs(optconfig.settings.n_jobs) > 1 and "cache" in study.user_attrs:
         return Memory(study.user_attrs["cache"], verbose=0)
     else:
         return None
+
+
+def remove_algo_hash(trial: FrozenTrial) -> FrozenTrial:
+    """Remove the hash from an Optuna algo param set"""
+    trial.params = {
+        param_name.split("__")[0]: param_value
+        for param_name, param_value in trial.params.items()
+    }
+    return trial
 
 
 def buildconfig_from_trial(study: Study, trial: FrozenTrial) -> BuildConfig:
@@ -37,6 +47,7 @@ def buildconfig_from_trial(study: Study, trial: FrozenTrial) -> BuildConfig:
         )
     optconfig = deserialize(OptimizationConfig, optconfig_json)
 
+    trial = remove_algo_hash(trial)
     descriptor_json = trial.params[TrialParams.DESCRIPTOR]
     descriptor_dict = json.loads(descriptor_json)
     descriptor = deserialize(MolDescriptor, descriptor_dict)
@@ -48,6 +59,11 @@ def buildconfig_from_trial(study: Study, trial: FrozenTrial) -> BuildConfig:
     base_estimator = trial.user_attrs.get(
         _CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR
     )
+    # Pretrained model for pretrained ChemProp methods are prepared here
+    pretrained_model = trial.user_attrs.get(
+        _CE.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL, {}
+    )
+    # Parameter dictionary for calibrated CV methods are prepared here
     calibrated_params = trial.user_attrs.get(
         _CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS, {}
     )
@@ -62,7 +78,11 @@ def buildconfig_from_trial(study: Study, trial: FrozenTrial) -> BuildConfig:
             {
                 **trial.params,
                 **calibrated_params,
-                **{"estimator": base_estimator, "aux_weight_pc": aux_weight_pc},
+                **{
+                    "estimator": base_estimator,
+                    "aux_weight_pc": aux_weight_pc,
+                    "pretrained_model": pretrained_model,
+                },
             }
         ),
     }
@@ -97,17 +117,22 @@ def buildconfig_from_trial(study: Study, trial: FrozenTrial) -> BuildConfig:
     )
 
 
+def encode_name(CEname, hash=hash):
+    return f"{CEname}__{hash}"
+
+
 def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAlgorithm:
     para = alg.parameters
+    _encode_name = partial(encode_name, hash=alg.hash)
 
     if isinstance(alg, opt.AdaBoostClassifier):
         n_estimators = trial.suggest_int(
-            name=_CE.ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS,
+            name=_encode_name(_CE.ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS),
             low=para.n_estimators.low,
             high=para.n_estimators.high,
         )
         learning_rate = trial.suggest_float(
-            name=_CE.ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE,
+            name=_encode_name(_CE.ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE),
             low=para.learning_rate.low,
             high=para.learning_rate.high,
         )
@@ -117,18 +142,52 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         )
     elif isinstance(alg, opt.Lasso):
         alpha = trial.suggest_float(
-            name=_CE.ALGORITHMS_LASSO_ALPHA,
+            name=_encode_name(_CE.ALGORITHMS_LASSO_ALPHA),
             low=para.alpha.low,
             high=para.alpha.high,
         )
         return build.Lasso.new(alpha=alpha)
+    elif isinstance(alg, opt.KNeighborsClassifier):
+        metric = trial.suggest_categorical(
+            name=_encode_name(_CE.ALGORITHMS_KNEIGHBORS_METRIC),
+            choices=para.metric,
+        )
+        n_neighbors = trial.suggest_int(
+            name=_encode_name(_CE.ALGORITHMS_KNEIGHBORS_N_NEIGHBORS),
+            low=para.n_neighbors.low,
+            high=para.n_neighbors.high,
+        )
+        weights = trial.suggest_categorical(
+            name=_encode_name(_CE.ALGORITHMS_KNEIGHBORS_WEIGHTS),
+            choices=para.weights,
+        )
+        return build.KNeighborsClassifier.new(
+            metric=metric, n_neighbors=n_neighbors, weights=weights
+        )
+    elif isinstance(alg, opt.KNeighborsRegressor):
+        metric = trial.suggest_categorical(
+            name=_encode_name(_CE.ALGORITHMS_KNEIGHBORS_METRIC),
+            choices=para.metric,
+        )
+        n_neighbors = trial.suggest_int(
+            name=_encode_name(_CE.ALGORITHMS_KNEIGHBORS_N_NEIGHBORS),
+            low=para.n_neighbors.low,
+            high=para.n_neighbors.high,
+        )
+        weights = trial.suggest_categorical(
+            name=_encode_name(_CE.ALGORITHMS_KNEIGHBORS_WEIGHTS),
+            choices=para.weights,
+        )
+        return build.KNeighborsRegressor.new(
+            metric=metric, n_neighbors=n_neighbors, weights=weights
+        )
     elif isinstance(alg, opt.LogisticRegression):
         solver = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_LOGISTICREGRESSION_SOLVER,
+            name=_encode_name(_CE.ALGORITHMS_LOGISTICREGRESSION_SOLVER),
             choices=para.solver,
         )
         lg_c = trial.suggest_float(
-            name=_CE.ALGORITHMS_LOGISTICREGRESSION_C,
+            name=_encode_name(_CE.ALGORITHMS_LOGISTICREGRESSION_C),
             low=para.C.low,
             high=para.C.high,
             log=True,
@@ -136,61 +195,63 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         return build.LogisticRegression.new(solver=solver, C=lg_c)
     elif isinstance(alg, opt.PLSRegression):
         n_components = trial.suggest_int(
-            name=_CE.ALGORITHMS_PLSREGRESSION_N_COMPONENTS,
+            name=_encode_name(_CE.ALGORITHMS_PLSREGRESSION_N_COMPONENTS),
             low=para.n_components.low,
             high=para.n_components.high,
         )
         return build.PLSRegression.new(n_components=n_components)
     elif isinstance(alg, opt.RandomForestClassifier):
         max_depth = trial.suggest_int(
-            name=_CE.ALGORITHMS_RF_MAX_DEPTH,
+            name=_encode_name(_CE.ALGORITHMS_RF_MAX_DEPTH),
             low=para.max_depth.low,
             high=para.max_depth.high,
         )
         n_estimators = trial.suggest_int(
-            name=_CE.ALGORITHMS_RF_N_ESTIMATORS,
+            name=_encode_name(_CE.ALGORITHMS_RF_N_ESTIMATORS),
             low=para.n_estimators.low,
             high=para.n_estimators.high,
         )
         max_features = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_RF_MAX_FEATURES, choices=para.max_features
+            name=_encode_name(_CE.ALGORITHMS_RF_MAX_FEATURES),
+            choices=para.max_features,
         )
         return build.RandomForestClassifier.new(
             max_depth=max_depth, n_estimators=n_estimators, max_features=max_features
         )
     elif isinstance(alg, opt.RandomForestRegressor):
         max_depth = trial.suggest_int(
-            name=_CE.ALGORITHMS_RF_MAX_DEPTH,
+            name=_encode_name(_CE.ALGORITHMS_RF_MAX_DEPTH),
             low=para.max_depth.low,
             high=para.max_depth.high,
         )
         n_estimators = trial.suggest_int(
-            name=_CE.ALGORITHMS_RF_N_ESTIMATORS,
+            name=_encode_name(_CE.ALGORITHMS_RF_N_ESTIMATORS),
             low=para.n_estimators.low,
             high=para.n_estimators.high,
         )
         max_features = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_RF_MAX_FEATURES, choices=para.max_features
+            name=_encode_name(_CE.ALGORITHMS_RF_MAX_FEATURES),
+            choices=para.max_features,
         )
         return build.RandomForestRegressor.new(
             max_depth=max_depth, n_estimators=n_estimators, max_features=max_features
         )
     elif isinstance(alg, opt.Ridge):
         alpha = trial.suggest_float(
-            name=_CE.ALGORITHMS_RIDGE_ALPHA,
+            name=_encode_name(_CE.ALGORITHMS_RIDGE_ALPHA),
             low=para.alpha.low,
             high=para.alpha.high,
         )
         return build.Ridge.new(alpha=alpha)
     elif isinstance(alg, opt.SVC):
         gamma = trial.suggest_float(
-            name=_CE.ALGORITHMS_SVC_GAMMA,
+            name=_encode_name(_CE.ALGORITHMS_SVC_GAMMA),
             low=para.gamma.low,
             high=para.gamma.high,
             log=True,
         )
         svc_c = trial.suggest_float(
-            name=_CE.ALGORITHMS_SVC_C,
+            name=_encode_name(_CE.ALGORITHMS_SVC_C),
             low=para.C.low,
             high=para.C.high,
             log=True,
@@ -198,13 +259,13 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         return build.SVC.new(gamma=gamma, C=svc_c)
     elif isinstance(alg, opt.SVR):
         gamma = trial.suggest_float(
-            name=_CE.ALGORITHMS_SVR_GAMMA,
+            name=_encode_name(_CE.ALGORITHMS_SVR_GAMMA),
             low=para.gamma.low,
             high=para.gamma.high,
             log=True,
         )
         svr_c = trial.suggest_float(
-            name=_CE.ALGORITHMS_SVR_C,
+            name=_encode_name(_CE.ALGORITHMS_SVR_C),
             low=para.C.low,
             high=para.C.high,
             log=True,
@@ -212,17 +273,17 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         return build.SVR.new(C=svr_c, gamma=gamma)
     elif isinstance(alg, opt.XGBRegressor):
         max_depth = trial.suggest_int(
-            name=_CE.ALGORITHMS_XGBREGRESSOR_MAX_DEPTH,
+            name=_encode_name(_CE.ALGORITHMS_XGBREGRESSOR_MAX_DEPTH),
             low=para.max_depth.low,
             high=para.max_depth.high,
         )
         n_estimators = trial.suggest_int(
-            name=_CE.ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS,
+            name=_encode_name(_CE.ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS),
             low=para.n_estimators.low,
             high=para.n_estimators.high,
         )
         learning_rate = trial.suggest_float(
-            name=_CE.ALGORITHMS_XGBREGRESSOR_LEARNING_RATE,
+            name=_encode_name(_CE.ALGORITHMS_XGBREGRESSOR_LEARNING_RATE),
             low=para.learning_rate.low,
             high=para.learning_rate.high,
         )
@@ -233,30 +294,31 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         )
     elif isinstance(alg, opt.PRFClassifier):
         max_depth = trial.suggest_int(
-            name=_CE.ALGORITHMS_PRF_MAX_DEPTH,
+            name=_encode_name(_CE.ALGORITHMS_PRF_MAX_DEPTH),
             low=para.max_depth.low,
             high=para.max_depth.high,
         )
         n_estimators = trial.suggest_int(
-            name=_CE.ALGORITHMS_PRF_N_ESTIMATORS,
+            name=_encode_name(_CE.ALGORITHMS_PRF_N_ESTIMATORS),
             low=para.n_estimators.low,
             high=para.n_estimators.high,
         )
         max_features = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_PRF_MAX_FEATURES, choices=para.max_features
+            name=_encode_name(_CE.ALGORITHMS_PRF_MAX_FEATURES),
+            choices=para.max_features,
         )
         min_py_sum_leaf = trial.suggest_int(
-            name=_CE.ALGORITHMS_PRF_MINPYSUMLEAF,
+            name=_encode_name(_CE.ALGORITHMS_PRF_MINPYSUMLEAF),
             low=para.min_py_sum_leaf.low,
             high=para.min_py_sum_leaf.high,
         )
         use_py_gini = trial.suggest_int(
-            name=_CE.ALGORITHMS_PRF_USE_PY_GINI,
+            name=_encode_name(_CE.ALGORITHMS_PRF_USE_PY_GINI),
             low=para.use_py_gini,
             high=para.use_py_gini,
         )
         use_py_leafs = trial.suggest_int(
-            name=_CE.ALGORITHMS_PRF_USE_PY_LEAFS,
+            name=_encode_name(_CE.ALGORITHMS_PRF_USE_PY_LEAFS),
             low=para.use_py_leafs,
             high=para.use_py_leafs,
         )
@@ -270,84 +332,86 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         )
     elif isinstance(alg, opt.ChemPropRegressor):
         activation = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_ACTIVATION, choices=para.activation
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_ACTIVATION),
+            choices=para.activation,
         )
         aggregation = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_AGGREGATION, choices=para.aggregation
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_AGGREGATION),
+            choices=para.aggregation,
         )
         aggregation_norm = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_AGGREGATION_NORM,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_AGGREGATION_NORM),
             low=para.aggregation_norm.low,
             high=para.aggregation_norm.high,
             step=para.aggregation_norm.q,
         )
         batch_size = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_BATCH_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_BATCH_SIZE),
             low=para.batch_size.low,
             high=para.batch_size.high,
             step=para.batch_size.q,
         )
         depth = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_DEPTH,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_DEPTH),
             low=para.depth.low,
             high=para.depth.high,
             step=para.depth.q,
         )
         dropout = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_DROPOUT,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_DROPOUT),
             low=para.dropout.low,
             high=para.dropout.high,
             step=para.dropout.q,
         )
         ensemble_size = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE),
             low=para.ensemble_size,
             high=para.ensemble_size,
         )
         epochs = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_EPOCHS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_EPOCHS),
             low=para.epochs,
             high=para.epochs,
         )
         features_generator = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR),
             choices=para.features_generator,
         )
         ffn_hidden_size = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE),
             low=para.ffn_hidden_size.low,
             high=para.ffn_hidden_size.high,
             step=para.ffn_hidden_size.q,
         )
         ffn_num_layers = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS),
             low=para.ffn_num_layers.low,
             high=para.ffn_num_layers.high,
             step=para.ffn_num_layers.q,
         )
         final_lr_ratio_exp = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP),
             low=para.final_lr_ratio_exp.low,
             high=para.final_lr_ratio_exp.high,
         )
         hidden_size = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_HIDDEN_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_HIDDEN_SIZE),
             low=para.hidden_size.low,
             high=para.hidden_size.high,
             step=para.hidden_size.q,
         )
         init_lr_ratio_exp = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP),
             low=para.init_lr_ratio_exp.low,
             high=para.init_lr_ratio_exp.high,
         )
         max_lr_exp = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_MAX_LR_EXP,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_MAX_LR_EXP),
             low=para.max_lr_exp.low,
             high=para.max_lr_exp.high,
         )
         warmup_epochs_ratio = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO),
             low=para.warmup_epochs_ratio.low,
             high=para.warmup_epochs_ratio.high,
             step=para.warmup_epochs_ratio.q,
@@ -372,84 +436,86 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         )
     elif isinstance(alg, opt.ChemPropClassifier):
         activation = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_ACTIVATION, choices=para.activation
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_ACTIVATION),
+            choices=para.activation,
         )
         aggregation = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_AGGREGATION, choices=para.aggregation
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_AGGREGATION),
+            choices=para.aggregation,
         )
         aggregation_norm = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_AGGREGATION_NORM,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_AGGREGATION_NORM),
             low=para.aggregation_norm.low,
             high=para.aggregation_norm.high,
             step=para.aggregation_norm.q,
         )
         batch_size = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_BATCH_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_BATCH_SIZE),
             low=para.batch_size.low,
             high=para.batch_size.high,
             step=para.batch_size.q,
         )
         depth = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_DEPTH,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_DEPTH),
             low=para.depth.low,
             high=para.depth.high,
             step=para.depth.q,
         )
         dropout = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_DROPOUT,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_DROPOUT),
             low=para.dropout.low,
             high=para.dropout.high,
             step=para.dropout.q,
         )
         ensemble_size = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE),
             low=para.ensemble_size,
             high=para.ensemble_size,
         )
         epochs = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_EPOCHS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_EPOCHS),
             low=para.epochs,
             high=para.epochs,
         )
         features_generator = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR),
             choices=para.features_generator,
         )
         ffn_hidden_size = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE),
             low=para.ffn_hidden_size.low,
             high=para.ffn_hidden_size.high,
             step=para.ffn_hidden_size.q,
         )
         ffn_num_layers = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS),
             low=para.ffn_num_layers.low,
             high=para.ffn_num_layers.high,
             step=para.ffn_num_layers.q,
         )
         final_lr_ratio_exp = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP),
             low=para.final_lr_ratio_exp.low,
             high=para.final_lr_ratio_exp.high,
         )
         hidden_size = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_HIDDEN_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_HIDDEN_SIZE),
             low=para.hidden_size.low,
             high=para.hidden_size.high,
             step=para.hidden_size.q,
         )
         init_lr_ratio_exp = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP),
             low=para.init_lr_ratio_exp.low,
             high=para.init_lr_ratio_exp.high,
         )
         max_lr_exp = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_MAX_LR_EXP,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_MAX_LR_EXP),
             low=para.max_lr_exp.low,
             high=para.max_lr_exp.high,
         )
         warmup_epochs_ratio = trial.suggest_float(
-            name=_CE.ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO),
             low=para.warmup_epochs_ratio.low,
             high=para.warmup_epochs_ratio.high,
             step=para.warmup_epochs_ratio.q,
@@ -474,26 +540,26 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         )
     elif isinstance(alg, opt.ChemPropHyperoptRegressor):
         ensemble_size = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE),
             low=para.ensemble_size,
             high=para.ensemble_size,
         )
         epochs = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_EPOCHS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_EPOCHS),
             low=para.epochs,
             high=para.epochs,
         )
         features_generator = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR),
             choices=para.features_generator,
         )
         num_iters = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_NUM_ITERS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_NUM_ITERS),
             low=para.num_iters,
             high=para.num_iters,
         )
         search_parameter_level = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL),
             choices=para.search_parameter_level,
         )
         return build.ChemPropHyperoptRegressor.new(
@@ -505,26 +571,26 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
         )
     elif isinstance(alg, opt.ChemPropHyperoptClassifier):
         ensemble_size = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE),
             low=para.ensemble_size,
             high=para.ensemble_size,
         )
         epochs = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_EPOCHS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_EPOCHS),
             low=para.epochs,
             high=para.epochs,
         )
         features_generator = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FEATURES_GENERATOR),
             choices=para.features_generator,
         )
         num_iters = trial.suggest_int(
-            name=_CE.ALGORITHMS_CHEMPROP_NUM_ITERS,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_NUM_ITERS),
             low=para.num_iters,
             high=para.num_iters,
         )
         search_parameter_level = trial.suggest_categorical(
-            name=_CE.ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL,
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL),
             choices=para.search_parameter_level,
         )
         return build.ChemPropHyperoptClassifier.new(
@@ -534,9 +600,25 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
             num_iters=num_iters,
             search_parameter_level=search_parameter_level,
         )
+    elif isinstance(alg, opt.ChemPropRegressorPretrained):
+        frzn = trial.suggest_categorical(
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_FRZN), choices=para.frzn
+        )
+        epochs = trial.suggest_int(
+            name=_encode_name(_CE.ALGORITHMS_CHEMPROP_EPOCHS),
+            low=para.epochs.low,
+            high=para.epochs.high,
+        )
+        trial.set_user_attr(key="pretrained_model", value=para.pretrained_model)
+
+        return build.ChemPropRegressorPretrained.new(
+            epochs=epochs,
+            frzn=frzn,
+            pretrained_model=para.pretrained_model,
+        )
     elif isinstance(alg, opt.CalibratedClassifierCVWithVA):
         n_folds = trial.suggest_int(
-            name=_CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS,
+            name=_encode_name(_CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS),
             low=para.n_folds,
             high=para.n_folds,
         )
@@ -557,28 +639,29 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
             n_folds=n_folds,
         )
     elif isinstance(alg, opt.Mapie):
-        alpha = trial.suggest_float(
-            name=_CE.ALGORITHMS_MAPIE_ALPHA,
-            low=para.alpha,
-            high=para.alpha,
+        mapie_alpha = trial.suggest_float(
+            name=_encode_name(_CE.ALGORITHMS_MAPIE_ALPHA),
+            low=para.mapie_alpha,
+            high=para.mapie_alpha,
         )
         estimator = suggest_alg_params(trial, para.estimator)
         trial.set_user_attr(key="estimator", value=serialize(estimator))
 
         return build.Mapie.new(
             estimator=estimator,
-            alpha=alpha,
+            mapie_alpha=mapie_alpha,
         )
     else:
         raise ValueError(f"Unrecognized algorithm: {alg.__class__}")
 
 
 def suggest_aux_params(trial: FrozenTrial, desc: descriptors.AnyDescriptor):
+    para = desc.parameters
+    _encode_name = partial(encode_name, hash=trial.user_attrs["alg_hash"])
     # SmilesAndSideInfoFromFile is the only descriptor currently supporting aux params
     if isinstance(desc, descriptors.SmilesAndSideInfoFromFile):
-        para = desc.parameters
         return trial.suggest_int(
-            name=_CE.DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC,
+            name=_encode_name(_CE.DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC),
             low=para.aux_weight_pc.low,
             high=para.aux_weight_pc.high,
             step=para.aux_weight_pc.q,

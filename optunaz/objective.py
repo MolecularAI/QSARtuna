@@ -6,7 +6,8 @@ from typing import List, Optional, Union
 import numpy as np
 import warnings
 from apischema import serialize, deserialize
-from joblib import Memory
+from joblib import Memory, effective_n_jobs
+
 
 import sklearn.model_selection
 from sklearn.metrics import make_scorer
@@ -31,6 +32,9 @@ from optuna.trial import TrialState
 from optunaz.metircs import auc_pr_cal, bedroc_score, concordance_index
 
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+logging.getLogger("chemprop").disabled = True
+logging.getLogger("train").disabled = True
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +127,10 @@ class Objective:
         # Get algo & descriptor from Optuna, get valid descriptor combo
         self._validate_algos()
         build_alg = self._get_estimator(trial)
-        estimator = build_alg.estimator()
+        try:
+            estimator = build_alg.estimator()
+        except FileNotFoundError as e:
+            raise TrialPruned(f"Estimator initiation failed for algorithm: {e}")
         try:
             descriptor, valid_descriptors, aux_weight_pc = self._get_descriptor(
                 trial, build_alg
@@ -131,8 +138,10 @@ class Objective:
             X, failed_idx = descriptor_from_config(
                 self.train_smiles, descriptor, cache=self.cache
             )
-        except (ScalingFittingError, ValueError):
-            raise TrialPruned(f"Descriptor generation failed for descriptor")
+            if len(X) == 0:
+                raise ValueError
+        except (ScalingFittingError, ValueError) as e:
+            raise TrialPruned(f"Descriptor generation failed for descriptor: {e}")
         train_y, train_smiles, train_aux = remove_failed_idx(
             failed_idx, self.train_y, self.train_smiles, self.train_aux
         )
@@ -143,9 +152,9 @@ class Objective:
                 f"Descriptor [{descriptor}] for trial [{trial}] has {len(failed_idx)} \
                 erroneous smiles at indices {failed_idx}"
             )
-        if len(X) == 0:
+        if len(X) < self.optconfig.settings.cross_validation:
             raise TrialPruned(
-                f"Issue with structures or descriptor config. No descriptors generated for: {descriptor.name}"
+                f"Issue with structures or descriptor config. Insufficient descriptors ({len(X)} generated for: {descriptor.name}"
             )
 
         # Check trial duplication, prune if this is detected.
@@ -182,10 +191,14 @@ class Objective:
                 n_splits=self.optconfig.settings.cross_validation
             )
 
-            # When n_jobs is <2 it must be set to >=2 for ChemProp (<2 causes SIGTERM)
-            n_jobs = self.optconfig.settings.n_jobs
-            if n_jobs == 1 and hasattr(estimator, "num_workers"):
-                n_jobs = 2
+            n_jobs = effective_n_jobs(self.optconfig.settings.n_jobs)
+            # ensure ChemProp uses parallelisation within trial, not cross_validate
+            if (
+                hasattr(estimator, "num_workers")
+                or hasattr(estimator, "estimator")
+                and hasattr(estimator.estimator, "num_workers")
+            ):
+                n_jobs = 1
 
             try:
                 scores = sklearn.model_selection.cross_validate(
@@ -197,10 +210,10 @@ class Objective:
                     scoring=scoring,
                     return_train_score=True,
                 )
-            except TypeError as e:
+            except (TypeError, ValueError) as e:
                 raise TypeError(
-                    f"CV failed for alg {build_alg}, estimator {estimator}, {e}"
-                ) from e
+                    f"CV failed for alg {build_alg}, estimator {estimator}:  {e}"
+                )
 
             # Add attributes to the trial to be accessed later.
             train_scores = {k: scores["train_" + k].tolist() for k in scoring}
@@ -273,6 +286,7 @@ class Objective:
         alg_hash = trial.suggest_categorical(
             f"{alg_name}_{TrialParams.ALGORITHM_HASH.value}", hash_choices
         )
+        trial.set_user_attr("alg_hash", alg_hash)
         alg = next(alg for alg in self.optconfig.algorithms if alg.hash == alg_hash)
         build_alg = suggest_alg_params(trial, alg)
         return build_alg

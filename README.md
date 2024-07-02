@@ -1,4 +1,4 @@
-# QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA)
+# QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QSARtuna)
 
 Build predictive models for CompChem with hyperparameters optimized by [Optuna](https://optuna.org/).
 

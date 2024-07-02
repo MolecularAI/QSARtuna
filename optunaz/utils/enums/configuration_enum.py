@@ -38,6 +38,11 @@ class ConfigurationEnum:
     DESCRIPTORS_ECFPCOUNTS_RADIUS = "radius"
     DESCRIPTORS_ECFPCOUNTS_USEFEATURES = "useFeatures"
 
+    # PathFP
+    DESCRIPTORS_PATHFP = "PathFP"
+    DESCRIPTORS_PATHFP_MAXPATH = "maxPath"
+    DESCRIPTORS_PATHFP_FPSIZE = "fpSize"
+
     # MACCS_keys
     DESCRIPTORS_MACCSKEYS = "MACCS_keys"
 
@@ -56,6 +61,10 @@ class ConfigurationEnum:
     DESCRIPTORS_PRECOMPUTED_FILE = "file"
     DESCRIPTORS_PRECOMPUTED_INPUT_COLUMNN = "input_column"
     DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN = "response_column"
+
+    # ZScales
+    DESCRIPTORS_UNSC_ZSCALES = "UnscaledZScalesDescriptors"
+    DESCRIPTORS_ZSCALES = "ZScalesDescriptors"
 
     # Smiles
     DESCRIPTORS_SMILES = "SmilesFromFile"
@@ -116,6 +125,13 @@ class ConfigurationEnum:
     ALGORITHMS_LASSO = "Lasso"
     ALGORITHMS_LASSO_ALPHA = "alpha"
 
+    # algorithm: KNeighbors
+    ALGORITHMS_KNEIGHBORSCLASSIFIER = "KNeighborsClassifier"
+    ALGORITHMS_KNEIGHBORSREGRESSOR = "KNeighborsRegressor"
+    ALGORITHMS_KNEIGHBORS_N_NEIGHBORS = "n_neighbors"
+    ALGORITHMS_KNEIGHBORS_METRIC = "metric"
+    ALGORITHMS_KNEIGHBORS_WEIGHTS = "weights"
+
     # algorithm: Ridge
     ALGORITHMS_RIDGE = "Ridge"
     ALGORITHMS_RIDGE_ALPHA = "alpha"
@@ -166,11 +182,13 @@ class ConfigurationEnum:
     ALGORITHMS_CHEMPROP_FEATURES_GENERATOR = "features_generator"
     ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE = "ffn_hidden_size"
     ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS = "ffn_num_layers"
+    ALGORITHMS_CHEMPROP_FRZN = "frzn"
     ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP = "final_lr_ratio_exp"
     ALGORITHMS_CHEMPROP_HIDDEN_SIZE = "hidden_size"
     ALGORITHMS_CHEMPROP_NUM_ITERS = "num_iters"
     ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP = "init_lr_ratio_exp"
     ALGORITHMS_CHEMPROP_MAX_LR_EXP = "max_lr_exp"
+    ALGORITHMS_CHEMPROP_PRETRAINED_MODEL = "pretrained_model"
     ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL = "search_parameter_level"
     ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS = "startup_random_iters"
     ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO = "warmup_epochs_ratio"
@@ -185,7 +203,7 @@ class ConfigurationEnum:
 
     # algorithm: Mapie specific
     ALGORITHMS_MAPIE = "Mapie"
-    ALGORITHMS_MAPIE_ALPHA = "alpha"
+    ALGORITHMS_MAPIE_ALPHA = "mapie_alpha"
 
     # try to find the internal value and return
     def __getattr__(self, name):
