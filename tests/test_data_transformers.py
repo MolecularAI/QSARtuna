@@ -7,6 +7,7 @@ from optunaz.utils.preprocessing.transform import (
     LogNegative,
     ModelDataTransform,
     PTRTransform,
+    ZScales
 )
 from optunaz.datareader import Dataset
 from optunaz.utils.preprocessing.deduplicator import KeepFirst
@@ -17,6 +18,10 @@ import numpy.testing as npt
 @pytest.fixture
 def drd2_50(shared_datadir):
     return str(shared_datadir / "DRD2" / "subset-50" / "train.csv")
+
+@pytest.fixture
+def peptide_toxinpred3(shared_datadir):
+    return str(shared_datadir / "peptide" / "toxinpred3" / "train.csv")
 
 
 @pytest.mark.parametrize(
@@ -82,3 +87,15 @@ def test_ptr_transform(drd2_50):
     reverse_transform = ptr_transformed.reverse_transform(transformed)
     train_y = train_y.clip(min_val, max_val)
     npt.assert_allclose(train_y, reverse_transform, rtol=1e-04, atol=1e-06)
+
+
+def test_zscales(peptide_toxinpred3):
+    data = Dataset(
+        input_column="Smiles",
+        response_column="Class",
+        training_dataset_file=peptide_toxinpred3,
+        aux_column="Peptide",
+        aux_transform=ZScales.new()
+    )
+    train_smiles, train_y, train_aux, test_smiles, test_y, test_aux = data.get_sets()
+    assert train_aux.shape == (8828, 5)

@@ -1,0 +1,102 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "Structure",
+    "response_column": "Permeability",
+    "training_dataset_file": "train/data/peptide/permeability/train.csv"
+  },
+  "descriptors": [
+    {
+      "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048
+      }
+    },
+    {
+      "name": "SmilesFromFile",
+      "parameters": {
+      }
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 5,
+    "shuffle": true,
+    "direction": "maximize",
+    "n_trials": 15,
+    "random_seed": 2,
+    "n_jobs": 1
+  },
+  "algorithms": [
+    {
+      "name": "RandomForestRegressor",
+      "parameters": {
+        "max_depth": {
+          "low": 10,
+          "high": 20
+        },
+        "n_estimators": {
+          "low": 10,
+          "high": 100
+        },
+        "max_features": [
+          "auto",
+          "sqrt",
+          "log2"
+        ]
+      }
+    },
+    {
+      "name": "KNeighborsRegressor",
+      "parameters": {
+        "n_neighbors": {
+          "low": 1,
+          "high": 3
+        },
+        "weights": ["uniform", "distance"],
+        "metric": ["minkowski", "euclidean", "manhattan"]
+      }
+    },
+    {
+      "name": "SVR",
+      "parameters": {
+        "C": {
+          "low": 1e-7,
+          "high": 1e7
+        },
+        "gamma": {
+          "low": 1e-9,
+          "high": 1000
+        }
+      }
+    },
+    {
+      "name": "Ridge",
+      "parameters": {
+        "alpha": {
+          "low": 1,
+          "high": 2
+        }
+      }
+    },
+    {
+      "name": "Lasso",
+      "parameters": {
+        "alpha": {
+          "low": 1,
+          "high": 2
+        }
+      }
+    },
+    {
+      "name": "ChemPropHyperoptRegressor",
+      "parameters": {
+        "ensemble_size": 1,
+        "epochs": 4,
+        "num_iters": 1
+      }
+    }
+  ]
+}
+

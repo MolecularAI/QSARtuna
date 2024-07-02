@@ -28,6 +28,4 @@ Development
 -----------
 * `Test report <_static/pytest/pytest/index.html>`_
 * `Test coverage <_static/pytest/coverage/index.html>`_
-* `Source code (GitHub) <https://github.com/AZU-RDIT/optuna_az/>`_
-* `Issues (Jira) <https://jira.rd.astrazeneca.net/browse/OPTUNA/>`_
 * `Public release (3.1.0)  <https://github.com/MolecularAI/QSARtuna/>`_

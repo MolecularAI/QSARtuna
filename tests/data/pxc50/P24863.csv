@@ -1,6 +1,6 @@
 Uniprot,Organism,Compound_ID,Smiles,Measurement,Confidence_Score,Activity_Units,Assay_ID,PredefinedSplit
-P24863,Homo sapiens,CHEMBL4078454,OC[C@H](Nc1cncc(-c2ccc(O)c(Cl)c2)n1)c1ccccc1,9.7,7,IC50,105033,1
-P24863,Homo sapiens,CHEMBL4083552,NC(=O)c1sc(Oc2ccccc2)c2c1CCc1cnsc1-2,9.47,7,IC50,105033,1
+P24863,Homo sapiens,CHEMBL4078454,OC[C@H](Nc1cncc(-c2ccc(O)c(Cl)c2)n1)c1ccccc1,9.7,7,IC50,105033,
+P24863,Homo sapiens,CHEMBL4083552,NC(=O)c1sc(Oc2ccccc2)c2c1CCc1cnsc1-2,9.47,7,IC50,105033,
 P24863,Homo sapiens,CHEMBL4061525,CNc1ccc(Oc2sc(C(N)=O)c3c2-c2sncc2CC3)cn1,9.44,7,IC50,105033,1
 P24863,Homo sapiens,CHEMBL4096487,OC[C@H](Nc1cncc(-c2ccc3[nH]ncc3c2)c1)c1ccccc1,9.4,7,IC50,105033,1
 P24863,Homo sapiens,CHEMBL4066819,COCCNC(=O)c1ccc(Oc2sc(C(N)=O)c3c2-c2sncc2CC3)cn1,9.34,7,IC50,105033,1

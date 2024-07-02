@@ -8,6 +8,7 @@ from optunaz.builder import build
 from optunaz.config.buildconfig import BuildConfig
 from optunaz.utils import load_json
 from optunaz.utils.files_paths import attach_root_path
+import pickle
 
 
 def getmodel(fname, respcol):
@@ -97,3 +98,12 @@ def test_Calibration():
         "examples/building/calibration_build.json", "molwt_gt_330"
     )
     assert isinstance(model, calibrated_cv.CalibratedClassifierCVWithVA)
+
+
+def test_Calibration_ChemProp(shared_datadir):
+    model, train_score, test_score = getmodel(
+        "examples/building/calibration_chemprop_build.json", "molwt_gt_330"
+    )
+    assert isinstance(model, calibrated_cv.CalibratedClassifierCVWithVA)
+    with open(str(shared_datadir / "test.pkl"), "wb") as fid:
+        pickle.dump(model, fid)

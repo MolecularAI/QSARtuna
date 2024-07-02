@@ -78,8 +78,8 @@ def test_physchem_scaler(shared_datadir):
         pred[0:3],
         [
             0.16,
-            0.60,
             0.16,
+            0.58,
         ],
         2,
     )
@@ -107,8 +107,8 @@ def test_physchem_noscaler(shared_datadir):
         pred[0:3],
         [
             0.16,
-            0.60,
             0.16,
+            0.58,
         ],
         2,
     )
@@ -127,7 +127,7 @@ def mol_set2():
 def test_set1_noscaler(mol_set1):
     d = UnscaledPhyschemDescriptors.new()
     pred = d.calculate_from_smi("CCC")
-    npt.assert_almost_equal(pred[0:3], [2.12, 1.25, 2.12], 2)
+    npt.assert_almost_equal(pred[0:3], [2.12, 2.12, 1.25], 2)
 
 
 def test_set1_set2_scaler_simple(mol_set1, mol_set2):
@@ -146,7 +146,7 @@ def test_set1_set2_scaler_simple(mol_set1, mol_set2):
                 ),
             )
             pred = d.calculate_from_smi("CCC")
-            npt.assert_almost_equal(pred[0:3], [0.15, -0.84, 0.15], 2)
+            npt.assert_almost_equal(pred[0:3], [0.15, 0.15, -0.84], 2)
 
 
 def test_set1_scaler_advanced(mol_set1):
@@ -159,7 +159,7 @@ def test_set1_scaler_advanced(mol_set1):
         scaler=FittedSklearnScaler(saved_params=jsonpickle.dumps(scaler)),
     )
     pred = d2.calculate_from_smi("CCC")
-    npt.assert_almost_equal(pred[0:3], [0.96, 0.62, 0.96], 2)
+    npt.assert_almost_equal(pred[0:3], [0.96, 0.96, 0.62], 2)
 
 
 def test_serialization(shared_datadir):
@@ -199,8 +199,8 @@ def test_scaledphyschem(shared_datadir):
         pred[0:3],
         [
             0.16,
-            0.60,
             0.16,
+            0.58,
         ],
         2,
     )

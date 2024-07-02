@@ -24,22 +24,26 @@ from optunaz.config.optconfig import (
     AdaBoostClassifier,
     OptimizationConfig,
     ChemPropRegressor,
+    ChemPropRegressorPretrained,
     ChemPropHyperoptRegressor,
     ChemPropClassifier,
     ChemPropHyperoptClassifier,
     PRFClassifier,
     CalibratedClassifierCVWithVA,
     Mapie,
+    CompositeDescriptor,
 )
 
 from optunaz.datareader import Dataset
 from optunaz.descriptors import (
     ECFP,
     MACCS_keys,
+    PathFP,
     ECFP_counts,
     UnscaledPhyschemDescriptors,
     SmilesFromFile,
     SmilesAndSideInfoFromFile,
+    PrecomputedDescriptorFromFile,
 )
 from optunaz import predict
 
@@ -77,6 +81,12 @@ def file_drd2_50_side_info(shared_datadir):
 
 
 @pytest.fixture
+def file_drd2_pretrained_reg(shared_datadir):
+    """Returns 50 molecules and side info from DRD2 dataset."""
+    return str(shared_datadir / "DRD2" / "drd2_reg.pkl")
+
+
+@pytest.fixture
 def file_sdf1(shared_datadir):
     """Returns sdf test file."""
     return str(shared_datadir / "sdf" / "1.sdf")
@@ -100,6 +110,9 @@ def optconfig_regression(file_drd2_50):
             log_transform_base=LogBase.LOG10,
             log_transform_negative=LogNegative.TRUE,
             log_transform_unit_conversion=6,
+            probabilistic_threshold_representation=True,
+            probabilistic_threshold_representation_std=50,
+            probabilistic_threshold_representation_threshold=400,
         ),
         descriptors=[ECFP.new(), UnscaledPhyschemDescriptors.new(), MACCS_keys.new()],
         algorithms=[
@@ -167,7 +180,7 @@ def optconfig_classification(file_drd2_50):
             response_type="classification",
             training_dataset_file=file_drd2_50,
         ),
-        descriptors=[ECFP.new(), ECFP_counts.new(), MACCS_keys.new()],
+        descriptors=[ECFP.new(), PathFP.new(), MACCS_keys.new()],
         algorithms=[
             SVC.new(),
             RandomForestClassifier.new(
@@ -248,8 +261,9 @@ def optconfig_calibration_chemprop(file_drd2_50, file_drd2_50_side_info):
         ],
         settings=OptimizationConfig.Settings(
             mode=ModelMode.CLASSIFICATION,
-            cross_validation=2,
+            cross_validation=1,
             n_trials=1,
+            n_startup_trials=0,
             direction=OptimizationDirection.MAXIMIZATION,
             scoring="neg_brier_score",
         ),
@@ -261,8 +275,8 @@ def optconfig_mapie_rf(file_drd2_50):
     return OptimizationConfig(
         data=Dataset(
             input_column="canonical",
-            response_column="molwt_gt_330",
-            response_type="classification",
+            response_column="molwt",
+            response_type="regression",
             training_dataset_file=file_drd2_50,
         ),
         descriptors=[ECFP.new()],
@@ -365,17 +379,41 @@ def optconfig_prfc(file_drd2_50):
     )
 
 
+@pytest.fixture
+def optconfig_regression_chemprop_pretrained(file_drd2_50, file_drd2_pretrained_reg):
+    return OptimizationConfig(
+        data=Dataset(
+            input_column="canonical",
+            response_column="molwt",
+            response_type="regression",
+            training_dataset_file=file_drd2_50,
+        ),
+        descriptors=[SmilesFromFile.new()],
+        algorithms=[
+            ChemPropRegressorPretrained.new(
+                pretrained_model=file_drd2_pretrained_reg,
+            ),
+        ],
+        settings=OptimizationConfig.Settings(
+            mode=ModelMode.REGRESSION,
+            cross_validation=2,
+            n_trials=1,
+            direction=OptimizationDirection.MAXIMIZATION,
+        ),
+    )
+
+
 @pytest.mark.parametrize(
     "optconfig",
     [
+        "optconfig_classification",
         "optconfig_classification_chemprop",
         "optconfig_calibration_chemprop",
-        "optconfig_calibration_chemprop",
         "optconfig_regression",
+        "optconfig_regression_chemprop_pretrained",
         "optconfig_mapie_rf",
         "optconfig_prfc",
         "optconfig_regression_sdf",
-        "optconfig_classification",
         "optconfig_regression_chemprop",
         "optconfig_calibration_rf",
     ],
@@ -463,6 +501,7 @@ def optconfig_mixture(file_drd2_50):
             cross_validation=2,
             n_trials=10,
             n_chemprop_trials=1,
+            random_seed=1,
             direction=OptimizationDirection.MAXIMIZATION,
         ),
     )
@@ -875,6 +914,150 @@ def test_regression_vector_aux(
             "canonical",
             "--input-aux-column",
             "fp",
+            "--input-precomputed-file",
+            str(train_with_fp),
+            "--input-precomputed-input-column",
+            "canonical",
+            "--input-precomputed-response-column",
+            "fp",
+            "--output-prediction-csv-file",
+            str(shared_datadir / "outprediction"),
+        ]
+        with patch.object(sys, "argv", predict_args):
+            predict.main()
+
+        predictions = pd.read_csv(
+            str(shared_datadir / "outprediction"), usecols=["Prediction"]
+        )
+        assert len(predictions.dropna()) == 50
+
+
+@pytest.fixture
+def optconfig_precomputed(file_drd2_50, train_with_fp):
+    return OptimizationConfig(
+        data=Dataset(
+            input_column="canonical",
+            response_column="molwt",
+            response_type="regression",
+            aux_column="activity",
+            training_dataset_file=file_drd2_50,
+            log_transform=True,
+            log_transform_base=LogBase.LOG10,
+            log_transform_negative=LogNegative.TRUE,
+            log_transform_unit_conversion=6,
+        ),
+        descriptors=[
+            PrecomputedDescriptorFromFile.new(
+                file=str(train_with_fp), input_column="canonical", response_column="fp"
+            )
+        ],
+        algorithms=[
+            RandomForestRegressor.new(
+                n_estimators=RandomForestRegressor.Parameters.RandomForestRegressorParametersNEstimators(
+                    low=2, high=2
+                )
+            ),
+        ],
+        settings=OptimizationConfig.Settings(
+            mode=ModelMode.REGRESSION,
+            cross_validation=2,
+            n_trials=1,
+            random_seed=1,
+            direction=OptimizationDirection.MAXIMIZATION,
+        ),
+    )
+
+
+@pytest.fixture
+def optconfig_composite_precomputed(file_drd2_50, train_with_fp):
+    return OptimizationConfig(
+        data=Dataset(
+            input_column="canonical",
+            response_column="molwt",
+            response_type="regression",
+            aux_column="activity",
+            training_dataset_file=file_drd2_50,
+            log_transform=True,
+            log_transform_base=LogBase.LOG10,
+            log_transform_negative=LogNegative.TRUE,
+            log_transform_unit_conversion=6,
+        ),
+        descriptors=[
+            CompositeDescriptor.new(
+                descriptors=[
+                    PrecomputedDescriptorFromFile.new(
+                        file=str(train_with_fp),
+                        input_column="canonical",
+                        response_column="fp",
+                    ),
+                    ECFP.new(),
+                ]
+            )
+        ],
+        algorithms=[
+            RandomForestRegressor.new(
+                n_estimators=RandomForestRegressor.Parameters.RandomForestRegressorParametersNEstimators(
+                    low=2, high=2
+                )
+            ),
+        ],
+        settings=OptimizationConfig.Settings(
+            mode=ModelMode.REGRESSION,
+            cross_validation=2,
+            n_trials=1,
+            random_seed=1,
+            direction=OptimizationDirection.MAXIMIZATION,
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "optconfig", ["optconfig_precomputed", "optconfig_composite_precomputed"]
+)
+def test_precomputed(file_drd2_50, train_with_fp, optconfig, shared_datadir, request):
+    optconfig = request.getfixturevalue(optconfig)
+    with tempfile.NamedTemporaryFile(
+        mode="wt", delete=False, dir=shared_datadir, suffix=".json"
+    ) as optconfig_fp:
+        optconfig_fp.write(json.dumps(serialize(optconfig)))
+
+    testargs = [
+        "prog",
+        "--config",
+        str(optconfig_fp.name),
+        "--best-buildconfig-outpath",
+        str(shared_datadir / "buildconfig.json"),
+        "--best-model-outpath",
+        str(shared_datadir / "best.pkl"),
+        "--merged-model-outpath",
+        str(shared_datadir / "merged.pkl"),
+    ]
+    with patch.object(sys, "argv", testargs):
+        optbuild.main()
+
+    os.unlink(optconfig_fp.name)
+
+    with open(shared_datadir / "buildconfig.json", "rt") as fp:
+        buildconfig = deserialize(BuildConfig, json.load(fp))
+    assert buildconfig is not None
+
+    for pkl_file in ["best.pkl", "merged.pkl"]:
+        predict_args = [
+            "prog",
+            "--model-file",
+            str(shared_datadir / pkl_file),
+            "--input-smiles-csv-file",
+            file_drd2_50,
+            "--input-smiles-csv-column",
+            "canonical",
+            "--input-aux-column",
+            "activity",
+            "--input-precomputed-file",
+            str(train_with_fp),
+            "--input-precomputed-input-column",
+            "canonical",
+            "--input-precomputed-response-column",
+            "fp",
             "--output-prediction-csv-file",
             str(shared_datadir / "outprediction"),
         ]
@@ -915,7 +1098,7 @@ def test_scp_integration(file_drd2_50, shared_datadir, optconfig, request):
         "--merged-model-outpath",
         str(shared_datadir / "merged.pkl"),
         "--inference_uncert",
-        "None"
+        "None",
     ]
     with patch.object(sys, "argv", testargs):
         optbuild.main()

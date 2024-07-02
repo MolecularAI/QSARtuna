@@ -13,8 +13,8 @@ def test_composite():
     fp_comp = d_comp.calculate_from_smi(smi)
 
     assert len(fp1) == 1024
-    assert len(fp2) == 208
-    assert len(fp_comp) == 1232
+    assert len(fp2) == 210
+    assert len(fp_comp) == 1234
 
 
 def test_bad_smiles():

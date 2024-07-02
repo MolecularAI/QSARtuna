@@ -20,6 +20,17 @@ def file_sdf1(shared_datadir):
     """Returns sdf test file."""
     return str(shared_datadir / "sdf" / "1.sdf")
 
+
+@pytest.fixture
+def d360_example(shared_datadir):
+    return str(shared_datadir / "d360" / "data_train.csv")
+
+
+@pytest.fixture
+def peptide_toxinpred3(shared_datadir):
+    return str(shared_datadir / "peptide" / "toxinpred3" / "train.csv")
+
+
 def test_nosplit(drd2_300):
     data = Dataset(
         input_column="canonical",
@@ -95,6 +106,40 @@ def test_sdf(file_sdf1):
     assert len(train_smiles) == 407
     assert len(test_smiles) == 102
 
+
+def test_d360(d360_example):
+    data = Dataset(
+        input_column="Structure",
+        response_column="TSA none;(Num)",
+        training_dataset_file=d360_example,
+        deduplication_strategy=KeepAllNoDeduplication(),
+    )
+    train_smiles, train_y, _, test_smiles, test_y, _ = data.get_sets()
+    assert len(train_smiles) == len(train_y)
+    assert len(test_smiles) == len(test_y)
+    assert len(train_smiles) == 366
+    assert len(test_smiles) == 0
+
+
+@pytest.fixture
+def d360_example2(shared_datadir):
+    return str(shared_datadir / "d360" / "dataset-514402-1668542938822.csv")
+
+
+def test_d3602(d360_example2):
+    data = Dataset(
+        input_column="Structure",
+        response_column="IT12918 (ATR Hu Phos ELISA);GMean;IC50 (µM)",
+        training_dataset_file=d360_example2,
+        deduplication_strategy=KeepFirst(),
+    )
+    train_smiles, train_y, _, test_smiles, test_y, _ = data.get_sets()
+    assert len(train_smiles) == len(train_y)
+    assert len(test_smiles) == len(test_y)
+    assert len(train_smiles) == 10
+    assert len(test_smiles) == 0
+
+
 @pytest.fixture
 def drd2_reg_errs(shared_datadir):
     return str(
@@ -169,3 +214,17 @@ def test_aux(drd2_aux, aux_column, exp_tr, exp_te):
     assert len(test_smiles) == exp_te
     assert len(train_smiles) == exp_tr
     assert len(test_smiles) == exp_te
+
+
+def test_peptide(peptide_toxinpred3):
+    data = Dataset(
+        input_column="Smiles",
+        response_column="Class",
+        training_dataset_file=peptide_toxinpred3,
+        deduplication_strategy=KeepAllNoDeduplication(),
+    )
+    train_smiles, train_y, _, test_smiles, test_y, _ = data.get_sets()
+    assert len(train_smiles) == len(train_y)
+    assert len(test_smiles) == len(test_y)
+    assert len(train_smiles) == 8828
+    assert len(test_smiles) == 0
