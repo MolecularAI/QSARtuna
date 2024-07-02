@@ -21,6 +21,8 @@ explainability python packages
 
 Further documentation in the GitHub pages [here](https://molecularai.github.io/QSARtuna/).
 
+QSARtuna Publication available [here](https://doi.org/10.1021/acs.jcim.4c00457).
+
 ### The three-step process
 
 QSARtuna is structured around three steps:
