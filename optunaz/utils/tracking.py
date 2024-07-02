@@ -5,6 +5,7 @@ from typing import List, Dict
 
 import requests
 from apischema import serialize
+from optunaz.config.build_from_opt import remove_algo_hash
 from optuna import Study
 from optuna.trial import FrozenTrial
 
@@ -32,6 +33,10 @@ class TrackingData:
     all_cv_test_scores: Dict[str, List[float]]
     buildconfig: BuildConfig
 
+    def __post_init__(self):
+        self.buildconfig.metadata = None  # Metadata is not essential - drop.
+        self.buildconfig.settings.n_trials = None  # Drop.
+
 
 def removeprefix(line: str, prefix: str) -> str:
     # Starting from Python 3.9, str has method removeprefix().
@@ -52,39 +57,39 @@ class InternalTrackingCallback:
     trial_number_offset: int
 
     def __call__(self, study: Study, trial: FrozenTrial) -> None:
-
-        buildconfig = buildconfig_from_trial(study, trial)
-        buildconfig.metadata = None  # Metadata is not essential - drop.
-        buildconfig.settings.n_trials = None  # Drop.
-        if hasattr(trial, "values") and trial.values is not None:
-            trial_value = round(trial.values[0], ndigits=3)
-        elif hasattr(trial, "value") and trial.value is not None:
-            trial_value = round(trial.value, ndigits=3)
-        else:
-            trial_value = float("nan")
-
-        data = TrackingData(
-            trial_number=trial.number + self.trial_number_offset,
-            trial_value=trial_value,
-            scoring=self.optconfig.settings.scoring,
-            trial_state=trial.state.name,
-            all_cv_test_scores=round_scores(trial.user_attrs["test_scores"]),
-            buildconfig=buildconfig,
-        )
-
-        json_data = serialize(data)
-
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": get_authorization_header(),
-        }
-        url = self.optconfig.settings.tracking_rest_endpoint
-
+        trial = remove_algo_hash(trial)
         try:
-            response = requests.post(url, json=json_data, headers=headers)
+            buildconfig = buildconfig_from_trial(study, trial)
+            if hasattr(trial, "values") and trial.values is not None:
+                trial_value = round(trial.values[0], ndigits=3)
+            elif hasattr(trial, "value") and trial.value is not None:
+                trial_value = round(trial.value, ndigits=3)
+            else:
+                trial_value = float("nan")
+
+            data = TrackingData(
+                trial_number=trial.number + self.trial_number_offset,
+                trial_value=trial_value,
+                scoring=self.optconfig.settings.scoring,
+                trial_state=trial.state.name,
+                all_cv_test_scores=round_scores(trial.user_attrs["test_scores"]),
+                buildconfig=buildconfig,
+            )
+
+            json_data = serialize(data)
+
+            headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": get_authorization_header(),
+            }
+            url = self.optconfig.settings.tracking_rest_endpoint
+            try:
+                response = requests.post(url, json=json_data, headers=headers)
+            except Exception as e:
+                logger.warning(f"Failed to report progress to {url}: {e}")
         except Exception as e:
-            logger.warning(f"Failed to report progress to {url}: {e}")
+            logger.warning(f"Failed to report progress: {e}")
 
 
 @dataclass
@@ -104,7 +109,6 @@ class BuildTrackingData:
 
 
 def track_build(model, buildconfig: BuildConfig):
-
     train_scores, test_scores = get_train_test_scores(model, buildconfig)
 
     rounded_test_scores = (

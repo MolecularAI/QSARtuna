@@ -13,6 +13,18 @@ Lasso
     :members:
 
 
+KNeighborsClassifier
+#####
+..  autoclass:: optunaz.config.optconfig.KNeighborsClassifier
+    :members:
+
+
+KNeighborsRegressor
+#####
+..  autoclass:: optunaz.config.optconfig.KNeighborsRegressor
+    :members:
+
+
 LogisticRegression
 ##################
 ..  autoclass:: optunaz.config.optconfig.LogisticRegression
@@ -88,6 +100,12 @@ ChemPropHyperoptClassifier
 ChemPropHyperoptRegressor
 #########################
 ..  autoclass:: optunaz.config.optconfig.ChemPropHyperoptRegressor
+    :members:
+
+
+ChemPropHyperoptRegressorPretrained
+#########################
+..  autoclass:: optunaz.config.optconfig.ChemPropRegressorPretrained
     :members:
 
 

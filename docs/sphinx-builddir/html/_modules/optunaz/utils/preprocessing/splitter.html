@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils.preprocessing.splitter &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.utils.preprocessing.splitter &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -309,6 +311,23 @@
         <span class="p">)</span></div></div>
 
 
+<span class="c1"># rectify error with numpy trying to allocate too large linspace</span>
+<div class="viewcode-block" id="fd_bin"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.fd_bin">[docs]</a><span class="k">def</span> <span class="nf">fd_bin</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Empty bin merging histogram based on:</span>
+<span class="sd">    https://github.com/numpy/numpy/issues/11879 and</span>
+<span class="sd">    https://github.com/numpy/numpy/issues/10297</span>
+
+<span class="sd">    The modification avoids this via merging adjacent empty bins&quot;&quot;&quot;</span>
+    <span class="n">a_unsorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">left_cap</span><span class="p">,</span> <span class="n">right_cap</span> <span class="o">=</span> <span class="n">a_unsorted</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">a_unsorted</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a_unsorted</span><span class="p">)</span> <span class="o">-</span> <span class="n">left_cap</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">histograms</span><span class="o">.</span><span class="n">_hist_bin_fd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span>
+    <span class="n">left_edges</span> <span class="o">=</span> <span class="n">a</span> <span class="o">//</span> <span class="n">fd</span> <span class="o">*</span> <span class="n">fd</span>
+    <span class="n">right_edges</span> <span class="o">=</span> <span class="n">left_edges</span> <span class="o">+</span> <span class="n">fd</span>
+    <span class="n">new_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">left_edges</span><span class="p">,</span> <span class="n">right_edges</span><span class="p">)))</span> <span class="o">+</span> <span class="n">left_cap</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_bins</span><span class="p">,</span> <span class="n">right_cap</span> <span class="o">+</span> <span class="n">fd</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="stratify"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.stratify">[docs]</a><span class="k">def</span> <span class="nf">stratify</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fd&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stratifies (splits into groups) the values in &#39;y&#39;.</span>
 
@@ -320,8 +339,12 @@
 <span class="sd">    since downstream algorithms can natively deal with integer and categorical data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Bin the values.</span>
-    <span class="n">samples_per_bin</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="c1"># Bin the values</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="o">==</span> <span class="s2">&quot;fd_merge&quot;</span><span class="p">:</span>
+        <span class="c1"># implement fd avoiding this issue: https://github.com/numpy/numpy/issues/11879</span>
+        <span class="n">samples_per_bin</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">fd_bin</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">samples_per_bin</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
 
     <span class="c1"># Extend the first and the last bin by a tiny amount, to include every observation.</span>
     <span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
@@ -356,7 +379,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_splits</span></div>
 
 <div class="viewcode-block" id="HistogramStratifiedShuffleSplit.split"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
         <span class="c1"># Here we stratify &#39;y&#39; ourselves when it is floating-point (&quot;np.inexact&quot;).</span>
         <span class="c1"># Then we delegate the actual splitting to StratifiedShuffleSplit (SSS).</span>
         <span class="c1"># If elements in y are integer or string, SSS handles them natively.</span>
@@ -390,7 +412,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Predefined split.</span>
 
 <span class="sd">    Splits data based predefined labels in a column. Integers can be used, and `-1` flags datapoints for use only in</span>
-<span class="sd">    the training set.</span>
+<span class="sd">    the training set. Data points with missing (NaN) values will be removed from train or test</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">column_name</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
@@ -410,13 +432,18 @@
 <div class="viewcode-block" id="Predefined.split"><a class="viewcode-back" href="../../../../splitters.html#optunaz.utils.preprocessing.splitter.Predefined.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
         <span class="k">assert</span> <span class="n">groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;`groups` should be supplied for Predefined splitter&quot;</span>
         <span class="n">ps</span> <span class="o">=</span> <span class="n">PredefinedSplit</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">))</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">(</span>
+                <span class="s2">&quot;Predefined split not valid, check configuration and data&quot;</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Predefined.groups"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Predefined.groups">[docs]</a>    <span class="k">def</span> <span class="nf">groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">smiles_col</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">column_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">),</span> <span class="s2">&quot;Predefined split should be supplied with a `column_name` with labels&quot;</span>
-        <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">smiles_col</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">column_name</span><span class="p">]</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">smiles_col</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
         <span class="c1"># maintain the `-1` manually defined training set, if it is present</span>
         <span class="k">if</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">groups</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
@@ -467,7 +494,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stratified Group K Fold based on chemical scaffold.</span>
 
 <span class="sd">    Splits data based chemical (Murcko) scaffolds for the compounds in the user input data.</span>
-<span class="sd">    This emulates the real-world scenario when models are applied to novel chemical space&quot;&quot;&quot;</span>
+<span class="sd">    This emulates the real-world scenario when models are applied to novel chemical space</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">bins</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>

@@ -2,13 +2,13 @@
   "task": "optimization",
   "data": {
     "input_column": "canonical",
-    "response_column": "molwt_gt_330",
+    "response_column": "molwt",
     "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
     "test_dataset_file": null,
     "split_strategy": {
       "name": "ScaffoldSplit",
-      "make_scaffold_generic": false,
-      "butina_cluster": 0.4
+      "make_scaffold_generic": true,
+      "butina_cluster": 0.2
     }
 },
   "descriptors": [

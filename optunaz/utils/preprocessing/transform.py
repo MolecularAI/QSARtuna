@@ -74,22 +74,41 @@ class PTRTransform(DataTransform):
             default=None,
         )
 
-    name: Literal["PTRTransform"]
-    parameters: Parameters
+    name: Literal["PTRTransform"] = "PTRTransform"
+    parameters: Parameters = Parameters()
 
     def transform(self, y_) -> np.ndarray:
         assert self.parameters.threshold is not None, "Must define a PTR threshold"
         assert self.parameters.std is not None, "Must define a PTR Std. Dev."
-        return norm.cdf(y_, self.parameters.threshold, self.parameters.std)
-
-    def reverse_transform(self, y_) -> np.ndarray:
-        assert self.parameters.threshold is not None, "Must define a PTR threshold"
-        assert self.parameters.std is not None, "Must define a PTR Std. Dev."
-        return norm.ppf(
-            y_.clip(0.0000000000000001, 0.9999999999999999),
+        y_ = np.array(y_)
+        mask = np.isfinite(y_)
+        ret = np.zeros(y_.shape)
+        ret[mask] = norm.cdf(
+            np.array(y_[mask]).clip(
+                0.0000000000000001,
+            ),
             self.parameters.threshold,
             self.parameters.std,
         )
+        ret[~mask] = np.nan
+        return ret
+
+    def reverse_transform(self, y_) -> np.ndarray:
+        assert self.parameters.threshold is not None, "Must define a PTR threshold"
+        assert float(self.parameters.threshold) != float(
+            "nan"
+        ), "PTR threshold must not be nan"
+        assert self.parameters.std is not None, "Must define a PTR Std. Dev."
+        y_ = np.array(y_)
+        mask = np.isfinite(y_)
+        ret = np.zeros(y_.shape)
+        ret[mask] = norm.ppf(
+            y_[mask].clip(0.0000000000000001, 0.9999999999999999),
+            self.parameters.threshold,
+            self.parameters.std,
+        )
+        ret[~mask] = np.nan
+        return ret
 
 
 class LogBase(str, Enum):
@@ -142,8 +161,8 @@ class ModelDataTransform(DataTransform):
             default=None,
         )
 
-    name: Literal["ModelDataTransform"]
-    parameters: Parameters
+    name: Literal["ModelDataTransform"] = "ModelDataTransform"
+    parameters: Parameters = Parameters()
 
     base_dict = {
         LogBase.LOG2: np.log2,
@@ -181,6 +200,8 @@ class ModelDataTransform(DataTransform):
             transformed = self.transform_df(y_)
         else:
             transformed = self.transform_one(y_)
+        if len(transformed.shape) >= 1:
+            transformed[~np.isfinite(transformed)] = float("nan")
         if self.base_negation[self.parameters.negation]:
             return -transformed
         else:
@@ -188,7 +209,7 @@ class ModelDataTransform(DataTransform):
 
     def reverse_transform(self, y_):
         if self.base_negation[self.parameters.negation]:
-            y_ = -y_
+            y_ = -y_.astype(float)
         if isinstance(y_, pd.Series):
             transformed = self.reverse_transform_df(y_)
         else:
@@ -229,8 +250,8 @@ class VectorFromColumn(AuxTransformer):
             default=",",
         )
 
-    name: Literal["VectorFromColumn"]
-    parameters: Parameters
+    name: Literal["VectorFromColumn"] = "VectorFromColumn"
+    parameters: Parameters = Parameters()
 
     def transform(self, auxiliary_data: np.array) -> np.array:
         return np.array(
@@ -245,31 +266,20 @@ class VectorFromColumn(AuxTransformer):
 class ZScales(AuxTransformer):
     """Z-scales from column
 
-    Calculates Z-scores for sequences or a predefined list of protein targets"""
+    Calculates Z-scores for sequences or a predefined list of peptide/protein targets"""
 
     @apischema.type_name("ZScalesParams")
     @dataclass
     class Parameters:
-        delimiter: Annotated[
-            str,
-            schema(
-                title="Delimiter",
-                description="String used to split the auxiliary column into a vector",
-            ),
-        ] = field(
-            default=",",
-        )
+        pass
 
-    name: Literal["ZScales"]
-    parameters: Parameters
+    name: Literal["ZScales"] = "ZScales"
+    parameters: Parameters = Parameters()
 
     def transform(self, auxiliary_data: np.ndarray) -> np.ndarray:
-        return np.ndarray(
-            [
-                np.fromstring(val, sep=self.parameters.delimiter)
-                for val in auxiliary_data
-            ]
-        )
+        from peptides import Peptide
+
+        return np.array([list(Peptide(val).z_scales()) for val in auxiliary_data])
 
 
 AnyAuxTransformer = Union[VectorFromColumn, ZScales]

@@ -230,6 +230,23 @@ class KFold(Splitter):
         )
 
 
+# rectify error with numpy trying to allocate too large linspace
+def fd_bin(y: np.ndarray) -> np.ndarray:
+    """Empty bin merging histogram based on:
+    https://github.com/numpy/numpy/issues/11879 and
+    https://github.com/numpy/numpy/issues/10297
+
+    The modification avoids this via merging adjacent empty bins"""
+    a_unsorted = np.array(y)
+    left_cap, right_cap = a_unsorted.min(), a_unsorted.max()
+    a = np.sort(a_unsorted) - left_cap
+    fd = np.lib.histograms._hist_bin_fd(a, range)
+    left_edges = a // fd * fd
+    right_edges = left_edges + fd
+    new_bins = np.unique(np.concatenate((left_edges, right_edges))) + left_cap
+    return np.append(new_bins, right_cap + fd)
+
+
 def stratify(y: np.ndarray, bins: str = "fd") -> np.ndarray:
     """Stratifies (splits into groups) the values in 'y'.
 
@@ -241,8 +258,12 @@ def stratify(y: np.ndarray, bins: str = "fd") -> np.ndarray:
     since downstream algorithms can natively deal with integer and categorical data.
     """
 
-    # Bin the values.
-    samples_per_bin, bins = np.histogram(y, bins=bins)
+    # Bin the values
+    if bins == "fd_merge":
+        # implement fd avoiding this issue: https://github.com/numpy/numpy/issues/11879
+        samples_per_bin, bins = np.histogram(y, bins=fd_bin(y))
+    else:
+        samples_per_bin, bins = np.histogram(y, bins=bins)
 
     # Extend the first and the last bin by a tiny amount, to include every observation.
     bins[0] = np.nextafter(bins[0], -np.inf)
@@ -277,7 +298,6 @@ class HistogramStratifiedShuffleSplit(SklearnSplitter):
         return self.n_splits
 
     def split(self, X, y, groups=None):
-
         # Here we stratify 'y' ourselves when it is floating-point ("np.inexact").
         # Then we delegate the actual splitting to StratifiedShuffleSplit (SSS).
         # If elements in y are integer or string, SSS handles them natively.
@@ -311,7 +331,7 @@ class Predefined(GroupingSplitter):
     """Predefined split.
 
     Splits data based predefined labels in a column. Integers can be used, and `-1` flags datapoints for use only in
-    the training set.
+    the training set. Data points with missing (NaN) values will be removed from train or test
     """
 
     column_name: Annotated[
@@ -331,13 +351,18 @@ class Predefined(GroupingSplitter):
     def split(self, X, y=None, groups=None) -> Tuple[np.ndarray, np.ndarray]:
         assert groups is not None, "`groups` should be supplied for Predefined splitter"
         ps = PredefinedSplit(groups)
-        return next(ps.split(X))
+        try:
+            return next(ps.split(X))
+        except StopIteration:
+            raise StopIteration(
+                "Predefined split not valid, check configuration and data"
+            )
 
     def groups(self, df, smiles_col) -> Dict:
         assert (
             self.column_name is not None
         ), "Predefined split should be supplied with a `column_name` with labels"
-        groups = df.set_index(smiles_col)[self.column_name]
+        groups = df.set_index(smiles_col)[self.column_name].dropna()
         # maintain the `-1` manually defined training set, if it is present
         if -1 in groups.unique():
             return groups.to_dict()
@@ -388,7 +413,8 @@ class ScaffoldSplit(GroupingSplitter):
     """Stratified Group K Fold based on chemical scaffold.
 
     Splits data based chemical (Murcko) scaffolds for the compounds in the user input data.
-    This emulates the real-world scenario when models are applied to novel chemical space"""
+    This emulates the real-world scenario when models are applied to novel chemical space
+    """
 
     bins: Annotated[
         str,

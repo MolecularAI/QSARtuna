@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils.mlflow &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.utils.mlflow &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -128,7 +130,6 @@
     <span class="n">optconfig</span><span class="p">:</span> <span class="n">OptimizationConfig</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">Study</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="n">FrozenTrial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mlflow</span><span class="o">.</span><span class="n">set_tracking_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="p">)</span>
 
@@ -144,7 +145,6 @@
         <span class="k">with</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span>
             <span class="n">run_name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">number</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_number_offset</span><span class="p">)</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">run</span><span class="p">:</span>
-
             <span class="n">metric_name</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;optimization_objective_cvmean_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">scoring</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>

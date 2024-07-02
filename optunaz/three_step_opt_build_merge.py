@@ -1,5 +1,6 @@
 import logging
 from typing import Optional, Union
+import math
 
 import json
 from apischema import serialize
@@ -15,10 +16,9 @@ from optunaz.config.optconfig import (
     ChemPropClassifier,
     ChemPropRegressor,
 )
-from optunaz.model_writer import save_model, ModelPersistenceMode
+from optunaz.model_writer import save_model
 from optunaz.objective import Objective
-from optunaz.utils.enums import StudyUserAttrs
-from optunaz.utils.mlflow import MLflowCallback
+from optunaz.utils.enums import StudyUserAttrs, TrialParams
 from optunaz.utils.tracking import InternalTrackingCallback, track_build
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,10 @@ def base_chemprop_params(alg):
     A Check is performed to ensure any parameters outside valid Optuna subspace are popped from fixed parameters.
     """
     from optunaz.algorithms.chem_prop import BaseChemProp
+    from optunaz.config.build_from_opt import encode_name
+    from functools import partial
 
+    _encode_name = partial(encode_name, hash=alg.hash)
     base_cp = BaseChemProp()
     fixed_params = {
         param: getattr(base_cp, param)
@@ -79,7 +82,16 @@ def base_chemprop_params(alg):
         else:
             if not fixed_params[param] in [attr.value for attr in thisattr]:
                 fixed_params.pop(param)
-    return {**fixed_params, **{"algorithm_name": alg.name}}
+    fixed_params = {
+        _encode_name(param): value for param, value in fixed_params.items()
+    }  # add algo hash
+    return {
+        **fixed_params,
+        **{
+            "algorithm_name": alg.name,
+            f"{alg.name}_{TrialParams.ALGORITHM_HASH.value}": alg.hash,
+        },
+    }
 
 
 def run_study(
@@ -133,6 +145,8 @@ def run_study(
         study.set_user_attr("cache", objective.cache)
     callbacks = []
     if optconfig.settings.track_to_mlflow:
+        from optunaz.utils.mlflow import MLflowCallback
+
         callbacks.append(
             MLflowCallback(optconfig=optconfig, trial_number_offset=trial_number_offset)
         )
@@ -217,15 +231,19 @@ def optimize(optconfig: OptimizationConfig, study_name: Optional[str] = None):
                 )
                 # manually set the distributions to avoid dynamic subspace error
                 for st_idx, st in enumerate(study.get_trials(deepcopy=False)):
-                    st.distributions["descriptor"].choices = descript_dist
-                    st.distributions["algorithm_name"].choices = algo_dist
-                    study.trials[st_idx] = st
-                # set parameters for next chemprop study
+                    try:
+                        st.distributions["descriptor"].choices = descript_dist
+                        st.distributions["algorithm_name"].choices = algo_dist
+                        study.trials[st_idx] = st
+                    except KeyError:
+                        pass  # skip trials that did not get a descriptor or algorithm choice
+                # set parameters for next chemprop study (currently share n chemprop trials with
                 if cfg_idx == 0:
+                    n_chemprop_shared_trials = n_chemprop_trials / 2
                     studies = study
                     trial_number_offset = len(study.get_trials())
-                    n_startup_trials = 0
-                    n_trials = n_chemprop_trials
+                    n_startup_trials = math.floor(n_chemprop_shared_trials)
+                    n_trials = math.ceil(n_chemprop_shared_trials)
                 # add the chemprop results to the existing study
                 else:
                     studies.add_trials(study.trials)
@@ -260,7 +278,6 @@ def log_scores(scores, main_score, label: str):
 def build_best(
     buildconfig: BuildConfig,
     outfname,
-    persist_as: ModelPersistenceMode = None,
     cache: Optional[Memory] = None,
 ):
     """Step 2. Build. Train a model with the best hyperparameters."""
@@ -272,7 +289,6 @@ def build_best(
         outfname,
         train_scores,
         test_scores,
-        persist_as,
     )
 
     # print model characteristics
@@ -290,7 +306,6 @@ def build_best(
 def build_merged(
     buildconfig: BuildConfig,
     outfname,
-    persist_as: ModelPersistenceMode = None,
     cache: Optional[Memory] = None,
 ):
     """Step 3. Merge datasets and re-train the model."""
@@ -304,7 +319,6 @@ def build_merged(
         outfname,
         train_scores,
         test_scores,
-        persist_as,
     )
 
     # Print model characteristics.

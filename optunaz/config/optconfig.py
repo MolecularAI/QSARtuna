@@ -162,6 +162,118 @@ class Lasso(Algorithm):
     parameters: Parameters
 
 
+class KNeighborsWeights(str, Enum):
+    """Method used to define the weights for a K-Neighbors Classifier"""
+
+    UNIFORM = "uniform"
+    "uniform weights. All points in each neighborhood are weighted equally."
+    DISTANCE = "distance"
+    """weight points by the inverse of their distance so closer neighbors for a query will have greater \
+     influence than further neighbors"""
+
+
+class KNeighborsMetric(str, Enum):
+    """Metric used to define the weights for a K-Neighbors Classifier"""
+
+    MINKOWSKI = "minkowski"
+    EUCLIDEAN = "euclidean"
+    MANHATTAN = "manhattan"
+
+
+@dataclass
+class KNeighborsClassifier(Algorithm):
+    """KNeighborsClassifier.
+
+    Classifier implementing the k-nearest neighbors vote.
+
+    The principle behind nearest neighbor methods is to find a predefined number of training samples closest in
+    distance to the new point, and predict the label from these. The number of samples is a user-defined constant
+    for k-nearest neighbor learning. Despite its simplicity, nearest neighbors is successful in a large number of
+    classification problems
+    """
+
+    @type_name("KNeighborsClassifierParams")
+    @dataclass
+    class Parameters:
+        @dataclass
+        class KNeighborsClassifierParametersN_Neighbors:
+            low: float = field(default=1, metadata=schema(title="low", min=0))
+            high: float = field(default=10, metadata=schema(title="high", min=0))
+
+        n_neighbors: Annotated[
+            KNeighborsClassifierParametersN_Neighbors,
+            schema(
+                title="N Neighbors",
+                description="Number of neighbors to use by default for kneighbors queries.",
+            ),
+        ] = KNeighborsClassifierParametersN_Neighbors()
+        weights: Annotated[
+            List[KNeighborsWeights],
+            schema(
+                title="Weights",
+                description="Weight function used in prediction",
+            ),
+        ] = field(default_factory=lambda: [KNeighborsWeights.UNIFORM])
+        metric: Annotated[
+            List[KNeighborsMetric],
+            schema(
+                title="Metric",
+                description="Metric to use for distance computation."
+                "The default of “minkowski” results in the standard Euclidean distance",
+            ),
+        ] = field(default_factory=lambda: [KNeighborsMetric.MINKOWSKI])
+
+    name: Literal["KNeighborsClassifier"]
+    parameters: Parameters
+
+
+@dataclass
+class KNeighborsRegressor(Algorithm):
+    """KNeighborsRegressor.
+
+    Regressor implementing the k-nearest neighbors vote.
+
+    The principle behind nearest neighbor methods is to find a predefined number of training samples closest in
+    distance to the new point, and predict the label from these. The number of samples is a user-defined constant
+    for k-nearest neighbor learning. Despite its simplicity, nearest neighbors is successful in a large number of
+    classification problems
+    """
+
+    @type_name("KNeighborsRegressorParams")
+    @dataclass
+    class Parameters:
+        @dataclass
+        class KNeighborsRegressorParametersN_Neighbors:
+            low: float = field(default=1, metadata=schema(title="low", min=0))
+            high: float = field(default=10, metadata=schema(title="high", min=0))
+
+        n_neighbors: Annotated[
+            KNeighborsRegressorParametersN_Neighbors,
+            schema(
+                title="N Neighbors",
+                description="Number of neighbors to use by default for kneighbors queries.",
+            ),
+        ] = KNeighborsRegressorParametersN_Neighbors()
+        weights: Annotated[
+            List[KNeighborsWeights],
+            schema(
+                title="Weights",
+                description="Weight function used in prediction",
+            ),
+        ] = field(default_factory=lambda: [KNeighborsWeights.UNIFORM])
+        metric: Annotated[
+            List[KNeighborsMetric],
+            schema(
+                title="Metric",
+                description="Metric to use for distance computation."
+                "The default of “minkowski” results in the standard Euclidean distance",
+            ),
+        ] = field(default_factory=lambda: [KNeighborsMetric.MINKOWSKI])
+
+    name: Literal["KNeighborsRegressor"]
+    parameters: Parameters
+
+
 @dataclass
 class LogisticRegression(Algorithm):
     """Logistic Regression classifier.
@@ -1170,6 +1282,67 @@ class ChemPropRegressor(Algorithm):
     parameters: Parameters
 
 
+class ChemPropFrzn(str, Enum):
+    """
+    `QSARtuna` implements a hyperparameter search space level for ChemProp in order to define Hyperopt search space
+     to optimise. Increasing levels correspond to increasing the search space.
+    """
+
+    NONE = "none"
+    """No weights are frozen"""
+    MPNN = "mpnn"
+    """Freeze the weights in only the MPNN during transfer learning"""
+    MPNN_FIRST_FFN = "mpnn_first_ffn"
+    """Freeze the MPNN and first layer of the FFN during transfer learning"""
+    MPNN_LAST_FFN = "mpnn_last_ffn"
+    """Freeze the MPNN and until the penultimate layer of the FFN during transfer learning"""
+
+
+@dataclass
+class ChemPropRegressorPretrained(Algorithm):
+    """Chemprop Regressor from a pretrined model
+
+    Pretraining can be carried out by supplying previously trained QSARtuna ChemProp PKL model.
+    """
+
+    @type_name("ChemPropRegressorPretrainedParams")
+    @dataclass
+    class Parameters:
+        @type_name("ChemPropRegressorPretrainedEpochs")
+        @dataclass
+        class ChemPropParametersEpochs:
+            low: int = field(default=4, metadata=schema(min=0, max=300))
+            high: int = field(default=30, metadata=schema(min=0, max=300))
+            q: int = field(default=1, metadata=schema(min=1))
+
+        epochs: Annotated[
+            ChemPropParametersEpochs,
+            schema(
+                title="epochs",
+                description="Number of epochs to fine-tune the pretrained model on new data",
+            ),
+        ] = ChemPropParametersEpochs()
+
+        frzn: Annotated[
+            List[ChemPropFrzn],
+            schema(
+                title="Frozen layers",
+                description="Decide which layers of the MPNN or FFN to freeze during transfer learning.",
+            ),
+        ] = field(default_factory=lambda: [ChemPropFrzn.NONE])
+
+        pretrained_model: Annotated[
+            str,
+            schema(
+                title="Pretrained Model",
+                description="Path to a pretrained QSARtuna pkl model",
+            ),
+        ] = field(default=None)
+
+    name: Literal["ChemPropRegressorPretrained"]
+    parameters: Parameters
+
+
 class ChemPropSearch_Parameter_Level(str, Enum):
     """
     `QSARtuna` implements a hyperparameter search space level for ChemProp in order to define Hyperopt search space
@@ -1341,15 +1514,18 @@ AnyRegressionAlgorithm = Union[
     PLSRegression,
     RandomForestRegressor,
     Ridge,
+    KNeighborsRegressor,
     SVR,
     XGBRegressor,
     PRFClassifier,  # PRFClassifier ingests/outputs continuous probabilities so should be evaluated as regressor
     ChemPropRegressor,
+    ChemPropRegressorPretrained,
     ChemPropHyperoptRegressor,
 ]
 
 AnyClassificationAlgorithm = Union[
     AdaBoostClassifier,
+    KNeighborsClassifier,
     LogisticRegression,
     RandomForestClassifier,
     SVC,
@@ -1428,6 +1604,7 @@ MapieCompatibleAlgorithm = Union[
     Lasso,
     PLSRegression,
     RandomForestRegressor,
+    KNeighborsRegressor,
     Ridge,
     SVR,
     XGBRegressor,
@@ -1456,7 +1633,7 @@ class Mapie(Algorithm):
                 description="Base estimator to use",
             ),
         ] = MapieCompatibleAlgorithm
-        alpha: Annotated[
+        mapie_alpha: Annotated[
             float,
             schema(
                 min=0.01,
@@ -1481,6 +1658,7 @@ AnyChemPropAlgorithm = [
     ChemPropClassifier,
     ChemPropHyperoptClassifier,
     ChemPropRegressor,
+    ChemPropRegressorPretrained,
     ChemPropHyperoptRegressor,
 ]
 
@@ -1500,6 +1678,7 @@ def detect_mode_from_algs(algs: List[AnyAlgorithm]) -> ModelMode:
         SVR,
         XGBRegressor,
         ChemPropRegressor,
+        ChemPropRegressorPretrained,
         ChemPropHyperoptRegressor,
         PRFClassifier,
         Mapie,
@@ -1620,7 +1799,8 @@ class OptimizationConfig:
             default=False,
             metadata=schema(
                 title="Minimise cross-fold deviation",
-                description="Whether or not to require Optuna to also optimise for low cross-fold standard deviation of the primary metric",
+                description="Whether or not to require Optuna to also optimise for low cross-fold standard deviation "
+                "of the primary metric",
             ),
         )
 
@@ -1782,6 +1962,8 @@ class OptimizationConfig:
         """
         for algorithm in self.algorithms:
             algorithm.hash = md5_hash(serialize(algorithm))
+            if hasattr(algorithm.parameters, "estimator"):
+                algorithm.parameters.estimator.hash = md5_hash(serialize(algorithm))
 
     def __post_init__(self):
         # Sync 'mode' in "root" (for GUI) and in settings.mode (original).

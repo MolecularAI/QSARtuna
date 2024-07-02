@@ -49,7 +49,6 @@ class MLflowCallback:
     optconfig: OptimizationConfig = None
 
     def __call__(self, study: optuna.study.Study, trial: FrozenTrial) -> None:
-
         if self.tracking_uri is not None:
             mlflow.set_tracking_uri(self.tracking_uri)
 
@@ -65,7 +64,6 @@ class MLflowCallback:
         with mlflow.start_run(
             run_name=str(trial.number + self.trial_number_offset)
         ) as run:
-
             metric_name = (
                 f"optimization_objective_cvmean_{self.optconfig.settings.scoring}"
             )

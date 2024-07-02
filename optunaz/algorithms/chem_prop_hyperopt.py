@@ -1,9 +1,10 @@
 import sys
 import tarfile
 import io
+import warnings
 from io import StringIO
 import os
-import logging
+import logging.config
 import chemprop
 import torch
 from functools import partialmethod, partial
@@ -21,8 +22,18 @@ from optunaz.algorithms.side_info import binarise_side_info, process_side_info
 from tqdm import tqdm
 
 tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
-logging.getLogger("chemprop").disabled = True
+logging.getLogger("train").disabled = True
+logging.getLogger("train").propagate = False
+logging.getLogger("train").setLevel(logging.ERROR)
+logging.config.dictConfig(
+    {
+        "version": 1,
+        "disable_existing_loggers": True,
+    }
+)
 np.seterr(divide="ignore")
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
 # Monkey patch MoleculeDataLoader num_workers=0 for parallel interpret. num_workers is baked in at 8 and
@@ -32,7 +43,7 @@ MoleculeDataLoader = partial(_MoleculeDataLoader, num_workers=0)
 chemprop.interpret.MoleculeDataLoader = MoleculeDataLoader
 
 
-class CaptureInterpret(list):
+class CaptureStdOut(list):
     def __enter__(self):
         self._stdout = sys.stdout
         sys.stdout = self._stringio = StringIO()
@@ -289,31 +300,47 @@ class BaseChemPropHyperopt(BaseEstimator):
                     ).to_csv(x_aux_path.name, index=False)
                     # arguments += ["--features_path", f"{x_aux_path.name}"] TODO: allow features once ChemProp is updated
 
-                if self.num_iters > 1:
-                    with tempfile.NamedTemporaryFile(
-                        delete=True, mode="w+"
-                    ) as config_save_path:
-                        hyp_arguments += [
-                            "--config_save_path",
-                            f"{config_save_path.name}",
-                        ]
-                        train_arguments += ["--config_path", f"{config_save_path.name}"]
-                        hyp_args = chemprop.args.HyperoptArgs().parse_args(
-                            hyp_arguments
-                        )
-                        chemprop.hyperparameter_optimization.hyperopt(args=hyp_args)
-                        train_args = chemprop.args.TrainArgs().parse_args(
-                            train_arguments
-                        )
+                with CaptureStdOut() as _:
+                    if self.num_iters > 1:
+                        with tempfile.NamedTemporaryFile(
+                            delete=True, mode="w+"
+                        ) as config_save_path:
+                            hyp_arguments += [
+                                "--config_save_path",
+                                f"{config_save_path.name}",
+                            ]
+                            train_arguments += ["--config_path", f"{config_save_path.name}"]
+                            hyp_args = chemprop.args.HyperoptArgs().parse_args(
+                                hyp_arguments
+                            )
+                            chemprop.hyperparameter_optimization.hyperopt(args=hyp_args)
+                            train_args = chemprop.args.TrainArgs().parse_args(
+                                train_arguments
+                            )
+                            chemprop.train.cross_validate(
+                                args=train_args, train_func=chemprop.train.run_training
+                            )
+                    else:
+                        train_args = chemprop.args.TrainArgs().parse_args(train_arguments)
                         chemprop.train.cross_validate(
                             args=train_args, train_func=chemprop.train.run_training
                         )
-                else:
-                    train_args = chemprop.args.TrainArgs().parse_args(train_arguments)
-                    chemprop.train.cross_validate(
-                        args=train_args, train_func=chemprop.train.run_training
-                    )
                 self.model_ = save_model_memory(save_dir)
+                for pre_param, pre_value in train_args.__dict__.items():
+                    if not hasattr(self, pre_param):
+                        if not isinstance(pre_value, (str, bool, int, float)):
+                            continue
+                        if not (
+                            pre_param
+                            in [
+                                "argument_buffer",
+                                "class_variables",
+                                "description",
+                                "argument_default",
+                            ]
+                            and not pre_param[0] == "_"
+                        ):
+                            self.__dict__[pre_param] = pre_value
         if self.x_aux_ is not None:
             x_aux_path.close()
         return self
@@ -354,14 +381,15 @@ class BaseChemPropHyperopt(BaseEstimator):
             else:
                 X = np.array(X[:, 0].reshape(len(X), 1))
 
-            args = chemprop.args.PredictArgs().parse_args(arguments)
-            model_objects = chemprop.train.load_model(args=args)
-            preds = np.array(
-                chemprop.train.make_predictions(
-                    args=args, model_objects=model_objects, smiles=X
-                ),
-                dtype="<U32",
-            )
+            with CaptureStdOut() as _:
+                args = chemprop.args.PredictArgs().parse_args(arguments)
+                model_objects = chemprop.train.load_model(args=args)
+                preds = np.array(
+                    chemprop.train.make_predictions(
+                        args=args, model_objects=model_objects, smiles=X
+                    ),
+                    dtype="<U32",
+                )
             if self.x_aux_ is not None:
                 x_aux_path.close()
         preds[preds == "Invalid SMILES"] = np.nan
@@ -428,30 +456,32 @@ class BaseChemPropHyperopt(BaseEstimator):
             else:
                 X = np.array(X[:, 0].reshape(len(X), 1))
 
-            args = chemprop.args.PredictArgs().parse_args(arguments)
-            if uncertainty_method == "dropout":
-                model_objects = list(chemprop.train.load_model(args=args))
-                model_objects[3] = iter(model_objects[3])
-                model_objects[2] = iter(model_objects[2])
-                model_objects = tuple(model_objects)
-            else:
-                model_objects = chemprop.train.load_model(args=args)
-            preds = np.array(
-                chemprop.train.make_predictions(
-                    args=args,
-                    model_objects=model_objects,
-                    smiles=X,
-                    return_uncertainty=True,
-                ),
-                dtype="<U32",
-            )
+            with CaptureStdOut() as _:
+                args = chemprop.args.PredictArgs().parse_args(arguments)
+                if uncertainty_method == "dropout":
+                    model_objects = list(chemprop.train.load_model(args=args))
+                    model_objects[3] = iter(model_objects[3])
+                    model_objects[2] = iter(model_objects[2])
+                    model_objects = tuple(model_objects)
+                else:
+                    model_objects = chemprop.train.load_model(args=args)
+                preds = np.array(
+                    chemprop.train.make_predictions(
+                        args=args,
+                        model_objects=model_objects,
+                        smiles=X,
+                        return_uncertainty=True,
+                    ),
+                    dtype="<U32",
+                )
             if self.x_aux_ is not None:
                 x_aux_path.close()
         preds[preds == "Invalid SMILES"] = np.nan
         preds[preds == "None"] = np.nan
-        preds = preds[-1].astype(np.float32)
-        if preds.shape[1] != 1:
-            preds = preds[:, 0].reshape(len(X), 1)
+        for p in range(preds.shape[0]):
+            preds[p] = preds[p].astype(np.float32)
+            if preds[p].shape[1] != 1:
+                preds[p][:, 0].reshape(len(X), 1)
         return preds
 
     def interpret(self, X, prop_delta=0.75):
@@ -488,7 +518,7 @@ class BaseChemPropHyperopt(BaseEstimator):
                 X = pd.DataFrame(X, columns=["smiles"])
                 X.to_csv(data_path.name, index=False)
                 args = chemprop.args.InterpretArgs().parse_args(intrprt_args)
-                with CaptureInterpret() as intrprt:
+                with CaptureStdOut() as intrprt:
                     interpret(args=args)
         intrprt = [
             line.split(",")
@@ -536,23 +566,24 @@ class BaseChemPropHyperopt(BaseEstimator):
             # if self.x_aux_ is not None:
             # fprnt_args += ["--features_path", f"{x_aux_path.name}"] TODO: allow features once ChemProp is updated
             # load_model returns pred&train arguments, object models & tasks info - but we only need TrainArgs here
-            args = chemprop.args.FingerprintArgs().parse_args(fprnt_args)
-            _, trainargs, _, _, _, _ = chemprop.train.load_model(args=args)
-            if fingerprint_type == "MPN":
-                numpy_fp = np.zeros((len(X), trainargs.hidden_size))
-            elif fingerprint_type == "last_FFN":
-                numpy_fp = np.zeros((len(X), trainargs.ffn_hidden_size))
-            else:
-                raise ValueError("fingerprint_type should be one of ['MPN','last_FFN']")
-            numpy_fp[:] = np.nan
-            try:
-                fps = chemprop.train.molecule_fingerprint.molecule_fingerprint(
-                    args=args, smiles=valid_smiles
-                )
-                fps = fps.reshape(fps.shape[:-1])
-                numpy_fp[valid_idx] = fps
-            except (ValueError, AttributeError):
-                pass
+            with CaptureStdOut() as _:
+                args = chemprop.args.FingerprintArgs().parse_args(fprnt_args)
+                _, trainargs, _, _, _, _ = chemprop.train.load_model(args=args)
+                if fingerprint_type == "MPN":
+                    numpy_fp = np.zeros((len(X), trainargs.hidden_size))
+                elif fingerprint_type == "last_FFN":
+                    numpy_fp = np.zeros((len(X), trainargs.ffn_hidden_size))
+                else:
+                    raise ValueError("fingerprint_type should be one of ['MPN','last_FFN']")
+                numpy_fp[:] = np.nan
+                try:
+                    fps = chemprop.train.molecule_fingerprint.molecule_fingerprint(
+                        args=args, smiles=valid_smiles
+                    )
+                    fps = fps.reshape(fps.shape[:-1])
+                    numpy_fp[valid_idx] = fps
+                except (ValueError, AttributeError):
+                    pass
             if self.x_aux_ is not None:
                 x_aux_path.close()
         return pd.DataFrame(numpy_fp)

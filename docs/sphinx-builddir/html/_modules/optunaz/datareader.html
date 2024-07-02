@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.datareader &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.datareader &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -104,6 +106,7 @@
     <span class="n">LogBase</span><span class="p">,</span>
     <span class="n">LogNegative</span><span class="p">,</span>
     <span class="n">AnyAuxTransformer</span><span class="p">,</span>
+    <span class="n">DataTransform</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -155,6 +158,8 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="n">nrow_before</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows with NaNs during load and splitting steps.&quot;</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No compounds remain for modelling&quot;</span><span class="p">)</span>
 
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>  <span class="c1"># default the dtype to numerical float for now</span>
     <span class="c1"># detect rows with to_numeric/to_boolean errors, report and fail the run</span>
@@ -200,6 +205,17 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No valid SMILES in user input column: </span><span class="si">{</span><span class="n">smiles_col</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split_strategy</span><span class="p">,</span> <span class="n">GroupingSplitter</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Split strategy </span><span class="si">{</span><span class="n">split_strategy</span><span class="si">}</span><span class="s2"> will drop &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">df</span><span class="p">[</span><span class="n">smiles_col</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> NaN labelled rows&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">dropmask</span> <span class="o">=</span> <span class="p">(</span><span class="n">dropmask</span> <span class="o">|</span> <span class="n">df</span><span class="p">[</span><span class="n">smiles_col</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="o">.</span><span class="n">isna</span><span class="p">())</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">if</span> <span class="n">dropmask</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No valid split labels for split strategy </span><span class="si">{</span><span class="n">split_strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">dropmask</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">valid_smiles</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">smiles_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
@@ -265,10 +281,7 @@
         <span class="n">df_dedup</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">cancol</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_dedup</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">df_dedup</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">auxcol</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_dedup</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">df_dedup</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Deduplication removed </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">df_dedup</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows at index:&quot;</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df_dedup</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deduplication removed </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">df_dedup</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows&quot;</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df_dedup</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Deduplication by averaging/median drops original SMILES column `smicol`.</span>
@@ -338,11 +351,47 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
     <span class="n">merged_smiles</span> <span class="o">=</span> <span class="n">train_smiles</span> <span class="o">+</span> <span class="n">test_smiles</span>
     <span class="n">merged_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_y</span><span class="p">,</span> <span class="n">test_y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">merged_aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_aux</span><span class="p">,</span> <span class="n">test_aux</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">merged_aux</span><span class="p">):</span>
-        <span class="n">merged_aux</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_aux</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_aux</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">merged_aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_aux</span><span class="p">,</span> <span class="n">test_aux</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">merged_aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_aux</span><span class="p">,</span> <span class="n">test_aux</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">merged_aux</span><span class="p">):</span>
+            <span class="n">merged_aux</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>
 
     <span class="k">return</span> <span class="n">merged_smiles</span><span class="p">,</span> <span class="n">merged_y</span><span class="p">,</span> <span class="n">merged_aux</span></div>
+
+
+<div class="viewcode-block" id="transform"><a class="viewcode-back" href="../../optunaz.html#optunaz.datareader.transform">[docs]</a><span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
+    <span class="n">smiles_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">y_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">aux_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">transform</span><span class="p">:</span> <span class="n">DataTransform</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="n">tansformed_y</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">y_</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">tansformed_y</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">tansformed_y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Transform settings incompatible with input data. Check your configuration&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Transform </span><span class="si">{</span><span class="n">transform</span><span class="si">}</span><span class="s2"> will remove </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span><span class="si">}</span><span class="s2"> incompatible data points.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">smiles_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">smiles_</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">y_</span> <span class="o">=</span> <span class="n">tansformed_y</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">aux_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">aux_</span> <span class="o">=</span> <span class="n">aux_</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_</span> <span class="o">=</span> <span class="n">tansformed_y</span>
+    <span class="k">return</span> <span class="n">smiles_</span><span class="p">,</span> <span class="n">y_</span><span class="p">,</span> <span class="n">aux_</span></div>
 
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../optunaz.html#optunaz.datareader.Dataset">[docs]</a><span class="nd">@dataclass</span>
@@ -546,6 +595,9 @@
             <span class="n">test_y</span><span class="p">,</span>
             <span class="n">test_auxs</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="n">ptr_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_threshold</span>
+        <span class="n">ptr_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_std</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_transform</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">optunaz.utils.preprocessing.transform</span> <span class="kn">import</span> <span class="n">ModelDataTransform</span>
 
@@ -554,30 +606,27 @@
                 <span class="n">negation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_transform_negative</span><span class="p">,</span>
                 <span class="n">conversion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_transform_unit_conversion</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">train_y</span> <span class="o">=</span> <span class="n">log_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train_y</span><span class="p">)</span>
-            <span class="n">test_y</span> <span class="o">=</span> <span class="n">log_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test_y</span><span class="p">)</span>
+            <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_auxs</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span>
+                <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_auxs</span><span class="p">,</span> <span class="n">log_transform</span>
+            <span class="p">)</span>
+            <span class="n">test_smiles</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="n">test_auxs</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span>
+                <span class="n">test_smiles</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="n">test_auxs</span><span class="p">,</span> <span class="n">log_transform</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_threshold</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">log_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_threshold</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_std</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">log_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_std</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
+                <span class="n">ptr_threshold</span> <span class="o">=</span> <span class="n">log_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">ptr_threshold</span><span class="p">)</span>
+                <span class="n">ptr_std</span> <span class="o">=</span> <span class="n">log_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">ptr_std</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Log transform applied&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">optunaz.utils.preprocessing.transform</span> <span class="kn">import</span> <span class="n">PTRTransform</span>
 
-            <span class="n">ptr_transform</span> <span class="o">=</span> <span class="n">PTRTransform</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
-                <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_threshold</span><span class="p">,</span>
-                <span class="n">std</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_threshold_representation_std</span><span class="p">,</span>
+            <span class="n">ptr_transform</span> <span class="o">=</span> <span class="n">PTRTransform</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="n">ptr_threshold</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">ptr_std</span><span class="p">)</span>
+            <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_auxs</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span>
+                <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_auxs</span><span class="p">,</span> <span class="n">ptr_transform</span>
             <span class="p">)</span>
-            <span class="n">train_y</span> <span class="o">=</span> <span class="n">ptr_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train_y</span><span class="p">)</span>
-            <span class="n">test_y</span> <span class="o">=</span> <span class="n">ptr_transform</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test_y</span><span class="p">)</span>
+            <span class="n">test_smiles</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="n">test_auxs</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span>
+                <span class="n">test_smiles</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="n">test_auxs</span><span class="p">,</span> <span class="n">ptr_transform</span>
+            <span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;PTR transform applied&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aux_column</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">aux_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -616,8 +665,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_smiles</span> <span class="o">=</span> <span class="n">test_smiles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_y</span> <span class="o">=</span> <span class="n">test_y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_aux</span> <span class="o">=</span> <span class="n">test_auxs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sets_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialized sets:&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialized sets&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;len(_train_smiles):</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_smiles</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;len(_train_y):</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_y</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -638,6 +688,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sets_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_sets</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_sets</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_train_smiles</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_train_y</span><span class="p">,</span>
@@ -667,7 +718,31 @@
                 <span class="s2">&quot;Requested merged (training+test) dataset, &quot;</span>
                 <span class="s2">&quot;but no test set specified, returning training dataset.&quot;</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_aux</span></div></div>
+            <span class="k">return</span> <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_aux</span></div>
+
+<div class="viewcode-block" id="Dataset.check_sets"><a class="viewcode-back" href="../../optunaz.html#optunaz.datareader.Dataset.check_sets">[docs]</a>    <span class="k">def</span> <span class="nf">check_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check sets are valid&quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_smiles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Insufficient train SMILES (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_smiles</span><span class="p">)</span><span class="si">}</span><span class="s2">), check data and/or splitting strategy&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_type</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_y</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Train is not binary classification (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_y</span><span class="p">))</span><span class="si">}</span><span class="s2"> distinct values), check data and/or splitting strategy&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_type</span> <span class="o">==</span> <span class="s2">&quot;regression&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_y</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">5</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Train values do not appear valid for regression (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_y</span><span class="p">))</span><span class="si">}</span><span class="s2"> response values)&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_smiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_smiles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_type</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_y</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Test is not binary classification (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_y</span><span class="p">))</span><span class="si">}</span><span class="s2"> distinct values), check data and/or splitting strategy&quot;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_type</span> <span class="o">==</span> <span class="s2">&quot;regression&quot;</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_y</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">5</span>
+                <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Train values do not appear valid for regression (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_y</span><span class="p">))</span><span class="si">}</span><span class="s2"> response values)&quot;</span></div></div>
 </pre></div>
 
            </div>

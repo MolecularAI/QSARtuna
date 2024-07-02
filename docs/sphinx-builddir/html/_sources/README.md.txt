@@ -1,8 +1,15 @@
-# QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)
+# QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and known publically as QSARtuna)
 
 Build predictive models for CompChem with hyperparameters optimized by [Optuna](https://optuna.org/).
 
-Developed with Uncertainty Quantification and model explainability in mind.
+Internal AZ links: 
+[Docs](https://pages.scp.astrazeneca.net/mai/qsartuna),
+[Code](https://github.com/AZU-RDIT/optuna_az/),
+[Issues](https://jira.astrazeneca.com/projects/OPTUNA).
+
+External (QSARtuna) links:
+[Public](https://github.com/MolecularAI/QSARtuna/blob/master/README.md?_sm_nck=1),
+[Public docs](https://molecularai.github.io/QSARtuna/).
 
 ## Background
 
@@ -14,10 +21,6 @@ for the given data.
 The search itself 
 is done using [Optuna](https://optuna.org/).
 
-Developed models employ
-the latest state-of-the-art
-uncertainty estimation and
-explainability python packages
 
 ### The three-step process
 
@@ -38,7 +41,7 @@ QSARtuna is structured around three steps:
     but it has a big benefit that this final model is trained on the all available data.   
 
 
-## JSON-based Command-line interface
+## JSON-based Command-line interface on AZ SCP
 
 Let's look at a trivial example of modelling molecular weight
 using a training set of 50 molecules.
@@ -52,7 +55,8 @@ It contains four main sections:
 * **descriptors** - which molecular descriptors to use.
 * **algorithms** - which ML algorithms to use.
 
-Below is the example of such a file 
+Below is the example of such file 
+(it is also available in the [source code repository](https://github.com/AZU-RDIT/optuna_az/blob/master/examples/optimization/regression.json)):
 
 ```json
 {
@@ -116,8 +120,8 @@ Below is the example of such a file
 ```
 
 Data section specifies location of the dataset file.
-In this example it specifies a relative path to the `tests/data` folder.
-
+In this example it specifies a relative path to the `tests/data` folder
+in the [source code repository](https://github.com/AZU-RDIT/optuna_az/tree/master/tests/data/DRD2/subset-50).
 
 Settings section specifies that:
 * we are building a regression model,
@@ -131,9 +135,9 @@ and optimization is free to pair any specified descriptor with any of the algori
 
 When we have our data and our configuration, it is time to start the optimization.
 
-### Running via singulartity
+### Running on SCP
 
-QSARtuna can be deployed using [Singularity](https://sylabs.io/guides/3.7/user-guide/index.html) container.
+QSARtuna is deployed on SCP using [Singularity](https://sylabs.io/guides/3.7/user-guide/index.html) container.
 
 To run commands inside the container, Singularity uses the following syntax:
 ```shell
@@ -173,12 +177,12 @@ We can submit our script to the queue by giving `sbatch` the following script:
 # The example we use is in examples/optimization/regression_drd2_50.json.
 
 # The example we chose uses relative paths to data files, change directory.
-cd /{project_folder}/OptunaAZ-versions/OptunaAZ_latest
+cd /projects/cc/mai/OptunaAZ-versions/OptunaAZ_latest
 
 singularity exec \
-  /{project_folder}/containers/QSARtuna_latest.sif \
+  /projects/cc/mai/containers/QSARtuna_latest.sif \
   /opt/qsartuna/.venv/bin/qsartuna-optimize \
-  --config{project_folder}/examples/optimization/regression_drd2_50.json \
+  --config examples/optimization/regression_drd2_50.json \
   --best-buildconfig-outpath ~/qsartuna-target/best.json \
   --best-model-outpath ~/qsartuna-target/best.pkl \
   --merged-model-outpath ~/qsartuna-target/merged.pkl
@@ -191,7 +195,7 @@ When the script is complete, it will create pickled model files inside your home
 
 When the model is built, run inference:
 ```shell
-singularity exec /{project_folder}/containers/QSARtuna_latest.sif \
+singularity exec /projects/cc/mai/containers/QSARtuna_latest.sif \
   /opt/qsartuna/.venv/bin/qsartuna-predict \
   --model-file target/merged.pkl \
   --input-smiles-csv-file tests/data/DRD2/subset-50/test.csv \
@@ -207,7 +211,7 @@ This can be specified by modifying the above command and supplying
 
 E.g:
 ```shell
-singularity exec /{project_folder}/containers/QSARtuna_2.5.1.sif \
+singularity exec /projects/cc/mai/containers/QSARtuna_2.5.1.sif \
   /opt/qsartuna/.venv/bin/qsartuna-predict \
   --model-file 2.5.1_model.pkl \
   --input-smiles-csv-file tests/data/DRD2/subset-50/test.csv \
@@ -216,42 +220,6 @@ singularity exec /{project_folder}/containers/QSARtuna_2.5.1.sif \
 ```
 
 would generate predictions for a model trained with QSARtuna 2.5.1.
-
-### Optional: inspect
-To inspect performance of different models tried during optimization,
-use [MLFlow Tracking UI](https://www.mlflow.org/docs/latest/tracking.html):
-```bash
-module load mlflow
-mlflow ui
-```
-
-Then open mlflow link your browser.
-
-![mlflow select experiment](docs/images/mlflow-select-experiment.png)
-
-If you run `mlflow ui` on SCP, 
-you can forward your mlflow port 
-with a separate SSH session started on your local ("non-SCP") machine:
-```bash
-ssh -N -L localhost:5000:localhost:5000 user@login.intranet.net
-```
-("-L" forwards ports, and "-N" just to not execute any commands).
-
-In the MLFlow Tracking UI, select experiment to the left, 
-it is named after the input file path.
-Then select all runs/trials in the experiment, and choose "Compare". 
-You will get a comparison page for selected runs/trials in the experiment.
-
-![mlflow inspecting trials](docs/images/mlflow-inspecting-trials.png)
-
-Comparison page will show MLFlow Runs (called Trials in Optuna), 
-as well as their Parameters and Metrics.
-At the bottom there are plots. 
-For X-axis, select "trial_number".
-For Y-axis, start with "optimization_objective_cvmean_r2".
-
-You can get more details by clicking individual runs. 
-There you can access run/trial build (training) configuration.
 
 
 ## Run from Python/Jupyter Notebook
@@ -264,7 +232,7 @@ conda create --name my_env_with_qsartuna python=3.10.10 jupyter pip
 conda activate my_env_with_qsartuna
 module purge  # Just in case.
 which python  # Check. Should output path that contains "my_env_with_qsartuna".
-python -m pip install 
+python -m pip install http://pages.scp.astrazeneca.net/mai/qsartuna/releases/QSARtuna_latest.tar.gz
 ```
 
 Then you can use QSARtuna inside your Notebook:

@@ -33,5 +33,11 @@ html: Makefile
 $(SOURCEDIR)/_static/pytest:
 	cd .. && pytest --cov-report html:docs/$(SOURCEDIR)/_static/pytest/coverage/ --cov-report xml:coverage.xml --html=docs/$(SOURCEDIR)/_static/pytest/pytest/index.html --cov optunaz
 
+scpdocdeploy:
+	rsync -avz $(BUILDDIR)/html/ login.scp.astrazeneca.net:/projects/mai/public_html/qsartuna/ --no-o --no-g --omit-dir-times --no-perms
+	# adding --delete to rsync removes qsartuna/releases!
+	# Alternative:
+	# scp -r $(BUILDDIR)/html login.scp.astrazeneca.net:/projects/mai/public_html/qsartuna/
+
 clean:
 	rm -rf $(BUILDDIR) $(SOURCEDIR)

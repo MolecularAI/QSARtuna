@@ -26,6 +26,7 @@ from optunaz.utils.preprocessing.transform import (
     LogBase,
     LogNegative,
     AnyAuxTransformer,
+    DataTransform,
 )
 
 logger = logging.getLogger(__name__)
@@ -77,6 +78,8 @@ def read_data(
         logger.info(
             f"Removed {nrow_before - df.shape[0]} rows with NaNs during load and splitting steps."
         )
+        if df.shape[0] == 0:
+            raise ValueError("No compounds remain for modelling")
 
     dtype = np.float64  # default the dtype to numerical float for now
     # detect rows with to_numeric/to_boolean errors, report and fail the run
@@ -122,6 +125,17 @@ def read_data(
         msg = f"No valid SMILES in user input column: {smiles_col}"
         logger.info(msg)
         raise ValueError(msg)
+    if isinstance(split_strategy, GroupingSplitter):
+        msg = (
+            f"Split strategy {split_strategy} will drop "
+            f"{df[smiles_col].map(groups).isna().sum()} NaN labelled rows"
+        )
+        logger.info(msg)
+        dropmask = (dropmask | df[smiles_col].map(groups).isna()).values
+        if dropmask.all():
+            logger.info(f"No valid split labels for split strategy {split_strategy}")
+            raise ValueError(msg)
+
     df.drop(df[dropmask].index, inplace=True)
 
     valid_smiles = df[smiles_col].to_list()
@@ -187,10 +201,7 @@ def deduplicate(
         df_dedup.loc[:, cancol] = df_dedup.loc[:, "id"].str.split("|").str[0]
         df_dedup.loc[:, auxcol] = df_dedup.loc[:, "id"].str.split("|").str[1]
     if df_dedup.shape[0] < df.shape[0]:
-        logger.info(
-            f"Deduplication removed {df.shape[0] - df_dedup.shape[0]} rows at index:"
-        )
-        logger.info(f"{df[~df.index.isin(df_dedup)].index.to_list()}")
+        logger.info(f"Deduplication removed {df.shape[0] - df_dedup.shape[0]} rows")
     df = df_dedup.reset_index(drop=True)
 
     # Deduplication by averaging/median drops original SMILES column `smicol`.
@@ -260,11 +271,47 @@ def merge(
 ) -> Tuple[List[str], np.ndarray, np.ndarray]:
     merged_smiles = train_smiles + test_smiles
     merged_y = np.concatenate((train_y, test_y), axis=None)
-    merged_aux = np.concatenate((train_aux, test_aux), axis=None)
-    if not any(merged_aux):
-        merged_aux = None
+    if isinstance(train_aux, np.ndarray) and len(train_aux.shape) == 2:
+        merged_aux = np.concatenate((train_aux, test_aux), axis=0)
+    else:
+        merged_aux = np.concatenate((train_aux, test_aux), axis=None)
+    try:
+        if not any(merged_aux):
+            merged_aux = None
+    except ValueError:
+        pass
 
     return merged_smiles, merged_y, merged_aux
+
+
+def transform(
+    smiles_: List[str],
+    y_: np.ndarray,
+    aux_: np.ndarray,
+    transform: DataTransform,
+) -> Tuple[List[str], np.ndarray, np.ndarray]:
+    tansformed_y = transform.transform(y_)
+    try:
+        mask = np.isfinite(tansformed_y).values
+    except AttributeError:
+        mask = np.isfinite(tansformed_y)
+    if len(mask) > 0 and (~mask).all():
+        msg = (
+            f"Transform settings incompatible with input data. Check your configuration"
+        )
+        logger.info(msg)
+        raise ValueError(msg)
+    if sum(~mask) > 0:
+        logger.info(
+            f"Transform {transform} will remove {sum(~mask)} incompatible data points."
+        )
+        smiles_ = np.array(smiles_)[mask].tolist()
+        y_ = tansformed_y[mask]
+        if aux_ is not None:
+            aux_ = aux_[mask]
+    else:
+        y_ = tansformed_y
+    return smiles_, y_, aux_
 
 
 @dataclass
@@ -468,6 +515,9 @@ class Dataset:
             test_y,
             test_auxs,
         )
+
+        ptr_threshold = self.probabilistic_threshold_representation_threshold
+        ptr_std = self.probabilistic_threshold_representation_std
         if self.log_transform:
             from optunaz.utils.preprocessing.transform import ModelDataTransform
 
@@ -476,30 +526,27 @@ class Dataset:
                 negation=self.log_transform_negative,
                 conversion=self.log_transform_unit_conversion,
             )
-            train_y = log_transform.transform(train_y)
-            test_y = log_transform.transform(test_y)
+            train_smiles, train_y, train_auxs = transform(
+                train_smiles, train_y, train_auxs, log_transform
+            )
+            test_smiles, test_y, test_auxs = transform(
+                test_smiles, test_y, test_auxs, log_transform
+            )
             if self.probabilistic_threshold_representation:
-                self.probabilistic_threshold_representation_threshold = (
-                    log_transform.transform(
-                        self.probabilistic_threshold_representation_threshold
-                    )
-                )
-                self.probabilistic_threshold_representation_std = (
-                    log_transform.transform(
-                        self.probabilistic_threshold_representation_std
-                    )
-                )
+                ptr_threshold = log_transform.transform(ptr_threshold)
+                ptr_std = log_transform.transform(ptr_std)
             logger.info("Log transform applied")
 
         if self.probabilistic_threshold_representation:
             from optunaz.utils.preprocessing.transform import PTRTransform
 
-            ptr_transform = PTRTransform.new(
-                threshold=self.probabilistic_threshold_representation_threshold,
-                std=self.probabilistic_threshold_representation_std,
+            ptr_transform = PTRTransform.new(threshold=ptr_threshold, std=ptr_std)
+            train_smiles, train_y, train_auxs = transform(
+                train_smiles, train_y, train_auxs, ptr_transform
             )
-            train_y = ptr_transform.transform(train_y)
-            test_y = ptr_transform.transform(test_y)
+            test_smiles, test_y, test_auxs = transform(
+                test_smiles, test_y, test_auxs, ptr_transform
+            )
             logger.info("PTR transform applied")
 
         if self.aux_column and self.aux_transform is not None:
@@ -538,8 +585,9 @@ class Dataset:
         self._test_smiles = test_smiles
         self._test_y = test_y
         self._test_aux = test_auxs
+        self._sets_initialized = True
 
-        logger.info(f"Initialized sets:")
+        logger.info(f"Initialized sets")
         logger.info(f"len(_train_smiles):{len(train_smiles)}")
         logger.info(f"len(_train_y):{len(train_y)}")
         try:
@@ -560,6 +608,7 @@ class Dataset:
 
         if not self._sets_initialized:
             self._initialize_sets()
+        self.check_sets()
         return (
             self._train_smiles,
             self._train_y,
@@ -590,3 +639,27 @@ class Dataset:
                 "but no test set specified, returning training dataset."
             )
             return train_smiles, train_y, train_aux
+
+    def check_sets(self):
+        """Check sets are valid"""
+
+        assert (
+            len(self._train_smiles) > 0
+        ), f"Insufficient train SMILES ({len(self._train_smiles)}), check data and/or splitting strategy"
+        if self.response_type == "classification":
+            assert (
+                len(set(self._train_y)) == 2
+            ), f"Train is not binary classification ({len(set(self._train_y))} distinct values), check data and/or splitting strategy"
+        elif self.response_type == "regression":
+            assert (
+                len(set(self._train_y)) >= 5
+            ), f"Train values do not appear valid for regression ({len(set(self._train_y))} response values)"
+        if self._test_smiles is not None and len(self._test_smiles) > 0:
+            if self.response_type == "classification":
+                assert (
+                    len(set(self._test_y)) == 2
+                ), f"Test is not binary classification ({len(set(self._test_y))} distinct values), check data and/or splitting strategy"
+            elif self.response_type == "regression":
+                assert (
+                    len(set(self._test_y)) >= 5
+                ), f"Train values do not appear valid for regression ({len(set(self._test_y))} response values)"

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.config.buildconfig &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.config.buildconfig &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -77,8 +79,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for optunaz.config.buildconfig</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">abc</span>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -86,6 +87,7 @@
 <span class="kn">import</span> <span class="nn">sklearn.cross_decomposition</span>
 <span class="kn">import</span> <span class="nn">sklearn.ensemble</span>
 <span class="kn">import</span> <span class="nn">sklearn.linear_model</span>
+<span class="kn">import</span> <span class="nn">sklearn.neighbors</span>
 <span class="kn">import</span> <span class="nn">sklearn.svm</span>
 <span class="kn">import</span> <span class="nn">xgboost</span>
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">schema</span>
@@ -97,6 +99,7 @@
 <span class="kn">from</span> <span class="nn">optunaz.algorithms</span> <span class="kn">import</span> <span class="n">chem_prop</span>
 <span class="kn">from</span> <span class="nn">optunaz.algorithms</span> <span class="kn">import</span> <span class="n">chem_prop_hyperopt</span>
 <span class="kn">from</span> <span class="nn">optunaz.algorithms</span> <span class="kn">import</span> <span class="n">probabilistic_random_forest</span>
+<span class="kn">from</span> <span class="nn">optunaz.algorithms</span> <span class="kn">import</span> <span class="n">calibrated_cv</span>
 <span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ModelMode</span><span class="p">,</span>
     <span class="n">OptimizationDirection</span><span class="p">,</span>
@@ -148,6 +151,46 @@
 
 <div class="viewcode-block" id="Lasso.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Lasso.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">linear_model</span><span class="o">.</span><span class="n">Lasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="KNeighborsClassifier"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">KNeighborsClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="KNeighborsClassifier.KNeighborsClassifierParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">KNeighborsClassifierParameters</span><span class="p">:</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;KNeighborsClassifier&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">KNeighborsClassifierParameters</span>
+
+<div class="viewcode-block" id="KNeighborsClassifier.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">KNeighborsClassifier</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">n_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span>
+            <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="KNeighborsRegressor"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">KNeighborsRegressor</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="KNeighborsRegressor.KNeighborsRegressorParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">KNeighborsRegressorParameters</span><span class="p">:</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;KNeighborsRegressor&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">KNeighborsRegressorParameters</span>
+
+<div class="viewcode-block" id="KNeighborsRegressor.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">KNeighborsRegressor</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">n_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span>
+            <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="LogisticRegression"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.LogisticRegression">[docs]</a><span class="nd">@dataclass</span>
@@ -459,6 +502,25 @@
         <span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="ChemPropRegressorPretrained"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ChemPropRegressorPretrained</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">ChemPropRegressorPretrainedParameters</span><span class="p">:</span>
+        <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span>
+        <span class="n">frzn</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">pretrained_model</span><span class="p">:</span> <span class="nb">str</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ChemPropRegressorPretrained&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">ChemPropRegressorPretrainedParameters</span>
+
+<div class="viewcode-block" id="ChemPropRegressorPretrained.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">chem_prop</span><span class="o">.</span><span class="n">ChemPropRegressorPretrained</span><span class="p">(</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">frzn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">frzn</span><span class="p">,</span>
+            <span class="n">pretrained_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">pretrained_model</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
 <div class="viewcode-block" id="ChemPropHyperoptClassifier"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptClassifier">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ChemPropHyperoptClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
 <div class="viewcode-block" id="ChemPropHyperoptClassifier.ChemPropHyperoptClassifierParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptClassifier.ChemPropHyperoptClassifierParameters">[docs]</a>    <span class="nd">@dataclass</span>
@@ -511,11 +573,13 @@
 
 <span class="n">AnyUncalibratedClassifier</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">AdaBoostClassifier</span><span class="p">,</span>
+    <span class="n">KNeighborsClassifier</span><span class="p">,</span>
     <span class="n">LogisticRegression</span><span class="p">,</span>
     <span class="n">RandomForestClassifier</span><span class="p">,</span>
     <span class="n">SVC</span><span class="p">,</span>
     <span class="n">ChemPropClassifier</span><span class="p">,</span>
     <span class="n">ChemPropRegressor</span><span class="p">,</span>
+    <span class="n">ChemPropRegressorPretrained</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptClassifier</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
 <span class="p">]</span>
@@ -533,22 +597,18 @@
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;CalibratedClassifierCVWithVA&quot;</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">CalibratedClassifierCVParameters</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># pop sys calibration cache for monkey patch</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sklearn.calibration&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="kn">import</span> <span class="nn">optunaz.algorithms.calibrated_cv</span>
-
 <div class="viewcode-block" id="CalibratedClassifierCVWithVA.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># pop sys calibration cache for monkey patch</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sklearn.calibration&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="kn">import</span> <span class="nn">optunaz.algorithms.calibrated_cv</span>
-
+        <span class="n">estimator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">estimator</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="s2">&quot;num_workers&quot;</span><span class="p">):</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">return</span> <span class="n">optunaz</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">calibrated_cv</span><span class="o">.</span><span class="n">CalibratedClassifierCVWithVA</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">estimator</span><span class="p">(),</span>
+            <span class="n">estimator</span><span class="p">,</span>
             <span class="n">n_folds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">n_folds</span><span class="p">,</span>
             <span class="n">ensemble</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">ensemble</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
-            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 
@@ -557,17 +617,20 @@
     <span class="n">PLSRegression</span><span class="p">,</span>
     <span class="n">RandomForestRegressor</span><span class="p">,</span>
     <span class="n">Ridge</span><span class="p">,</span>
+    <span class="n">KNeighborsRegressor</span><span class="p">,</span>
     <span class="n">SVR</span><span class="p">,</span>
     <span class="n">XGBRegressor</span><span class="p">,</span>
     <span class="n">PRFClassifier</span><span class="p">,</span>
     <span class="n">ChemPropRegressor</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
+    <span class="n">ChemPropRegressorPretrained</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">MapieCompatible</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Lasso</span><span class="p">,</span>
     <span class="n">PLSRegression</span><span class="p">,</span>
     <span class="n">RandomForestRegressor</span><span class="p">,</span>
+    <span class="n">KNeighborsRegressor</span><span class="p">,</span>
     <span class="n">Ridge</span><span class="p">,</span>
     <span class="n">SVR</span><span class="p">,</span>
     <span class="n">XGBRegressor</span><span class="p">,</span>
@@ -579,7 +642,7 @@
 <span class="k">class</span> <span class="nc">Mapie</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
 <div class="viewcode-block" id="Mapie.MapieParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.Mapie.MapieParameters">[docs]</a>    <span class="nd">@dataclass</span>
     <span class="k">class</span> <span class="nc">MapieParameters</span><span class="p">:</span>
-        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.99</span><span class="p">))</span>
+        <span class="n">mapie_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.99</span><span class="p">))</span>
         <span class="n">estimator</span><span class="p">:</span> <span class="n">MapieCompatible</span></div>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Mapie&quot;</span><span class="p">]</span>
@@ -589,7 +652,7 @@
         <span class="kn">from</span> <span class="nn">optunaz.algorithms.mapie_uncertainty</span> <span class="kn">import</span> <span class="n">MapieWithUncertainty</span>
 
         <span class="k">return</span> <span class="n">MapieWithUncertainty</span><span class="p">(</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">mapie_alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">mapie_alpha</span><span class="p">,</span>
             <span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">estimator</span><span class="p">(),</span>
             <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span></div></div>
@@ -607,6 +670,7 @@
     <span class="n">ChemPropRegressor</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptClassifier</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
+    <span class="n">ChemPropRegressorPretrained</span><span class="p">,</span>
 <span class="p">]</span>
 
 

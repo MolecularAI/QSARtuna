@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils.enums package &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.utils.enums package &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -50,6 +50,8 @@
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -250,6 +252,21 @@ checks are not performed, but referred to JSON Schema validations.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PATHFP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PathFP'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_MAXPATH">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PATHFP_MAXPATH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'maxPath'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_MAXPATH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_FPSIZE">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_PATHFP_FPSIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fpSize'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_FPSIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_MACCSKEYS">
 <span class="sig-name descname"><span class="pre">DESCRIPTORS_MACCSKEYS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MACCS_keys'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_MACCSKEYS" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -302,6 +319,16 @@ checks are not performed, but referred to JSON Schema validations.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN">
 <span class="sig-name descname"><span class="pre">DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'response_column'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PRECOMPUTED_RESPONSE_COLUMN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_ZSCALES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_UNSC_ZSCALES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UnscaledZScalesDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_ZSCALES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ZSCALES">
+<span class="sig-name descname"><span class="pre">DESCRIPTORS_ZSCALES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ZScalesDescriptors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ZSCALES" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -490,6 +517,31 @@ checks are not performed, but referred to JSON Schema validations.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSCLASSIFIER">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORSCLASSIFIER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KNeighborsClassifier'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSCLASSIFIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSREGRESSOR">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORSREGRESSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KNeighborsRegressor'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSREGRESSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_N_NEIGHBORS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORS_N_NEIGHBORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'n_neighbors'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_N_NEIGHBORS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_METRIC">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORS_METRIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'metric'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_METRIC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_WEIGHTS">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_KNEIGHBORS_WEIGHTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'weights'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_WEIGHTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RIDGE">
 <span class="sig-name descname"><span class="pre">ALGORITHMS_RIDGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ridge'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_RIDGE" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -675,6 +727,11 @@ checks are not performed, but referred to JSON Schema validations.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FRZN">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_FRZN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'frzn'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FRZN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP">
 <span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'final_lr_ratio_exp'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -697,6 +754,11 @@ checks are not performed, but referred to JSON Schema validations.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_MAX_LR_EXP">
 <span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max_lr_exp'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_MAX_LR_EXP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL">
+<span class="sig-name descname"><span class="pre">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pretrained_model'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -751,7 +813,7 @@ checks are not performed, but referred to JSON Schema validations.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_MAPIE_ALPHA">
-<span class="sig-name descname"><span class="pre">ALGORITHMS_MAPIE_ALPHA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alpha'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_MAPIE_ALPHA" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ALGORITHMS_MAPIE_ALPHA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mapie_alpha'</span></em><a class="headerlink" href="#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_MAPIE_ALPHA" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.config.build_from_opt &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.config.build_from_opt &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -80,6 +82,7 @@
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">effective_n_jobs</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">deserialize</span><span class="p">,</span> <span class="n">serialize</span>
 <span class="kn">from</span> <span class="nn">optuna</span> <span class="kn">import</span> <span class="n">Study</span>
@@ -100,12 +103,21 @@
 <span class="n">_CE</span> <span class="o">=</span> <span class="n">ConfigurationEnum</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="set_build_cache"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.set_build_cache">[docs]</a><span class="k">def</span> <span class="nf">set_build_cache</span><span class="p">(</span><span class="n">study</span><span class="p">:</span> <span class="n">Study</span><span class="p">,</span> <span class="n">optconfig</span><span class="p">:</span> <span class="n">OptimizationConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="set_build_cache"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.set_build_cache">[docs]</a><span class="k">def</span> <span class="nf">set_build_cache</span><span class="p">(</span><span class="n">study</span><span class="p">:</span> <span class="n">Study</span><span class="p">,</span> <span class="n">optconfig</span><span class="p">:</span> <span class="n">OptimizationConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Memory</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the cache to preexisting one from Optimisation, when the number of cores supports this&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">effective_n_jobs</span><span class="p">(</span><span class="n">optconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s2">&quot;cache&quot;</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">user_attrs</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Memory</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">user_attrs</span><span class="p">[</span><span class="s2">&quot;cache&quot;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="remove_algo_hash"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.remove_algo_hash">[docs]</a><span class="k">def</span> <span class="nf">remove_algo_hash</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">FrozenTrial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrozenTrial</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove the hash from an Optuna algo param set&quot;&quot;&quot;</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">param_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">param_value</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">trial</span></div>
 
 
 <div class="viewcode-block" id="buildconfig_from_trial"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.buildconfig_from_trial">[docs]</a><span class="k">def</span> <span class="nf">buildconfig_from_trial</span><span class="p">(</span><span class="n">study</span><span class="p">:</span> <span class="n">Study</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="n">FrozenTrial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuildConfig</span><span class="p">:</span>
@@ -116,6 +128,7 @@
         <span class="p">)</span>
     <span class="n">optconfig</span> <span class="o">=</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">OptimizationConfig</span><span class="p">,</span> <span class="n">optconfig_json</span><span class="p">)</span>
 
+    <span class="n">trial</span> <span class="o">=</span> <span class="n">remove_algo_hash</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
     <span class="n">descriptor_json</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">TrialParams</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="p">]</span>
     <span class="n">descriptor_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">descriptor_json</span><span class="p">)</span>
     <span class="n">descriptor</span> <span class="o">=</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">MolDescriptor</span><span class="p">,</span> <span class="n">descriptor_dict</span><span class="p">)</span>
@@ -127,6 +140,11 @@
     <span class="n">base_estimator</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
         <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR</span>
     <span class="p">)</span>
+    <span class="c1"># Pretrained model for pretrained ChemProp methods are prepared here</span>
+    <span class="n">pretrained_model</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL</span><span class="p">,</span> <span class="p">{}</span>
+    <span class="p">)</span>
+    <span class="c1"># Parameter dictionary for calibrated CV methods are prepared here</span>
     <span class="n">calibrated_params</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
         <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS</span><span class="p">,</span> <span class="p">{}</span>
     <span class="p">)</span>
@@ -141,7 +159,11 @@
             <span class="p">{</span>
                 <span class="o">**</span><span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">calibrated_params</span><span class="p">,</span>
-                <span class="o">**</span><span class="p">{</span><span class="s2">&quot;estimator&quot;</span><span class="p">:</span> <span class="n">base_estimator</span><span class="p">,</span> <span class="s2">&quot;aux_weight_pc&quot;</span><span class="p">:</span> <span class="n">aux_weight_pc</span><span class="p">},</span>
+                <span class="o">**</span><span class="p">{</span>
+                    <span class="s2">&quot;estimator&quot;</span><span class="p">:</span> <span class="n">base_estimator</span><span class="p">,</span>
+                    <span class="s2">&quot;aux_weight_pc&quot;</span><span class="p">:</span> <span class="n">aux_weight_pc</span><span class="p">,</span>
+                    <span class="s2">&quot;pretrained_model&quot;</span><span class="p">:</span> <span class="n">pretrained_model</span><span class="p">,</span>
+                <span class="p">},</span>
             <span class="p">}</span>
         <span class="p">),</span>
     <span class="p">}</span>
@@ -176,17 +198,22 @@
     <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="encode_name"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.encode_name">[docs]</a><span class="k">def</span> <span class="nf">encode_name</span><span class="p">(</span><span class="n">CEname</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="nb">hash</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CEname</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="nb">hash</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
 <div class="viewcode-block" id="suggest_alg_params"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.suggest_alg_params">[docs]</a><span class="k">def</span> <span class="nf">suggest_alg_params</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">FrozenTrial</span><span class="p">,</span> <span class="n">alg</span><span class="p">:</span> <span class="n">opt</span><span class="o">.</span><span class="n">AnyAlgorithm</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">build</span><span class="o">.</span><span class="n">AnyAlgorithm</span><span class="p">:</span>
     <span class="n">para</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="n">_encode_name</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">encode_name</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">hash</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">AdaBoostClassifier</span><span class="p">):</span>
         <span class="n">n_estimators</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_ADABOOSTCLASSIFIER_N_ESTIMATORS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">learning_rate</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_ADABOOSTCLASSIFIER_LEARNING_RATE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">learning_rate</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">learning_rate</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
@@ -196,18 +223,52 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">Lasso</span><span class="p">):</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_LASSO_ALPHA</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_LASSO_ALPHA</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">Lasso</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">KNeighborsClassifier</span><span class="p">):</span>
+        <span class="n">metric</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_KNEIGHBORS_METRIC</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_KNEIGHBORS_N_NEIGHBORS</span><span class="p">),</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_neighbors</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_neighbors</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_KNEIGHBORS_WEIGHTS</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">KNeighborsClassifier</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">KNeighborsRegressor</span><span class="p">):</span>
+        <span class="n">metric</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_KNEIGHBORS_METRIC</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_KNEIGHBORS_N_NEIGHBORS</span><span class="p">),</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_neighbors</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_neighbors</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_KNEIGHBORS_WEIGHTS</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">KNeighborsRegressor</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">):</span>
         <span class="n">solver</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_LOGISTICREGRESSION_SOLVER</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_LOGISTICREGRESSION_SOLVER</span><span class="p">),</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">solver</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">lg_c</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_LOGISTICREGRESSION_C</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_LOGISTICREGRESSION_C</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -215,61 +276,63 @@
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">lg_c</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">PLSRegression</span><span class="p">):</span>
         <span class="n">n_components</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PLSREGRESSION_N_COMPONENTS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PLSREGRESSION_N_COMPONENTS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_components</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_components</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">PLSRegression</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">RandomForestClassifier</span><span class="p">):</span>
         <span class="n">max_depth</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_DEPTH</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_DEPTH</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">n_estimators</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_N_ESTIMATORS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_N_ESTIMATORS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">max_features</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_FEATURES</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_features</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_FEATURES</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_features</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">RandomForestClassifier</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
             <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">RandomForestRegressor</span><span class="p">):</span>
         <span class="n">max_depth</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_DEPTH</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_DEPTH</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">n_estimators</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_N_ESTIMATORS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_N_ESTIMATORS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">max_features</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_FEATURES</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_features</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RF_MAX_FEATURES</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_features</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">RandomForestRegressor</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
             <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">Ridge</span><span class="p">):</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RIDGE_ALPHA</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_RIDGE_ALPHA</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">Ridge</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">SVC</span><span class="p">):</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVC_GAMMA</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVC_GAMMA</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">gamma</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">gamma</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">svc_c</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVC_C</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVC_C</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -277,13 +340,13 @@
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">SVC</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">svc_c</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">SVR</span><span class="p">):</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVR_GAMMA</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVR_GAMMA</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">gamma</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">gamma</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">svr_c</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVR_C</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_SVR_C</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -291,17 +354,17 @@
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">SVR</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="n">svr_c</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">XGBRegressor</span><span class="p">):</span>
         <span class="n">max_depth</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_XGBREGRESSOR_MAX_DEPTH</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_XGBREGRESSOR_MAX_DEPTH</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">n_estimators</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_XGBREGRESSOR_N_ESTIMATORS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">learning_rate</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_XGBREGRESSOR_LEARNING_RATE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_XGBREGRESSOR_LEARNING_RATE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">learning_rate</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">learning_rate</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
@@ -312,30 +375,31 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">PRFClassifier</span><span class="p">):</span>
         <span class="n">max_depth</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_MAX_DEPTH</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_MAX_DEPTH</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_depth</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">n_estimators</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_N_ESTIMATORS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_N_ESTIMATORS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_estimators</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">max_features</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_MAX_FEATURES</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_features</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_MAX_FEATURES</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_features</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">min_py_sum_leaf</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_MINPYSUMLEAF</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_MINPYSUMLEAF</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">min_py_sum_leaf</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">min_py_sum_leaf</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">use_py_gini</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_USE_PY_GINI</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_USE_PY_GINI</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">use_py_gini</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">use_py_gini</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">use_py_leafs</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_USE_PY_LEAFS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_PRF_USE_PY_LEAFS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">use_py_leafs</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">use_py_leafs</span><span class="p">,</span>
         <span class="p">)</span>
@@ -349,84 +413,86 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ChemPropRegressor</span><span class="p">):</span>
         <span class="n">activation</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ACTIVATION</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">activation</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ACTIVATION</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">aggregation</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">aggregation_norm</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION_NORM</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION_NORM</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">batch_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_BATCH_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_BATCH_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">batch_size</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">batch_size</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">batch_size</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DEPTH</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DEPTH</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">dropout</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DROPOUT</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DROPOUT</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ensemble_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">epochs</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">features_generator</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">),</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ffn_hidden_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ffn_num_layers</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">final_lr_ratio_exp</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">final_lr_ratio_exp</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">final_lr_ratio_exp</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">hidden_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_HIDDEN_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_HIDDEN_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">hidden_size</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">hidden_size</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">hidden_size</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">init_lr_ratio_exp</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">init_lr_ratio_exp</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">init_lr_ratio_exp</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">max_lr_exp</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_lr_exp</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_lr_exp</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">warmup_epochs_ratio</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
@@ -451,84 +517,86 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ChemPropClassifier</span><span class="p">):</span>
         <span class="n">activation</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ACTIVATION</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">activation</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ACTIVATION</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">aggregation</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">aggregation_norm</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION_NORM</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_AGGREGATION_NORM</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aggregation_norm</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">batch_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_BATCH_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_BATCH_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">batch_size</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">batch_size</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">batch_size</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DEPTH</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DEPTH</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">dropout</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DROPOUT</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_DROPOUT</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ensemble_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">epochs</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">features_generator</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">),</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ffn_hidden_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_HIDDEN_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_hidden_size</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ffn_num_layers</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FFN_NUM_LAYERS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ffn_num_layers</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">final_lr_ratio_exp</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">final_lr_ratio_exp</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">final_lr_ratio_exp</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">hidden_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_HIDDEN_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_HIDDEN_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">hidden_size</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">hidden_size</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">hidden_size</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">init_lr_ratio_exp</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_INIT_LR_RATIO_EXP</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">init_lr_ratio_exp</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">init_lr_ratio_exp</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">max_lr_exp</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_MAX_LR_EXP</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_lr_exp</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">max_lr_exp</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">warmup_epochs_ratio</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">warmup_epochs_ratio</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
@@ -553,26 +621,26 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ChemPropHyperoptRegressor</span><span class="p">):</span>
         <span class="n">ensemble_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">epochs</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">features_generator</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">),</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">num_iters</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_NUM_ITERS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_NUM_ITERS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">num_iters</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">num_iters</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">search_parameter_level</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL</span><span class="p">),</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">search_parameter_level</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">ChemPropHyperoptRegressor</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
@@ -584,26 +652,26 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ChemPropHyperoptClassifier</span><span class="p">):</span>
         <span class="n">ensemble_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_ENSEMBLE_SIZE</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">ensemble_size</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">epochs</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">features_generator</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FEATURES_GENERATOR</span><span class="p">),</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">features_generator</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">num_iters</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_NUM_ITERS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_NUM_ITERS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">num_iters</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">num_iters</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">search_parameter_level</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL</span><span class="p">),</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">search_parameter_level</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">ChemPropHyperoptClassifier</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
@@ -613,9 +681,25 @@
             <span class="n">num_iters</span><span class="o">=</span><span class="n">num_iters</span><span class="p">,</span>
             <span class="n">search_parameter_level</span><span class="o">=</span><span class="n">search_parameter_level</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ChemPropRegressorPretrained</span><span class="p">):</span>
+        <span class="n">frzn</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_FRZN</span><span class="p">),</span> <span class="n">choices</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">frzn</span>
+        <span class="p">)</span>
+        <span class="n">epochs</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_EPOCHS</span><span class="p">),</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;pretrained_model&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">pretrained_model</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">ChemPropRegressorPretrained</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">frzn</span><span class="o">=</span><span class="n">frzn</span><span class="p">,</span>
+            <span class="n">pretrained_model</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">pretrained_model</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">CalibratedClassifierCVWithVA</span><span class="p">):</span>
         <span class="n">n_folds</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_folds</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_folds</span><span class="p">,</span>
         <span class="p">)</span>
@@ -636,28 +720,29 @@
             <span class="n">n_folds</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">Mapie</span><span class="p">):</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_MAPIE_ALPHA</span><span class="p">,</span>
-            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
-            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+        <span class="n">mapie_alpha</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_MAPIE_ALPHA</span><span class="p">),</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">mapie_alpha</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">mapie_alpha</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">estimator</span> <span class="o">=</span> <span class="n">suggest_alg_params</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">para</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span>
         <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">serialize</span><span class="p">(</span><span class="n">estimator</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">Mapie</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
             <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">mapie_alpha</span><span class="o">=</span><span class="n">mapie_alpha</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized algorithm: </span><span class="si">{</span><span class="n">alg</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="suggest_aux_params"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.suggest_aux_params">[docs]</a><span class="k">def</span> <span class="nf">suggest_aux_params</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">FrozenTrial</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="n">descriptors</span><span class="o">.</span><span class="n">AnyDescriptor</span><span class="p">):</span>
+    <span class="n">para</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="n">_encode_name</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">encode_name</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span><span class="p">[</span><span class="s2">&quot;alg_hash&quot;</span><span class="p">])</span>
     <span class="c1"># SmilesAndSideInfoFromFile is the only descriptor currently supporting aux params</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">descriptors</span><span class="o">.</span><span class="n">SmilesAndSideInfoFromFile</span><span class="p">):</span>
-        <span class="n">para</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="n">parameters</span>
         <span class="k">return</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC</span><span class="p">),</span>
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aux_weight_pc</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aux_weight_pc</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
             <span class="n">step</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">aux_weight_pc</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>

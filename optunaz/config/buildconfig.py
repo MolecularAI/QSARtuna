@@ -1,4 +1,3 @@
-import sys
 import abc
 from dataclasses import dataclass, field
 from typing import Optional, Union
@@ -7,6 +6,7 @@ import sklearn
 import sklearn.cross_decomposition
 import sklearn.ensemble
 import sklearn.linear_model
+import sklearn.neighbors
 import sklearn.svm
 import xgboost
 from apischema import schema
@@ -18,6 +18,7 @@ from optunaz import algorithms
 from optunaz.algorithms import chem_prop
 from optunaz.algorithms import chem_prop_hyperopt
 from optunaz.algorithms import probabilistic_random_forest
+from optunaz.algorithms import calibrated_cv
 from optunaz.config import (
     ModelMode,
     OptimizationDirection,
@@ -69,6 +70,46 @@ class Lasso(Algorithm):
 
     def estimator(self):
         return sklearn.linear_model.Lasso(alpha=self.parameters.alpha, random_state=42)
+
+
+@dataclass
+class KNeighborsClassifier(Algorithm):
+    @dataclass
+    class KNeighborsClassifierParameters:
+        metric: str
+        weights: str
+        n_neighbors: int = field(default=5, metadata=schema(min=1))
+
+    name: Literal["KNeighborsClassifier"]
+    parameters: KNeighborsClassifierParameters
+
+    def estimator(self):
+        return sklearn.neighbors.KNeighborsClassifier(
+            metric=self.parameters.metric,
+            n_jobs=-1,
+            n_neighbors=self.parameters.n_neighbors,
+            weights=self.parameters.weights,
+        )
+
+
+@dataclass
+class KNeighborsRegressor(Algorithm):
+    @dataclass
+    class KNeighborsRegressorParameters:
+        metric: str
+        weights: str
+        n_neighbors: int = field(default=5, metadata=schema(min=1))
+
+    name: Literal["KNeighborsRegressor"]
+    parameters: KNeighborsRegressorParameters
+
+    def estimator(self):
+        return sklearn.neighbors.KNeighborsRegressor(
+            metric=self.parameters.metric,
+            n_jobs=-1,
+            n_neighbors=self.parameters.n_neighbors,
+            weights=self.parameters.weights,
+        )
 
 
 @dataclass
@@ -381,6 +422,25 @@ class ChemPropClassifier(Algorithm):
 
 
 @dataclass
+class ChemPropRegressorPretrained(Algorithm):
+    @dataclass
+    class ChemPropRegressorPretrainedParameters:
+        epochs: int = field(metadata=schema(default=30, min=0, max=400))
+        frzn: str
+        pretrained_model: str
+
+    name: Literal["ChemPropRegressorPretrained"]
+    parameters: ChemPropRegressorPretrainedParameters
+
+    def estimator(self):
+        return optunaz.algorithms.chem_prop.ChemPropRegressorPretrained(
+            epochs=self.parameters.epochs,
+            frzn=self.parameters.frzn,
+            pretrained_model=self.parameters.pretrained_model,
+        )
+
+
+@dataclass
 class ChemPropHyperoptClassifier(Algorithm):
     @dataclass
     class ChemPropHyperoptClassifierParameters:
@@ -432,11 +492,13 @@ class ChemPropHyperoptRegressor(Algorithm):
 
 AnyUncalibratedClassifier = Union[
     AdaBoostClassifier,
+    KNeighborsClassifier,
     LogisticRegression,
     RandomForestClassifier,
     SVC,
     ChemPropClassifier,
     ChemPropRegressor,
+    ChemPropRegressorPretrained,
     ChemPropHyperoptClassifier,
     ChemPropHyperoptRegressor,
 ]
@@ -454,22 +516,18 @@ class CalibratedClassifierCVWithVA(Algorithm):
     name: Literal["CalibratedClassifierCVWithVA"]
     parameters: CalibratedClassifierCVParameters
 
-    def __post_init__(self):
-        # pop sys calibration cache for monkey patch
-        sys.modules.pop("sklearn.calibration", None)
-        import optunaz.algorithms.calibrated_cv
-
     def estimator(self):
-        # pop sys calibration cache for monkey patch
-        sys.modules.pop("sklearn.calibration", None)
-        import optunaz.algorithms.calibrated_cv
-
+        estimator = self.parameters.estimator.estimator()
+        if hasattr(estimator, "num_workers"):
+            n_jobs = 1
+        else:
+            n_jobs = -1
         return optunaz.algorithms.calibrated_cv.CalibratedClassifierCVWithVA(
-            self.parameters.estimator.estimator(),
+            estimator,
             n_folds=self.parameters.n_folds,
             ensemble=self.parameters.ensemble == "True",
             method=self.parameters.method,
-            n_jobs=-1,
+            n_jobs=n_jobs,
         )
 
 
@@ -478,17 +536,20 @@ AnyRegression = Union[
     PLSRegression,
     RandomForestRegressor,
     Ridge,
+    KNeighborsRegressor,
     SVR,
     XGBRegressor,
     PRFClassifier,
     ChemPropRegressor,
     ChemPropHyperoptRegressor,
+    ChemPropRegressorPretrained,
 ]
 
 MapieCompatible = Union[
     Lasso,
     PLSRegression,
     RandomForestRegressor,
+    KNeighborsRegressor,
     Ridge,
     SVR,
     XGBRegressor,
@@ -500,7 +561,7 @@ MapieCompatible = Union[
 class Mapie(Algorithm):
     @dataclass
     class MapieParameters:
-        alpha: float = field(metadata=schema(default=0.05, min=0.01, max=0.99))
+        mapie_alpha: float = field(metadata=schema(default=0.05, min=0.01, max=0.99))
         estimator: MapieCompatible
 
     name: Literal["Mapie"]
@@ -510,7 +571,7 @@ class Mapie(Algorithm):
         from optunaz.algorithms.mapie_uncertainty import MapieWithUncertainty
 
         return MapieWithUncertainty(
-            alpha=self.parameters.alpha,
+            mapie_alpha=self.parameters.mapie_alpha,
             estimator=self.parameters.estimator.estimator(),
             n_jobs=-1,
         )
@@ -528,6 +589,7 @@ AnyChemPropAlgorithm = [
     ChemPropRegressor,
     ChemPropHyperoptClassifier,
     ChemPropHyperoptRegressor,
+    ChemPropRegressorPretrained,
 ]
 
 

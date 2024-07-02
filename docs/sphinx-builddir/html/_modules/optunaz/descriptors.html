@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.descriptors &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>optunaz.descriptors &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -82,7 +84,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">import</span> <span class="nn">apischema</span>
@@ -101,14 +103,16 @@
     <span class="n">MakeScaffoldGeneric</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">rdkit.Avalon</span> <span class="kn">import</span> <span class="n">pyAvalonTools</span>
-<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span><span class="p">,</span> <span class="n">Descriptors</span><span class="p">,</span> <span class="n">MACCSkeys</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span><span class="p">,</span> <span class="n">Descriptors</span><span class="p">,</span> <span class="n">MACCSkeys</span><span class="p">,</span> <span class="n">rdFingerprintGenerator</span>
 <span class="kn">from</span> <span class="nn">rdkit.DataStructs.cDataStructs</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ExplicitBitVect</span><span class="p">,</span>
     <span class="n">SparseBitVect</span><span class="p">,</span>
     <span class="n">UIntSparseIntVect</span><span class="p">,</span>
 <span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">rdkit.ML.Descriptors.MoleculeDescriptors</span> <span class="kn">import</span> <span class="n">MolecularDescriptorCalculator</span>
-<span class="kn">from</span> <span class="nn">jazzy.api</span> <span class="kn">import</span> <span class="n">molecular_vector_from_smiles</span><span class="p">,</span> <span class="n">JazzyError</span>
+<span class="kn">from</span> <span class="nn">jazzy.api</span> <span class="kn">import</span> <span class="n">molecular_vector_from_smiles</span>
+<span class="kn">from</span> <span class="nn">jazzy.exception</span> <span class="kn">import</span> <span class="n">JazzyError</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Annotated</span>
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">effective_n_jobs</span>
@@ -216,13 +220,19 @@
 
 <span class="sd">        Can be used to generate descriptors in parallel and/or with a cache&quot;&quot;&quot;</span>
 
+        <span class="k">def</span> <span class="nf">try_cache</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_from_smi</span><span class="p">)(</span><span class="n">mol</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">):</span>  <span class="c1"># handle when cleared cache not found</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_from_smi</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Scaled and Composite descriptors accept cache in order to sub-cache nested calculate_from_smi</span>
             <span class="k">if</span> <span class="s2">&quot;cache&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_from_smi</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">:</span>
                 <span class="n">_calculate_from_smi</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_from_smi</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
             <span class="c1"># All other descriptors cache calculate_from_smi directly</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">_calculate_from_smi</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_from_smi</span><span class="p">)</span>
+                <span class="n">_calculate_from_smi</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">try_cache</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n_cores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="s2">&quot;n_cores&quot;</span><span class="p">):</span>
                     <span class="n">n_cores</span> <span class="o">=</span> <span class="n">effective_n_jobs</span><span class="p">(</span><span class="n">cache</span><span class="o">.</span><span class="n">n_cores</span><span class="p">)</span>
@@ -411,6 +421,46 @@
         <span class="k">return</span> <span class="n">numpy_from_rdkit</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="PathFP"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.PathFP">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PathFP</span><span class="p">(</span><span class="n">RdkitDescriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;PathFP</span>
+
+<span class="sd">    Path fingerprint based on RDKit FP Generator.\n</span>
+
+<span class="sd">    This is a Path fingerprint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PathFP.Parameters"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.PathFP.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;PathFPParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="n">maxPath</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">int</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;maxPath&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum path for the fingerprint&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">fpSize</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">int</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;fpSize&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number size of the fingerprint, sometimes also called bit size.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">2048</span><span class="p">)</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;PathFP&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
+
+<div class="viewcode-block" id="PathFP.calculate_from_mol"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.PathFP.calculate_from_mol">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_from_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">):</span>
+        <span class="n">rdkit_gen</span> <span class="o">=</span> <span class="n">rdFingerprintGenerator</span><span class="o">.</span><span class="n">GetRDKitFPGenerator</span><span class="p">(</span>
+            <span class="n">maxPath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">maxPath</span><span class="p">,</span> <span class="n">fpSize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">fpSize</span>
+        <span class="p">)</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">rdkit_gen</span><span class="o">.</span><span class="n">GetFingerprint</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy_from_rdkit</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span></div></div>
+
+
 <div class="viewcode-block" id="MACCS_keys"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.MACCS_keys">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">MACCS_keys</span><span class="p">(</span><span class="n">RdkitDescriptor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MACCS</span>
@@ -539,7 +589,8 @@
 <div class="viewcode-block" id="UnscaledJazzyDescriptors.Parameters"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.UnscaledJazzyDescriptors.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;UnscaledJazzyDescriptorsParams&quot;</span><span class="p">)</span>
     <span class="nd">@dataclass</span>
     <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
-        <span class="n">jazzy_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="n">jazzy_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">jazzy_filters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;UnscaledJazzyDescriptors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;UnscaledJazzyDescriptors&quot;</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
@@ -548,10 +599,9 @@
         <span class="n">mol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="n">PRE_FILTERS</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;NumHAcceptors&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;NumHDonors&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;MolWt&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)]</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">Descriptors</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)(</span><span class="n">mol</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span>
-            <span class="k">for</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="n">PRE_FILTERS</span>
+            <span class="k">for</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_filters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_jazzy_descriptors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smi</span><span class="p">):</span>
@@ -570,14 +620,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
                 <span class="nb">list</span><span class="p">(</span><span class="n">molecular_vector_from_smiles</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">minimisation_method</span><span class="o">=</span><span class="s2">&quot;MMFF94&quot;</span><span class="p">))</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_filters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_filters</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;NumHAcceptors&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+                <span class="s2">&quot;NumHDonors&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+                <span class="s2">&quot;MolWt&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+            <span class="p">}</span>
 
 <div class="viewcode-block" id="UnscaledJazzyDescriptors.calculate_from_smi"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.UnscaledJazzyDescriptors.calculate_from_smi">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_from_smi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smi</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jazzy.utils</span> <span class="kn">import</span> <span class="n">JazzyError</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jazzy_descriptors</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">jazzy_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">jazzy_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span><span class="p">]</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">JazzyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ComplexWarning</span><span class="p">):</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">JazzyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -585,14 +639,39 @@
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="UnscaledZScalesDescriptors"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">UnscaledZScalesDescriptors</span><span class="p">(</span><span class="n">MolDescriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unscaled Z-Scales.</span>
+
+<span class="sd">    Compute the Z-scales of a peptide SMILES.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UnscaledZScalesDescriptors.Parameters"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;UnscaledZScalesDescParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;UnscaledZScalesDescriptors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;UnscaledZScalesDescriptors&quot;</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="UnscaledZScalesDescriptors.calculate_from_smi"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors.calculate_from_smi">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_from_smi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smi</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">chemistry_adapters</span> <span class="kn">import</span> <span class="n">AminoAcidAdapter</span>
+        <span class="kn">from</span> <span class="nn">peptides</span> <span class="kn">import</span> <span class="n">Peptide</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sequence</span> <span class="o">=</span> <span class="n">AminoAcidAdapter</span><span class="p">()</span><span class="o">.</span><span class="n">convert_smiles_to_amino_acid_sequence</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Peptide</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span><span class="o">.</span><span class="n">z_scales</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># SMILES to aa sequence failed</span>
+        <span class="k">return</span> <span class="n">fp</span></div></div>
+
+
 <div class="viewcode-block" id="PrecomputedDescriptorFromFile"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.PrecomputedDescriptorFromFile">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PrecomputedDescriptorFromFile</span><span class="p">(</span><span class="n">MolDescriptor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Precomputed descriptors.</span>
 
-<span class="sd">    Experimental implementation of precomputed descriptors.</span>
-
 <span class="sd">    Users can supply a CSV file of feature vectors to use as descriptors, with headers on the first line. Each row</span>
-<span class="sd">    corresponds to a compound in the training set, followed by a column containing comma-separated vectors describing</span>
+<span class="sd">    corresponds to a compound in the training set, followed by a column that may have comma-separated vectors describing</span>
 <span class="sd">    that molecule.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -628,14 +707,17 @@
 <div class="viewcode-block" id="PrecomputedDescriptorFromFile.calculate_from_smi"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.PrecomputedDescriptorFromFile.calculate_from_smi">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_from_smi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smi</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">file</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">input_column</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">smi</span><span class="p">]</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">input_column</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">smi</span><span class="p">][</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">input_column</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">response_column</span><span class="p">]</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Could not find descriptor for </span><span class="si">{</span><span class="n">smi</span><span class="si">}</span><span class="s2"> in file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">file</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Multiple descriptors found for </span><span class="si">{</span><span class="n">smi</span><span class="si">}</span><span class="s2">, taking the first one.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Multiple (conflicting) descriptors found for </span><span class="si">{</span><span class="n">smi</span><span class="si">}</span><span class="s2">, taking the first one.&quot;</span>
             <span class="p">)</span>
         <span class="n">descriptor_iloc</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">response_column</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
@@ -757,10 +839,12 @@
     <span class="n">Avalon</span><span class="p">,</span>
     <span class="n">ECFP</span><span class="p">,</span>
     <span class="n">ECFP_counts</span><span class="p">,</span>
+    <span class="n">PathFP</span><span class="p">,</span>
     <span class="n">MACCS_keys</span><span class="p">,</span>
     <span class="n">PrecomputedDescriptorFromFile</span><span class="p">,</span>
     <span class="n">UnscaledPhyschemDescriptors</span><span class="p">,</span>
     <span class="n">UnscaledJazzyDescriptors</span><span class="p">,</span>
+    <span class="n">UnscaledZScalesDescriptors</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -916,6 +1000,7 @@
     <span class="nd">@dataclass</span>
     <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
         <span class="n">jazzy_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">jazzy_filters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">scaler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="n">FittedSklearnScaler</span><span class="p">,</span>
             <span class="n">UnfittedSklearnScaler</span><span class="p">,</span>
@@ -931,9 +1016,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
                 <span class="nb">list</span><span class="p">(</span><span class="n">molecular_vector_from_smiles</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">minimisation_method</span><span class="o">=</span><span class="s2">&quot;MMFF94&quot;</span><span class="p">))</span>
             <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_filters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_filters</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;NumHAcceptors&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+                <span class="s2">&quot;NumHDonors&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+                <span class="s2">&quot;MolWt&quot;</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span>
+            <span class="p">}</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span> <span class="o">=</span> <span class="n">UnscaledJazzyDescriptors</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
-            <span class="n">jazzy_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span>
+            <span class="n">jazzy_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span><span class="p">,</span>
+            <span class="n">jazzy_filters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_filters</span><span class="p">,</span>
         <span class="p">)</span>
+
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">scaler</span><span class="p">,</span> <span class="n">UnfittedSklearnScaler</span><span class="p">)</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">mol_data</span><span class="o">.</span><span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -944,13 +1039,49 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;JazzyDescriptors scaling failed&quot;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="ZScalesDescriptors"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.ZScalesDescriptors">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ZScalesDescriptors</span><span class="p">(</span><span class="n">ScaledDescriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scaled Z-Scales descriptors.</span>
+
+<span class="sd">    Z-scales were proposed in Sandberg et al (1998) based on physicochemical properties of proteogenic and</span>
+<span class="sd">    non-proteogenic amino acids, including NMR data and thin-layer chromatography (TLC) data. Refer to</span>
+<span class="sd">    doi:10.1021/jm9700575 for the original publication. These descriptors capture 1. lipophilicity, 2. steric</span>
+<span class="sd">    properties (steric bulk and polarizability), 3. electronic properties (polarity and charge),</span>
+<span class="sd">    4. electronegativity (heat of formation, electrophilicity and hardness) and 5. another electronegativity.</span>
+<span class="sd">    This fingerprint is the computed average of Z-scales of all the amino acids in the peptide.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ZScalesDescriptors.Parameters"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.ZScalesDescriptors.Parameters">[docs]</a>    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;ZScalesDescParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="n">scaler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="n">FittedSklearnScaler</span><span class="p">,</span>
+            <span class="n">UnfittedSklearnScaler</span><span class="p">,</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">UnfittedSklearnScaler</span><span class="p">()</span>
+        <span class="n">descriptor</span><span class="p">:</span> <span class="n">AnyUnscaledDescriptor</span> <span class="o">=</span> <span class="n">UnscaledZScalesDescriptors</span></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ZScalesDescriptors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ZScalesDescriptors&quot;</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span> <span class="o">=</span> <span class="n">UnscaledZScalesDescriptors</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">scaler</span><span class="p">,</span> <span class="n">UnfittedSklearnScaler</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">mol_data</span><span class="o">.</span><span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_scaler_is_fitted</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">ScalingFittingError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ZScales scaling failed&quot;</span><span class="p">)</span></div>
+
+
 <span class="n">CompositeCompatibleDescriptor</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">AnyUnscaledDescriptor</span><span class="p">,</span>
     <span class="n">ScaledDescriptor</span><span class="p">,</span>
     <span class="n">PhyschemDescriptors</span><span class="p">,</span>
     <span class="n">JazzyDescriptors</span><span class="p">,</span>
-    <span class="n">UnscaledPhyschemDescriptors</span><span class="p">,</span>
-    <span class="n">UnscaledJazzyDescriptors</span><span class="p">,</span>
+    <span class="n">ZScalesDescriptors</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -1103,24 +1234,16 @@
         <span class="k">raise</span> <span class="n">NoValidSmiles</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Descriptor </span><span class="si">{</span><span class="n">descriptor</span><span class="si">}</span><span class="s2"> cannot generate empty smiles: </span><span class="si">{</span><span class="n">smiles</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">SmilesBasedDescriptor</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">return_failed_idx</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">descriptor</span><span class="o">.</span><span class="n">calculate_from_smi</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span> <span class="k">for</span> <span class="n">smi</span> <span class="ow">in</span> <span class="n">smiles</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span>
-                <span class="p">),</span>
-                <span class="p">[],</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">descriptor</span><span class="o">.</span><span class="n">calculate_from_smi</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span> <span class="k">for</span> <span class="n">smi</span> <span class="ow">in</span> <span class="n">smiles</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">descriptors</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">parallel_compute_descriptor</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+    <span class="n">descriptors</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">parallel_compute_descriptor</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">return_failed_idx</span><span class="p">:</span>
         <span class="n">list_of_arrays</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">failed_idx</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">d_idx</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">descriptors</span><span class="p">):</span>
-            <span class="c1"># we use pd.isnull instead of np.isnan here since np gives TypeError for objects/strings</span>
-            <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">failed_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_idx</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">SmilesBasedDescriptor</span><span class="p">):</span>
+                <span class="n">list_of_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
                 <span class="n">list_of_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">failed_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_idx</span><span class="p">)</span>

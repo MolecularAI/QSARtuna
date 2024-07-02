@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>Index &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -49,6 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -139,8 +141,6 @@
 </li>
       <li><a href="optunaz.utils.html#optunaz.utils.mlflow.add_ellipsis">add_ellipsis() (in module optunaz.utils.mlflow)</a>
 </li>
-      <li><a href="optunaz.html#optunaz.model_writer.add_predict_from_smiles">add_predict_from_smiles() (in module optunaz.model_writer)</a>
-</li>
       <li><a href="optunaz.utils.html#optunaz.utils.schema.addsibling">addsibling() (in module optunaz.utils.schema)</a>
 </li>
       <li><a href="optunaz.utils.html#optunaz.utils.schema.addtitles">addtitles() (in module optunaz.utils.schema)</a>
@@ -229,6 +229,8 @@
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP">ALGORITHMS_CHEMPROP_FINAL_LR_RATIO_EXP (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_FRZN">ALGORITHMS_CHEMPROP_FRZN (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HIDDEN_SIZE">ALGORITHMS_CHEMPROP_HIDDEN_SIZE (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_HYPEROPT_CLASSIFIER">ALGORITHMS_CHEMPROP_HYPEROPT_CLASSIFIER (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
@@ -241,21 +243,33 @@
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_NUM_ITERS">ALGORITHMS_CHEMPROP_NUM_ITERS (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_REGRESSOR">ALGORITHMS_CHEMPROP_REGRESSOR (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL">ALGORITHMS_CHEMPROP_SEARCH_PARAMETER_LEVEL (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS">ALGORITHMS_CHEMPROP_STARTUP_RANDOM_ITERS (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO">ALGORITHMS_CHEMPROP_WARMUP_EPOCHS_RATIO (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_HIGH">ALGORITHMS_HIGH (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_INTERFACE_SKLEARN">ALGORITHMS_INTERFACE_SKLEARN (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_INTERFACE_XGBOOST">ALGORITHMS_INTERFACE_XGBOOST (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_METRIC">ALGORITHMS_KNEIGHBORS_METRIC (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_N_NEIGHBORS">ALGORITHMS_KNEIGHBORS_N_NEIGHBORS (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORS_WEIGHTS">ALGORITHMS_KNEIGHBORS_WEIGHTS (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSCLASSIFIER">ALGORITHMS_KNEIGHBORSCLASSIFIER (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_KNEIGHBORSREGRESSOR">ALGORITHMS_KNEIGHBORSREGRESSOR (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.ALGORITHMS_LASSO">ALGORITHMS_LASSO (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
@@ -332,17 +346,15 @@
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.Lasso.LassoParameters.alpha">alpha (optunaz.config.buildconfig.Lasso.LassoParameters attribute)</a>
 
       <ul>
-        <li><a href="optunaz.config.html#optunaz.config.buildconfig.Mapie.MapieParameters.alpha">(optunaz.config.buildconfig.Mapie.MapieParameters attribute)</a>
-</li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.Ridge.RidgeParameters.alpha">(optunaz.config.buildconfig.Ridge.RidgeParameters attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.Lasso.Parameters.alpha">(optunaz.config.optconfig.Lasso.Parameters attribute)</a>
 </li>
-        <li><a href="optunaz.config.html#optunaz.config.optconfig.Mapie.Parameters.alpha">(optunaz.config.optconfig.Mapie.Parameters attribute)</a>
-</li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.Ridge.Parameters.alpha">(optunaz.config.optconfig.Ridge.Parameters attribute)</a>
 </li>
       </ul></li>
+      <li><a href="optunaz.html#optunaz.predict.ArgsError">ArgsError</a>
+</li>
       <li><a href="optunaz.utils.html#optunaz.utils.files_paths.attach_root_path">attach_root_path() (in module optunaz.utils.files_paths)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.objective_enum.ObjectiveEnum.ATTRIBUTE_TRIAL_TRAIN_SCORE">ATTRIBUTE_TRIAL_TRAIN_SCORE (optunaz.utils.enums.objective_enum.ObjectiveEnum attribute)</a>
@@ -379,6 +391,8 @@
         <li><a href="optunaz.html#optunaz.descriptors.SmilesAndSideInfoFromFile.Parameters.aux_weight_pc">(optunaz.descriptors.SmilesAndSideInfoFromFile.Parameters attribute)</a>
 </li>
       </ul></li>
+      <li><a href="optunaz.html#optunaz.predict.AuxCovariateMissing">AuxCovariateMissing</a>
+</li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.AuxTransformer">AuxTransformer (class in optunaz.utils.preprocessing.transform)</a>
 </li>
       <li><a href="descriptors.html#optunaz.descriptors.Avalon">Avalon (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.Avalon">[1]</a>
@@ -492,6 +506,8 @@
 </li>
         <li><a href="descriptors.html#optunaz.descriptors.MACCS_keys.calculate_from_mol">(optunaz.descriptors.MACCS_keys method)</a>, <a href="optunaz.html#optunaz.descriptors.MACCS_keys.calculate_from_mol">[1]</a>
 </li>
+        <li><a href="descriptors.html#optunaz.descriptors.PathFP.calculate_from_mol">(optunaz.descriptors.PathFP method)</a>, <a href="optunaz.html#optunaz.descriptors.PathFP.calculate_from_mol">[1]</a>
+</li>
         <li><a href="optunaz.html#optunaz.descriptors.RdkitDescriptor.calculate_from_mol">(optunaz.descriptors.RdkitDescriptor method)</a>
 </li>
         <li><a href="descriptors.html#optunaz.descriptors.UnscaledPhyschemDescriptors.calculate_from_mol">(optunaz.descriptors.UnscaledPhyschemDescriptors method)</a>, <a href="optunaz.html#optunaz.descriptors.UnscaledPhyschemDescriptors.calculate_from_mol">[1]</a>
@@ -520,6 +536,8 @@
 </li>
         <li><a href="descriptors.html#optunaz.descriptors.UnscaledJazzyDescriptors.calculate_from_smi">(optunaz.descriptors.UnscaledJazzyDescriptors method)</a>, <a href="optunaz.html#optunaz.descriptors.UnscaledJazzyDescriptors.calculate_from_smi">[1]</a>
 </li>
+        <li><a href="descriptors.html#optunaz.descriptors.UnscaledZScalesDescriptors.calculate_from_smi">(optunaz.descriptors.UnscaledZScalesDescriptors method)</a>, <a href="optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors.calculate_from_smi">[1]</a>
+</li>
         <li><a href="optunaz.html#optunaz.descriptors.ValidDescriptor.calculate_from_smi">(optunaz.descriptors.ValidDescriptor method)</a>
 </li>
       </ul></li>
@@ -544,6 +562,10 @@
       <li><a href="optunaz.html#optunaz.descriptors.CanonicalSmiles.Parameters">CanonicalSmiles.Parameters (class in optunaz.descriptors)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.build_from_opt.check_invalid_descriptor_param">check_invalid_descriptor_param() (in module optunaz.config.build_from_opt)</a>
+</li>
+      <li><a href="optunaz.html#optunaz.predict.check_precomp_args">check_precomp_args() (in module optunaz.predict)</a>
+</li>
+      <li><a href="optunaz.html#optunaz.datareader.Dataset.check_sets">check_sets() (optunaz.datareader.Dataset method)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.interface_enum.InterfaceEnum.CHEMPROP_SET">CHEMPROP_SET (optunaz.utils.enums.interface_enum.InterfaceEnum attribute)</a>
 </li>
@@ -577,15 +599,17 @@
 </li>
       <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersHidden_Size">ChemPropClassifier.Parameters.ChemPropParametersHidden_Size (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersHidden_Size">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersInit_Lr_Ratio_Exp">ChemPropClassifier.Parameters.ChemPropParametersInit_Lr_Ratio_Exp (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersInit_Lr_Ratio_Exp">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersMax_Lr_Exp">ChemPropClassifier.Parameters.ChemPropParametersMax_Lr_Exp (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersMax_Lr_Exp">[1]</a>
 </li>
       <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersWarmup_Epochs_Ratio">ChemPropClassifier.Parameters.ChemPropParametersWarmup_Epochs_Ratio (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.ChemPropParametersWarmup_Epochs_Ratio">[1]</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropFeatures_Generator">ChemPropFeatures_Generator (class in optunaz.config.optconfig)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropFrzn">ChemPropFrzn (class in optunaz.config.optconfig)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptClassifier">ChemPropHyperoptClassifier (class in optunaz.config.buildconfig)</a>
 
@@ -638,6 +662,18 @@
       <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersMax_Lr_Exp">ChemPropRegressor.Parameters.ChemPropParametersMax_Lr_Exp (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersMax_Lr_Exp">[1]</a>
 </li>
       <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio">ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio">[1]</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained">ChemPropRegressorPretrained (class in optunaz.config.buildconfig)</a>
+
+      <ul>
+        <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropRegressorPretrained">(class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters">ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters (class in optunaz.config.buildconfig)</a>
+</li>
+      <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters">ChemPropRegressorPretrained.Parameters (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters">[1]</a>
+</li>
+      <li><a href="algorithms.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs">ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs">[1]</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropSearch_Parameter_Level">ChemPropSearch_Parameter_Level (class in optunaz.config.optconfig)</a>
 </li>
@@ -754,11 +790,7 @@
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.deduplicator.Deduplicator">Deduplicator (class in optunaz.utils.preprocessing.deduplicator)</a>
 </li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters.delimiter">delimiter (optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters attribute)</a>
-
-      <ul>
-        <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales.Parameters.delimiter">(optunaz.utils.preprocessing.transform.ZScales.Parameters attribute)</a>
 </li>
-      </ul></li>
       <li><a href="optunaz.utils.html#optunaz.utils.schema.delsibling">delsibling() (in module optunaz.utils.schema)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropClassifier.ChemPropClassifierParameters.depth">depth (optunaz.config.buildconfig.ChemPropClassifier.ChemPropClassifierParameters attribute)</a>
@@ -782,6 +814,8 @@
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.ScaledDescriptor.ScaledDescriptorParameters.descriptor">(optunaz.descriptors.ScaledDescriptor.ScaledDescriptorParameters attribute)</a>
 </li>
+        <li><a href="descriptors.html#optunaz.descriptors.ZScalesDescriptors.Parameters.descriptor">(optunaz.descriptors.ZScalesDescriptors.Parameters attribute)</a>, <a href="optunaz.html#optunaz.descriptors.ZScalesDescriptors.Parameters.descriptor">[1]</a>
+</li>
         <li><a href="optunaz.html#optunaz.model_writer.QSARtunaModel.descriptor">(optunaz.model_writer.QSARtunaModel attribute)</a>
 </li>
       </ul></li>
@@ -789,8 +823,6 @@
 </li>
       <li><a href="optunaz.html#optunaz.descriptors.descriptor_from_config">descriptor_from_config() (in module optunaz.descriptors)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.OptimizationConfig.descriptors">descriptors (optunaz.config.optconfig.OptimizationConfig attribute)</a>
 
       <ul>
@@ -799,6 +831,8 @@
       </ul></li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS">DESCRIPTORS (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_AVALON">DESCRIPTORS_AVALON (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_AVALON_NBITS">DESCRIPTORS_AVALON_NBITS (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
@@ -822,6 +856,12 @@
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_JAZZY_JAZZYNAMES">DESCRIPTORS_JAZZY_JAZZYNAMES (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_MACCSKEYS">DESCRIPTORS_MACCSKEYS (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP">DESCRIPTORS_PATHFP (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_FPSIZE">DESCRIPTORS_PATHFP_FPSIZE (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PATHFP_MAXPATH">DESCRIPTORS_PATHFP_MAXPATH (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_PHYSCHEM">DESCRIPTORS_PHYSCHEM (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
@@ -855,6 +895,10 @@
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_PHYSCHEM">DESCRIPTORS_UNSC_PHYSCHEM (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
 </li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_UNSC_ZSCALES">DESCRIPTORS_UNSC_ZSCALES (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.configuration_enum.ConfigurationEnum.DESCRIPTORS_ZSCALES">DESCRIPTORS_ZSCALES (optunaz.utils.enums.configuration_enum.ConfigurationEnum attribute)</a>
+</li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.detect_mode_from_algs">detect_mode_from_algs() (in module optunaz.config.optconfig)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.BuildConfig.Settings.direction">direction (optunaz.config.buildconfig.BuildConfig.Settings attribute)</a>
@@ -863,6 +907,8 @@
         <li><a href="optunaz.config.html#optunaz.config.optconfig.OptimizationConfig.Settings.direction">(optunaz.config.optconfig.OptimizationConfig.Settings attribute)</a>
 </li>
       </ul></li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsWeights.DISTANCE">DISTANCE (optunaz.config.optconfig.KNeighborsWeights attribute)</a>
+</li>
       <li><a href="optunaz.html#optunaz.schemagen.doctitle">doctitle() (in module optunaz.schemagen)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropClassifier.ChemPropClassifierParameters.dropout">dropout (optunaz.config.buildconfig.ChemPropClassifier.ChemPropClassifierParameters attribute)</a>
@@ -890,6 +936,8 @@
       <li><a href="descriptors.html#optunaz.descriptors.ECFP_counts.Parameters">ECFP_counts.Parameters (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.ECFP_counts.Parameters">[1]</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropActivation.ELU">ELU (optunaz.config.optconfig.ChemPropActivation attribute)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.build_from_opt.encode_name">encode_name() (in module optunaz.config.build_from_opt)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters.ensemble">ensemble (optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters attribute)</a>
 
@@ -924,6 +972,8 @@
 </li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressor.ChemPropRegressorParameters.epochs">(optunaz.config.buildconfig.ChemPropRegressor.ChemPropRegressorParameters attribute)</a>
 </li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters.epochs">(optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters attribute)</a>
+</li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropClassifier.Parameters.epochs">(optunaz.config.optconfig.ChemPropClassifier.Parameters attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropHyperoptClassifier.Parameters.epochs">(optunaz.config.optconfig.ChemPropHyperoptClassifier.Parameters attribute)</a>
@@ -931,6 +981,8 @@
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropHyperoptRegressor.Parameters.epochs">(optunaz.config.optconfig.ChemPropHyperoptRegressor.Parameters attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.epochs">(optunaz.config.optconfig.ChemPropRegressor.Parameters attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.epochs">(optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters attribute)</a>
 </li>
       </ul></li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters.estimator">estimator (optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters attribute)</a>
@@ -960,6 +1012,12 @@
 </li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressor.estimator">(optunaz.config.buildconfig.ChemPropRegressor method)</a>
 </li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.estimator">(optunaz.config.buildconfig.ChemPropRegressorPretrained method)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.estimator">(optunaz.config.buildconfig.KNeighborsClassifier method)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.estimator">(optunaz.config.buildconfig.KNeighborsRegressor method)</a>
+</li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.Lasso.estimator">(optunaz.config.buildconfig.Lasso method)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.LogisticRegression.estimator">(optunaz.config.buildconfig.LogisticRegression method)</a>
@@ -983,6 +1041,8 @@
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.XGBRegressor.estimator">(optunaz.config.buildconfig.XGBRegressor method)</a>
 </li>
       </ul></li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsMetric.EUCLIDEAN">EUCLIDEAN (optunaz.config.optconfig.KNeighborsMetric attribute)</a>
+</li>
       <li><a href="optunaz.utils.html#optunaz.utils.tracking.Datapoint.expected">expected (optunaz.utils.tracking.Datapoint attribute)</a>
 </li>
       <li><a href="optunaz.html#optunaz.model_writer.Predictor.explain">explain() (optunaz.model_writer.Predictor method)</a>
@@ -1015,6 +1075,8 @@
         <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.LogNegative.FALSE">(optunaz.utils.preprocessing.transform.LogNegative attribute)</a>
 </li>
       </ul></li>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.fd_bin">fd_bin() (in module optunaz.utils.preprocessing.splitter)</a>
+</li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropClassifier.ChemPropClassifierParameters.features_generator">features_generator (optunaz.config.buildconfig.ChemPropClassifier.ChemPropClassifierParameters attribute)</a>
 
       <ul>
@@ -1079,12 +1141,20 @@
 </li>
       <li><a href="optunaz.html#optunaz.descriptors.CompositeDescriptor.fp_info">fp_info() (optunaz.descriptors.CompositeDescriptor method)</a>
 </li>
+      <li><a href="optunaz.html#optunaz.descriptors.PathFP.Parameters.fpSize">fpSize (optunaz.descriptors.PathFP.Parameters attribute)</a>
+</li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Random.fraction">fraction (optunaz.utils.preprocessing.splitter.Random attribute)</a>
 
       <ul>
         <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Stratified.fraction">(optunaz.utils.preprocessing.splitter.Stratified attribute)</a>
 </li>
         <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Temporal.fraction">(optunaz.utils.preprocessing.splitter.Temporal attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters.frzn">frzn (optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.frzn">(optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1248,6 +1318,12 @@
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio.high">(optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio attribute)</a>
 </li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs.high">(optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors.high">(optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors.high">(optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors attribute)</a>
+</li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.Lasso.Parameters.LassoParametersAlpha.high">(optunaz.config.optconfig.Lasso.Parameters.LassoParametersAlpha attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.LogisticRegression.Parameters.LogisticRegressionParametersParameterC.high">(optunaz.config.optconfig.LogisticRegression.Parameters.LogisticRegressionParametersParameterC attribute)</a>
@@ -1345,14 +1421,20 @@
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ClassificationScore.JACCARD_WEIGHTED">JACCARD_WEIGHTED (optunaz.config.optconfig.ClassificationScore attribute)</a>
 </li>
+      <li><a href="optunaz.html#optunaz.descriptors.JazzyDescriptors.Parameters.jazzy_filters">jazzy_filters (optunaz.descriptors.JazzyDescriptors.Parameters attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.html#optunaz.descriptors.UnscaledJazzyDescriptors.Parameters.jazzy_filters">(optunaz.descriptors.UnscaledJazzyDescriptors.Parameters attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.html#optunaz.descriptors.JazzyDescriptors.Parameters.jazzy_names">jazzy_names (optunaz.descriptors.JazzyDescriptors.Parameters attribute)</a>
 
       <ul>
         <li><a href="optunaz.html#optunaz.descriptors.UnscaledJazzyDescriptors.Parameters.jazzy_names">(optunaz.descriptors.UnscaledJazzyDescriptors.Parameters attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="descriptors.html#optunaz.descriptors.JazzyDescriptors">JazzyDescriptors (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.JazzyDescriptors">[1]</a>
 </li>
       <li><a href="descriptors.html#optunaz.descriptors.JazzyDescriptors.Parameters">JazzyDescriptors.Parameters (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.JazzyDescriptors.Parameters">[1]</a>
@@ -1375,8 +1457,6 @@
 </li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.deduplicator.KeepLast">KeepLast (class in optunaz.utils.preprocessing.deduplicator)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.deduplicator.KeepMax">KeepMax (class in optunaz.utils.preprocessing.deduplicator)</a>
 </li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.deduplicator.KeepMedian">KeepMedian (class in optunaz.utils.preprocessing.deduplicator)</a>
@@ -1386,6 +1466,36 @@
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.deduplicator.KeepRandom">KeepRandom (class in optunaz.utils.preprocessing.deduplicator)</a>
 </li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.KFold">KFold (class in optunaz.utils.preprocessing.splitter)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier">KNeighborsClassifier (class in optunaz.config.buildconfig)</a>
+
+      <ul>
+        <li><a href="algorithms.html#optunaz.config.optconfig.KNeighborsClassifier">(class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters">KNeighborsClassifier.KNeighborsClassifierParameters (class in optunaz.config.buildconfig)</a>
+</li>
+      <li><a href="algorithms.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters">KNeighborsClassifier.Parameters (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters">[1]</a>
+</li>
+      <li><a href="algorithms.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors">KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors">[1]</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsMetric">KNeighborsMetric (class in optunaz.config.optconfig)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor">KNeighborsRegressor (class in optunaz.config.buildconfig)</a>
+
+      <ul>
+        <li><a href="algorithms.html#optunaz.config.optconfig.KNeighborsRegressor">(class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters">KNeighborsRegressor.KNeighborsRegressorParameters (class in optunaz.config.buildconfig)</a>
+</li>
+      <li><a href="algorithms.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters">KNeighborsRegressor.Parameters (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters">[1]</a>
+</li>
+      <li><a href="algorithms.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors">KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors">[1]</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsWeights">KNeighborsWeights (class in optunaz.config.optconfig)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1524,6 +1634,12 @@
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio.low">(optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio attribute)</a>
 </li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs.low">(optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors.low">(optunaz.config.optconfig.KNeighborsClassifier.Parameters.KNeighborsClassifierParametersN_Neighbors attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors.low">(optunaz.config.optconfig.KNeighborsRegressor.Parameters.KNeighborsRegressorParametersN_Neighbors attribute)</a>
+</li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.Lasso.Parameters.LassoParametersAlpha.low">(optunaz.config.optconfig.Lasso.Parameters.LassoParametersAlpha attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.LogisticRegression.Parameters.LogisticRegressionParametersParameterC.low">(optunaz.config.optconfig.LogisticRegression.Parameters.LogisticRegressionParametersParameterC attribute)</a>
@@ -1583,6 +1699,8 @@
       </ul></li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.ScaffoldSplit.make_scaffold_generic">make_scaffold_generic (optunaz.utils.preprocessing.splitter.ScaffoldSplit attribute)</a>
 </li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsMetric.MANHATTAN">MANHATTAN (optunaz.config.optconfig.KNeighborsMetric attribute)</a>
+</li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.Mapie">Mapie (class in optunaz.config.buildconfig)</a>
 
       <ul>
@@ -1593,6 +1711,12 @@
 </li>
       <li><a href="algorithms.html#optunaz.config.optconfig.Mapie.Parameters">Mapie.Parameters (class in optunaz.config.optconfig)</a>, <a href="optunaz.config.html#optunaz.config.optconfig.Mapie.Parameters">[1]</a>
 </li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.Mapie.MapieParameters.mapie_alpha">mapie_alpha (optunaz.config.buildconfig.Mapie.MapieParameters attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.Mapie.Parameters.mapie_alpha">(optunaz.config.optconfig.Mapie.Parameters attribute)</a>
+</li>
+      </ul></li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters.max_depth">max_depth (optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters attribute)</a>
 
       <ul>
@@ -1639,6 +1763,8 @@
       </ul></li>
       <li><a href="optunaz.config.html#optunaz.config.OptimizationDirection.MAXIMIZATION">MAXIMIZATION (optunaz.config.OptimizationDirection attribute)</a>
 </li>
+      <li><a href="optunaz.html#optunaz.descriptors.PathFP.Parameters.maxPath">maxPath (optunaz.descriptors.PathFP.Parameters attribute)</a>
+</li>
       <li><a href="optunaz.utils.html#optunaz.utils.md5_hash">md5_hash() (in module optunaz.utils)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropAggregation.MEAN">MEAN (optunaz.config.optconfig.ChemPropAggregation attribute)</a>
@@ -1663,6 +1789,16 @@
         <li><a href="optunaz.config.html#optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters.method">(optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters attribute)</a>
 </li>
       </ul></li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters.metric">metric (optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters.metric">(optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.metric">(optunaz.config.optconfig.KNeighborsClassifier.Parameters attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.metric">(optunaz.config.optconfig.KNeighborsRegressor.Parameters attribute)</a>
+</li>
+      </ul></li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters.min_py_sum_leaf">min_py_sum_leaf (optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters attribute)</a>
 
       <ul>
@@ -1673,12 +1809,16 @@
 </li>
       <li><a href="optunaz.config.html#optunaz.config.OptimizationDirection.MINIMIZATION">MINIMIZATION (optunaz.config.OptimizationDirection attribute)</a>
 </li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsMetric.MINKOWSKI">MINKOWSKI (optunaz.config.optconfig.KNeighborsMetric attribute)</a>
+</li>
       <li><a href="optunaz.utils.html#optunaz.utils.mkdict">mkdict() (in module optunaz.utils)</a>
 </li>
       <li><a href="optunaz.utils.html#optunaz.utils.mlflow.MLflowCallback">MLflowCallback (class in optunaz.utils.mlflow)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.MlflowLogParams">MlflowLogParams (class in optunaz.utils.enums)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.BuildConfig.Settings.mode">mode (optunaz.config.buildconfig.BuildConfig.Settings attribute)</a>
 
       <ul>
@@ -1689,15 +1829,11 @@
         <li><a href="optunaz.html#optunaz.model_writer.QSARtunaModel.mode">(optunaz.model_writer.QSARtunaModel attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform">ModelDataTransform (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform">ModelDataTransform (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.ModelDataTransform">[1]</a>
 </li>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters">ModelDataTransform.Parameters (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters">ModelDataTransform.Parameters (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.ModelDataTransform.Parameters">[1]</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.ModelMode">ModelMode (class in optunaz.config)</a>
-</li>
-      <li><a href="optunaz.html#optunaz.model_writer.ModelPersistenceMode">ModelPersistenceMode (class in optunaz.model_writer)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.model_runner_enum.ModelRunnerDataframeEnum">ModelRunnerDataframeEnum (class in optunaz.utils.enums.model_runner_enum)</a>
 </li>
@@ -1794,6 +1930,12 @@
 </li>
       <li><a href="optunaz.utils.html#optunaz.utils.files_paths.move_up_directory">move_up_directory() (in module optunaz.utils.files_paths)</a>
 </li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropFrzn.MPNN">MPNN (optunaz.config.optconfig.ChemPropFrzn attribute)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropFrzn.MPNN_FIRST_FFN">MPNN_FIRST_FFN (optunaz.config.optconfig.ChemPropFrzn attribute)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropFrzn.MPNN_LAST_FFN">MPNN_LAST_FFN (optunaz.config.optconfig.ChemPropFrzn attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1838,6 +1980,16 @@
       </ul></li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.OptimizationConfig.Settings.n_jobs">n_jobs (optunaz.config.optconfig.OptimizationConfig.Settings attribute)</a>
 </li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters.n_neighbors">n_neighbors (optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters.n_neighbors">(optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.n_neighbors">(optunaz.config.optconfig.KNeighborsClassifier.Parameters attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.n_neighbors">(optunaz.config.optconfig.KNeighborsRegressor.Parameters attribute)</a>
+</li>
+      </ul></li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.n_splits">n_splits (optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit attribute)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.OptimizationConfig.Settings.n_startup_trials">n_startup_trials (optunaz.config.optconfig.OptimizationConfig.Settings attribute)</a>
@@ -1864,6 +2016,12 @@
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropHyperoptRegressor.name">(optunaz.config.buildconfig.ChemPropHyperoptRegressor attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressor.name">(optunaz.config.buildconfig.ChemPropRegressor attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.name">(optunaz.config.buildconfig.ChemPropRegressorPretrained attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.name">(optunaz.config.buildconfig.KNeighborsClassifier attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.name">(optunaz.config.buildconfig.KNeighborsRegressor attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.Lasso.name">(optunaz.config.buildconfig.Lasso attribute)</a>
 </li>
@@ -1898,6 +2056,12 @@
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropHyperoptRegressor.name">(optunaz.config.optconfig.ChemPropHyperoptRegressor attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.name">(optunaz.config.optconfig.ChemPropRegressor attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.name">(optunaz.config.optconfig.ChemPropRegressorPretrained attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.name">(optunaz.config.optconfig.KNeighborsClassifier attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.name">(optunaz.config.optconfig.KNeighborsRegressor attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.Lasso.name">(optunaz.config.optconfig.Lasso attribute)</a>
 </li>
@@ -1941,6 +2105,8 @@
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.MACCS_keys.name">(optunaz.descriptors.MACCS_keys attribute)</a>
 </li>
+        <li><a href="optunaz.html#optunaz.descriptors.PathFP.name">(optunaz.descriptors.PathFP attribute)</a>
+</li>
         <li><a href="optunaz.html#optunaz.descriptors.PhyschemDescriptors.name">(optunaz.descriptors.PhyschemDescriptors attribute)</a>
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.PrecomputedDescriptorFromFile.name">(optunaz.descriptors.PrecomputedDescriptorFromFile attribute)</a>
@@ -1959,7 +2125,11 @@
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.UnscaledPhyschemDescriptors.name">(optunaz.descriptors.UnscaledPhyschemDescriptors attribute)</a>
 </li>
+        <li><a href="optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors.name">(optunaz.descriptors.UnscaledZScalesDescriptors attribute)</a>
+</li>
         <li><a href="optunaz.html#optunaz.descriptors.ValidDescriptor.name">(optunaz.descriptors.ValidDescriptor attribute)</a>
+</li>
+        <li><a href="optunaz.html#optunaz.descriptors.ZScalesDescriptors.name">(optunaz.descriptors.ZScalesDescriptors attribute)</a>
 </li>
         <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication.name">(optunaz.utils.preprocessing.deduplicator.KeepAllNoDeduplication attribute)</a>
 </li>
@@ -2027,7 +2197,11 @@
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters.new_syn_data_frac">new_syn_data_frac (optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters attribute)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropFeatures_Generator.NONE">NONE (optunaz.config.optconfig.ChemPropFeatures_Generator attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropFrzn.NONE">(optunaz.config.optconfig.ChemPropFrzn attribute)</a>
 </li>
+      </ul></li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropAggregation.NORM">NORM (optunaz.config.optconfig.ChemPropAggregation attribute)</a>
 </li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.NoSplitting">NoSplitting (class in optunaz.utils.preprocessing.splitter)</a>
@@ -2381,6 +2555,12 @@
 </li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressor.parameters">(optunaz.config.buildconfig.ChemPropRegressor attribute)</a>
 </li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.parameters">(optunaz.config.buildconfig.ChemPropRegressorPretrained attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.parameters">(optunaz.config.buildconfig.KNeighborsClassifier attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.parameters">(optunaz.config.buildconfig.KNeighborsRegressor attribute)</a>
+</li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.Lasso.parameters">(optunaz.config.buildconfig.Lasso attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.buildconfig.LogisticRegression.parameters">(optunaz.config.buildconfig.LogisticRegression attribute)</a>
@@ -2414,6 +2594,12 @@
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropHyperoptRegressor.parameters">(optunaz.config.optconfig.ChemPropHyperoptRegressor attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.parameters">(optunaz.config.optconfig.ChemPropRegressor attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.parameters">(optunaz.config.optconfig.ChemPropRegressorPretrained attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.parameters">(optunaz.config.optconfig.KNeighborsClassifier attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.parameters">(optunaz.config.optconfig.KNeighborsRegressor attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.Lasso.parameters">(optunaz.config.optconfig.Lasso attribute)</a>
 </li>
@@ -2453,6 +2639,8 @@
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.MACCS_keys.parameters">(optunaz.descriptors.MACCS_keys attribute)</a>
 </li>
+        <li><a href="optunaz.html#optunaz.descriptors.PathFP.parameters">(optunaz.descriptors.PathFP attribute)</a>
+</li>
         <li><a href="optunaz.html#optunaz.descriptors.PhyschemDescriptors.parameters">(optunaz.descriptors.PhyschemDescriptors attribute)</a>
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.PrecomputedDescriptorFromFile.parameters">(optunaz.descriptors.PrecomputedDescriptorFromFile attribute)</a>
@@ -2469,7 +2657,11 @@
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.UnscaledPhyschemDescriptors.parameters">(optunaz.descriptors.UnscaledPhyschemDescriptors attribute)</a>
 </li>
+        <li><a href="optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors.parameters">(optunaz.descriptors.UnscaledZScalesDescriptors attribute)</a>
+</li>
         <li><a href="optunaz.html#optunaz.descriptors.ValidDescriptor.parameters">(optunaz.descriptors.ValidDescriptor attribute)</a>
+</li>
+        <li><a href="optunaz.html#optunaz.descriptors.ZScalesDescriptors.parameters">(optunaz.descriptors.ZScalesDescriptors attribute)</a>
 </li>
         <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.parameters">(optunaz.utils.preprocessing.transform.ModelDataTransform attribute)</a>
 </li>
@@ -2486,7 +2678,13 @@
 </li>
       <li><a href="optunaz.html#optunaz.schemagen.patch_schema_optunaz">patch_schema_optunaz() (in module optunaz.schemagen)</a>
 </li>
+      <li><a href="descriptors.html#optunaz.descriptors.PathFP">PathFP (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.PathFP">[1]</a>
+</li>
+      <li><a href="descriptors.html#optunaz.descriptors.PathFP.Parameters">PathFP.Parameters (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.PathFP.Parameters">[1]</a>
+</li>
       <li><a href="optunaz.config.html#optunaz.config.Visualization.ImageFileFormat.PDF">PDF (optunaz.config.Visualization.ImageFileFormat attribute)</a>
+</li>
+      <li><a href="optunaz.html#optunaz.model_writer.perform_ptr">perform_ptr() (in module optunaz.model_writer)</a>
 </li>
       <li><a href="descriptors.html#optunaz.descriptors.PhyschemDescriptors">PhyschemDescriptors (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.PhyschemDescriptors">[1]</a>
 </li>
@@ -2538,17 +2736,15 @@
 </li>
       <li><a href="descriptors.html#optunaz.descriptors.PrecomputedDescriptorFromFile.Parameters">PrecomputedDescriptorFromFile.Parameters (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.PrecomputedDescriptorFromFile.Parameters">[1]</a>
 </li>
+      <li><a href="optunaz.html#optunaz.predict.PrecomputedError">PrecomputedError</a>
+</li>
       <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Predefined">Predefined (class in optunaz.utils.preprocessing.splitter)</a>, <a href="splitters.html#optunaz.utils.preprocessing.splitter.Predefined">[1]</a>
 </li>
-      <li><a href="optunaz.html#optunaz.model_writer.predict">predict() (in module optunaz.model_writer)</a>
-
-      <ul>
-        <li><a href="optunaz.html#optunaz.model_writer.Predictor.predict">(optunaz.model_writer.Predictor method)</a>
+      <li><a href="optunaz.html#optunaz.model_writer.Predictor.predict">predict() (optunaz.model_writer.Predictor method)</a>
 </li>
-      </ul></li>
       <li><a href="optunaz.html#optunaz.model_writer.QSARtunaModel.predict_from_smiles">predict_from_smiles() (optunaz.model_writer.QSARtunaModel method)</a>
 </li>
-      <li><a href="optunaz.html#optunaz.model_writer.predict_from_smiles_and_descriptor">predict_from_smiles_and_descriptor() (in module optunaz.model_writer)</a>
+      <li><a href="optunaz.html#optunaz.optbuild.predict_pls">predict_pls() (in module optunaz.optbuild)</a>
 </li>
       <li><a href="optunaz.html#optunaz.model_writer.Predictor.predict_proba">predict_proba() (optunaz.model_writer.Predictor method)</a>
 </li>
@@ -2568,6 +2764,12 @@
 </li>
       <li><a href="optunaz.utils.html#optunaz.utils.mlflow.MLflowCallback.prepare_tags">prepare_tags() (optunaz.utils.mlflow.MLflowCallback method)</a>
 </li>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters.pretrained_model">pretrained_model (optunaz.config.buildconfig.ChemPropRegressorPretrained.ChemPropRegressorPretrainedParameters attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.pretrained_model">(optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters attribute)</a>
+</li>
+      </ul></li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.interface_enum.InterfaceEnum.PRF_SET">PRF_SET (optunaz.utils.enums.interface_enum.InterfaceEnum attribute)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.PRFClassifier">PRFClassifier (class in optunaz.config.buildconfig)</a>
@@ -2594,9 +2796,9 @@
 </li>
       <li><a href="optunaz.html#optunaz.datareader.Dataset.probabilistic_threshold_representation_threshold">probabilistic_threshold_representation_threshold (optunaz.datareader.Dataset attribute)</a>
 </li>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform">PTRTransform (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform">PTRTransform (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.PTRTransform">[1]</a>
 </li>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform.Parameters">PTRTransform.Parameters (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.PTRTransform.Parameters">PTRTransform.Parameters (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.PTRTransform.Parameters">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2636,6 +2838,8 @@
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersHidden_Size.q">(optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersHidden_Size attribute)</a>
 </li>
         <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio.q">(optunaz.config.optconfig.ChemPropRegressor.Parameters.ChemPropParametersWarmup_Epochs_Ratio attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs.q">(optunaz.config.optconfig.ChemPropRegressorPretrained.Parameters.ChemPropParametersEpochs attribute)</a>
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.SmilesAndSideInfoFromFile.Parameters.Aux_Weight_Pc.q">(optunaz.descriptors.SmilesAndSideInfoFromFile.Parameters.Aux_Weight_Pc attribute)</a>
 </li>
@@ -2718,10 +2922,10 @@
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ClassificationScore.RECALL_MACRO">RECALL_MACRO (optunaz.config.optconfig.ClassificationScore attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ClassificationScore.RECALL_MICRO">RECALL_MICRO (optunaz.config.optconfig.ClassificationScore attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ClassificationScore.RECALL_WEIGHTED">RECALL_WEIGHTED (optunaz.config.optconfig.ClassificationScore attribute)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.ModelMode.REGRESSION">REGRESSION (optunaz.config.ModelMode attribute)</a>
@@ -2729,6 +2933,8 @@
       <li><a href="optunaz.config.html#optunaz.config.optconfig.RegressionScore">RegressionScore (class in optunaz.config.optconfig)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.ChemPropActivation.RELU">RELU (optunaz.config.optconfig.ChemPropActivation attribute)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.build_from_opt.remove_algo_hash">remove_algo_hash() (in module optunaz.config.build_from_opt)</a>
 </li>
       <li><a href="optunaz.utils.html#optunaz.utils.remove_failed_idx">remove_failed_idx() (in module optunaz.utils)</a>
 </li>
@@ -2815,6 +3021,8 @@
 </li>
         <li><a href="optunaz.html#optunaz.descriptors.ScaledDescriptor.ScaledDescriptorParameters.scaler">(optunaz.descriptors.ScaledDescriptor.ScaledDescriptorParameters attribute)</a>
 </li>
+        <li><a href="optunaz.html#optunaz.descriptors.ZScalesDescriptors.Parameters.scaler">(optunaz.descriptors.ZScalesDescriptors.Parameters attribute)</a>
+</li>
       </ul></li>
       <li><a href="optunaz.html#optunaz.descriptors.ScalingFittingError">ScalingFittingError</a>
 </li>
@@ -2898,11 +3106,9 @@
       </ul></li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.CalibratedClassifierCVMethod.SIGMOID">SIGMOID (optunaz.config.optconfig.CalibratedClassifierCVMethod attribute)</a>
 </li>
-      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.interface_enum.InterfaceEnum.SKLEARN_SET">SKLEARN_SET (optunaz.utils.enums.interface_enum.InterfaceEnum attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="optunaz.html#optunaz.model_writer.ModelPersistenceMode.SKLEARN_WITH_OPTUNAZ">SKLEARN_WITH_OPTUNAZ (optunaz.model_writer.ModelPersistenceMode attribute)</a>
+      <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.interface_enum.InterfaceEnum.SKLEARN_SET">SKLEARN_SET (optunaz.utils.enums.interface_enum.InterfaceEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.return_values_enum.SklearnReturnValueEnum">SklearnReturnValueEnum (class in optunaz.utils.enums.return_values_enum)</a>
 </li>
@@ -3078,9 +3284,11 @@
 </li>
       <li><a href="optunaz.html#optunaz.model_writer.QSARtunaModel.transform">transform (optunaz.model_writer.QSARtunaModel attribute)</a>
 </li>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.AuxTransformer.transform">transform() (optunaz.utils.preprocessing.transform.AuxTransformer method)</a>
+      <li><a href="optunaz.html#optunaz.datareader.transform">transform() (in module optunaz.datareader)</a>
 
       <ul>
+        <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.AuxTransformer.transform">(optunaz.utils.preprocessing.transform.AuxTransformer method)</a>
+</li>
         <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.DataTransform.transform">(optunaz.utils.preprocessing.transform.DataTransform method)</a>
 </li>
         <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ModelDataTransform.transform">(optunaz.utils.preprocessing.transform.ModelDataTransform method)</a>
@@ -3128,9 +3336,13 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="optunaz.html#optunaz.predict.UncertaintyError">UncertaintyError</a>
+</li>
       <li><a href="optunaz.html#optunaz.descriptors.UnfittedSklearnScaler">UnfittedSklearnScaler (class in optunaz.descriptors)</a>
 </li>
       <li><a href="optunaz.html#optunaz.descriptors.UnfittedSklearnScaler.MolData">UnfittedSklearnScaler.MolData (class in optunaz.descriptors)</a>
+</li>
+      <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsWeights.UNIFORM">UNIFORM (optunaz.config.optconfig.KNeighborsWeights attribute)</a>
 </li>
       <li><a href="descriptors.html#optunaz.descriptors.UnscaledJazzyDescriptors">UnscaledJazzyDescriptors (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.UnscaledJazzyDescriptors">[1]</a>
 </li>
@@ -3142,6 +3354,10 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="descriptors.html#optunaz.descriptors.UnscaledZScalesDescriptors">UnscaledZScalesDescriptors (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors">[1]</a>
+</li>
+      <li><a href="descriptors.html#optunaz.descriptors.UnscaledZScalesDescriptors.Parameters">UnscaledZScalesDescriptors.Parameters (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors.Parameters">[1]</a>
+</li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.OptimizationConfig.Settings.use_cache">use_cache (optunaz.config.optconfig.OptimizationConfig.Settings attribute)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters.use_py_gini">use_py_gini (optunaz.config.buildconfig.PRFClassifier.PRFClassifierParameters attribute)</a>
@@ -3166,15 +3382,23 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="optunaz.html#optunaz.predict.validate_args">validate_args() (in module optunaz.predict)</a>
+</li>
+      <li><a href="optunaz.html#optunaz.predict.validate_aux">validate_aux() (in module optunaz.predict)</a>
+</li>
       <li><a href="optunaz.html#optunaz.metircs.validate_cls_input">validate_cls_input() (in module optunaz.metircs)</a>
+</li>
+      <li><a href="optunaz.html#optunaz.predict.validate_set_precomputed">validate_set_precomputed() (in module optunaz.predict)</a>
+</li>
+      <li><a href="optunaz.html#optunaz.predict.validate_uncertainty">validate_uncertainty() (in module optunaz.predict)</a>
 </li>
       <li><a href="optunaz.html#optunaz.descriptors.ValidDescriptor">ValidDescriptor (class in optunaz.descriptors)</a>
 </li>
       <li><a href="optunaz.html#optunaz.descriptors.ValidDescriptor.Parameters">ValidDescriptor.Parameters (class in optunaz.descriptors)</a>
 </li>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn">VectorFromColumn (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn">VectorFromColumn (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.VectorFromColumn">[1]</a>
 </li>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters">VectorFromColumn.Parameters (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters">VectorFromColumn.Parameters (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.VectorFromColumn.Parameters">[1]</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.optconfig.CalibratedClassifierCVMethod.VENNABERS">VENNABERS (optunaz.config.optconfig.CalibratedClassifierCVMethod attribute)</a>
 </li>
@@ -3188,12 +3412,12 @@
       </ul></li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION">VISUALIZATION (optunaz.utils.enums.visualization_enum.VisualizationEnum attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.config.html#optunaz.config.Visualization.ImageFileFormat">Visualization.ImageFileFormat (class in optunaz.config)</a>
 </li>
       <li><a href="optunaz.config.html#optunaz.config.Visualization.Plots">Visualization.Plots (class in optunaz.config)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_CLASSIFIER">VISUALIZATION_CLASSIFIER (optunaz.utils.enums.visualization_enum.VisualizationEnum attribute)</a>
 </li>
       <li><a href="optunaz.utils.enums.html#optunaz.utils.enums.visualization_enum.VisualizationEnum.VISUALIZATION_FILE_FORMAT">VISUALIZATION_FILE_FORMAT (optunaz.utils.enums.visualization_enum.VisualizationEnum attribute)</a>
@@ -3236,6 +3460,16 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters.weights">weights (optunaz.config.buildconfig.KNeighborsClassifier.KNeighborsClassifierParameters attribute)</a>
+
+      <ul>
+        <li><a href="optunaz.config.html#optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters.weights">(optunaz.config.buildconfig.KNeighborsRegressor.KNeighborsRegressorParameters attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsClassifier.Parameters.weights">(optunaz.config.optconfig.KNeighborsClassifier.Parameters attribute)</a>
+</li>
+        <li><a href="optunaz.config.html#optunaz.config.optconfig.KNeighborsRegressor.Parameters.weights">(optunaz.config.optconfig.KNeighborsRegressor.Parameters attribute)</a>
+</li>
+      </ul></li>
       <li><a href="optunaz.html#optunaz.model_writer.wrap_model">wrap_model() (in module optunaz.model_writer)</a>
 </li>
   </ul></td>
@@ -3284,11 +3518,15 @@
 <h2 id="Z">Z</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales">ZScales (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales">ZScales (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.ZScales">[1]</a>
+</li>
+      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales.Parameters">ZScales.Parameters (class in optunaz.utils.preprocessing.transform)</a>, <a href="transform.html#optunaz.utils.preprocessing.transform.ZScales.Parameters">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales.Parameters">ZScales.Parameters (class in optunaz.utils.preprocessing.transform)</a>
+      <li><a href="descriptors.html#optunaz.descriptors.ZScalesDescriptors">ZScalesDescriptors (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.ZScalesDescriptors">[1]</a>
+</li>
+      <li><a href="descriptors.html#optunaz.descriptors.ZScalesDescriptors.Parameters">ZScalesDescriptors.Parameters (class in optunaz.descriptors)</a>, <a href="optunaz.html#optunaz.descriptors.ZScalesDescriptors.Parameters">[1]</a>
 </li>
   </ul></td>
 </tr></table>

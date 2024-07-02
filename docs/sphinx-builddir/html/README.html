@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ) &mdash; QSARtuna 3.0.0.1 documentation</title>
+  <title>QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and known publically as QSARtuna) &mdash; QSARtuna 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Preprocessing data for QSARtuna" href="notebooks/preprocess_data.html" />
-    <link rel="prev" title="Welcome to QSARtuna Documentation!" href="index.html" /> 
+    <link rel="prev" title="Welcome to QSARtuna Documentation!" href="index.html" />
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,12 +51,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#the-three-step-process">The three-step process</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#json-based-command-line-interface">JSON-based Command-line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#json-based-command-line-interface-on-az-scp">JSON-based Command-line interface on AZ SCP</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#configuration-file">Configuration file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#running-via-singulartity">Running via singulartity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-on-scp">Running on SCP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#submitting-to-slurm">Submitting to SLURM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-the-model">Using the model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#optional-inspect">Optional: inspect</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#run-from-python-jupyter-notebook">Run from Python/Jupyter Notebook</a></li>
@@ -67,6 +66,8 @@
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">List of available data transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deduplicator.html">List of available deduplicators</a></li>
 </ul>
 
         </div>
@@ -83,7 +84,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)</li>
+      <li class="breadcrumb-item active">QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and known publically as QSARtuna)</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -117,10 +118,16 @@
     text-align: unset;
 }
 </style>
-<section id="qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az">
-<h1>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ)<a class="headerlink" href="#qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az" title="Permalink to this heading"></a></h1>
+<section id="qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az-and-known-publically-as-qsartuna">
+<h1>QSARtuna: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and known publically as QSARtuna)<a class="headerlink" href="#qsartuna-qsar-using-optimization-for-hyperparameter-tuning-formerly-optuna-az-and-known-publically-as-qsartuna" title="Permalink to this heading"></a></h1>
 <p>Build predictive models for CompChem with hyperparameters optimized by <a class="reference external" href="https://optuna.org/">Optuna</a>.</p>
-<p>Developed with Uncertainty Quantification and model explainability in mind.</p>
+<p>Internal AZ links:
+<a class="reference external" href="https://pages.scp.astrazeneca.net/mai/qsartuna">Docs</a>,
+<a class="reference external" href="https://github.com/AZU-RDIT/optuna_az/">Code</a>,
+<a class="reference external" href="https://jira.astrazeneca.com/projects/OPTUNA">Issues</a>.</p>
+<p>External (QSARtuna) links:
+<a class="reference external" href="https://github.com/MolecularAI/QSARtuna/blob/master/README.md?_sm_nck=1">Public</a>,
+<a class="reference external" href="https://molecularai.github.io/QSARtuna/">Public docs</a>.</p>
 <section id="background">
 <h2>Background<a class="headerlink" href="#background" title="Permalink to this heading"></a></h2>
 <p>This library searches
@@ -129,10 +136,6 @@ and molecular descriptor
 for the given data.</p>
 <p>The search itself
 is done using <a class="reference external" href="https://optuna.org/">Optuna</a>.</p>
-<p>Developed models employ
-the latest state-of-the-art
-uncertainty estimation and
-explainability python packages</p>
 <section id="the-three-step-process">
 <h3>The three-step process<a class="headerlink" href="#the-three-step-process" title="Permalink to this heading"></a></h3>
 <p>QSARtuna is structured around three steps:</p>
@@ -151,8 +154,8 @@ but it has a big benefit that this final model is trained on the all available d
 </ol>
 </section>
 </section>
-<section id="json-based-command-line-interface">
-<h2>JSON-based Command-line interface<a class="headerlink" href="#json-based-command-line-interface" title="Permalink to this heading"></a></h2>
+<section id="json-based-command-line-interface-on-az-scp">
+<h2>JSON-based Command-line interface on AZ SCP<a class="headerlink" href="#json-based-command-line-interface-on-az-scp" title="Permalink to this heading"></a></h2>
 <p>Let’s look at a trivial example of modelling molecular weight
 using a training set of 50 molecules.</p>
 <section id="configuration-file">
@@ -165,7 +168,8 @@ It contains four main sections:</p>
 <li><p><strong>descriptors</strong> - which molecular descriptors to use.</p></li>
 <li><p><strong>algorithms</strong> - which ML algorithms to use.</p></li>
 </ul>
-<p>Below is the example of such a file</p>
+<p>Below is the example of such file
+(it is also available in the <a class="reference external" href="https://github.com/AZU-RDIT/optuna_az/blob/master/examples/optimization/regression.json">source code repository</a>):</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optimization&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -227,7 +231,8 @@ It contains four main sections:</p>
 </pre></div>
 </div>
 <p>Data section specifies location of the dataset file.
-In this example it specifies a relative path to the <code class="docutils literal notranslate"><span class="pre">tests/data</span></code> folder.</p>
+In this example it specifies a relative path to the <code class="docutils literal notranslate"><span class="pre">tests/data</span></code> folder
+in the <a class="reference external" href="https://github.com/AZU-RDIT/optuna_az/tree/master/tests/data/DRD2/subset-50">source code repository</a>.</p>
 <p>Settings section specifies that:</p>
 <ul class="simple">
 <li><p>we are building a regression model,</p></li>
@@ -240,9 +245,9 @@ In this example it specifies a relative path to the <code class="docutils litera
 and optimization is free to pair any specified descriptor with any of the algorithms.</p>
 <p>When we have our data and our configuration, it is time to start the optimization.</p>
 </section>
-<section id="running-via-singulartity">
-<h3>Running via singulartity<a class="headerlink" href="#running-via-singulartity" title="Permalink to this heading"></a></h3>
-<p>QSARtuna can be deployed using <a class="reference external" href="https://sylabs.io/guides/3.7/user-guide/index.html">Singularity</a> container.</p>
+<section id="running-on-scp">
+<h3>Running on SCP<a class="headerlink" href="#running-on-scp" title="Permalink to this heading"></a></h3>
+<p>QSARtuna is deployed on SCP using <a class="reference external" href="https://sylabs.io/guides/3.7/user-guide/index.html">Singularity</a> container.</p>
 <p>To run commands inside the container, Singularity uses the following syntax:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;container.sif&gt;<span class="w"> </span>&lt;command&gt;
 </pre></div>
@@ -275,12 +280,12 @@ and we should submit it to the SLURM queue instead.</p>
 <span class="c1"># The example we use is in examples/optimization/regression_drd2_50.json.</span>
 
 <span class="c1"># The example we chose uses relative paths to data files, change directory.</span>
-<span class="nb">cd</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/OptunaAZ-versions/OptunaAZ_latest
+<span class="nb">cd</span><span class="w"> </span>/projects/cc/mai/OptunaAZ-versions/OptunaAZ_latest
 
 singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/projects/cc/mai/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--config<span class="o">{</span>project_folder<span class="o">}</span>/examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config<span class="w"> </span>examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
@@ -291,7 +296,7 @@ singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> 
 <section id="using-the-model">
 <h3>Using the model<a class="headerlink" href="#using-the-model" title="Permalink to this heading"></a></h3>
 <p>When the model is built, run inference:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/projects/cc/mai/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--model-file<span class="w"> </span>target/merged.pkl<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
@@ -304,7 +309,7 @@ singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> 
 This can be specified by modifying the above command and supplying
 <code class="docutils literal notranslate"><span class="pre">/projects/cc/mai/containers/QSARtuna_&lt;version&gt;.sif</span></code> (replace <version> with the version of QSARtuna).</p>
 <p>E.g:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_2.5.1.sif<span class="w"> </span><span class="se">\</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/projects/cc/mai/containers/QSARtuna_2.5.1.sif<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--model-file<span class="w"> </span><span class="m">2</span>.5.1_model.pkl<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
@@ -313,36 +318,6 @@ This can be specified by modifying the above command and supplying
 </pre></div>
 </div>
 <p>would generate predictions for a model trained with QSARtuna 2.5.1.</p>
-</section>
-<section id="optional-inspect">
-<h3>Optional: inspect<a class="headerlink" href="#optional-inspect" title="Permalink to this heading"></a></h3>
-<p>To inspect performance of different models tried during optimization,
-use <a class="reference external" href="https://www.mlflow.org/docs/latest/tracking.html">MLFlow Tracking UI</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>mlflow
-mlflow<span class="w"> </span>ui
-</pre></div>
-</div>
-<p>Then open mlflow link your browser.</p>
-<p><img alt="mlflow select experiment" src="_images/mlflow-select-experiment.png" /></p>
-<p>If you run <code class="docutils literal notranslate"><span class="pre">mlflow</span> <span class="pre">ui</span></code> on SCP,
-you can forward your mlflow port
-with a separate SSH session started on your local (”non-SCP”) machine:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>-N<span class="w"> </span>-L<span class="w"> </span>localhost:5000:localhost:5000<span class="w"> </span>user@login.intranet.net
-</pre></div>
-</div>
-<p>(”-L” forwards ports, and “-N” just to not execute any commands).</p>
-<p>In the MLFlow Tracking UI, select experiment to the left,
-it is named after the input file path.
-Then select all runs/trials in the experiment, and choose “Compare”.
-You will get a comparison page for selected runs/trials in the experiment.</p>
-<p><img alt="mlflow inspecting trials" src="_images/mlflow-inspecting-trials.png" /></p>
-<p>Comparison page will show MLFlow Runs (called Trials in Optuna),
-as well as their Parameters and Metrics.
-At the bottom there are plots.
-For X-axis, select “trial_number”.
-For Y-axis, start with “optimization_objective_cvmean_r2”.</p>
-<p>You can get more details by clicking individual runs.
-There you can access run/trial build (training) configuration.</p>
 </section>
 </section>
 <section id="run-from-python-jupyter-notebook">
@@ -354,7 +329,7 @@ conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"
 conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qsartuna
 module<span class="w"> </span>purge<span class="w">  </span><span class="c1"># Just in case.</span>
 which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Check. Should output path that contains &quot;my_env_with_qsartuna&quot;.</span>
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>http://pages.scp.astrazeneca.net/mai/qsartuna/releases/QSARtuna_latest.tar.gz
 </pre></div>
 </div>
 <p>Then you can use QSARtuna inside your Notebook:</p>

@@ -3,21 +3,61 @@ import json
 import logging
 import os
 import pathlib
+import sys
 from typing import Union
 
 from apischema import deserialize, serialize
 
+from optunaz import predict
 from optunaz.config.buildconfig import BuildConfig
 from optunaz.config.optconfig import OptimizationConfig
-from optunaz.model_writer import ModelPersistenceMode
 from optunaz.three_step_opt_build_merge import (
     optimize,
     buildconfig_best,
     build_best,
     build_merged,
 )
+from unittest.mock import patch
 
 logger = logging.getLogger(__name__)
+
+
+def predict_pls(model_path, inference_path):
+    if inference_path == "None":
+        logger.info(f"Inference path is not set so AL predictions not performed")
+        return
+    else:
+        logger.info(f"Inference path is {inference_path}")
+    predict_args = [
+        "prog",
+        "--model-file",
+        str(model_path),
+        "--input-smiles-csv-file",
+        str(inference_path),
+        "--input-smiles-csv-column",
+        "Structure",
+        "--output-prediction-csv-file",
+        str(os.path.dirname(model_path)) + "/al.csv",
+        "--predict-uncertainty",
+        "--uncertainty_quantile",
+        "0.99",
+    ]
+    try:
+        with patch.object(sys, "argv", predict_args):
+            logging.info("Performing active learning predictions")
+            predict.main()
+    except FileNotFoundError:
+        logger.info(
+            f"PLS file not found at {model_path}, AL predictions not performed"
+        )
+    except predict.UncertaintyError:
+        logging.info(
+            "PLS prediction not performed: algorithm does not support uncertainty prediction"
+        )
+    except predict.AuxCovariateMissing:
+        logging.info(
+            "PLS prediction not performed: algorithm requires corvariate auxiliary data for inference"
+        )
 
 
 def main():
@@ -53,16 +93,6 @@ def main():
         default=None,
     )
     parser.add_argument(
-        "--model-persistence-mode",
-        help="Model persistence mode: "
-        "model with OptunaAZ, "
-        "or AZ PIP "
-        "(default: %(default)s).",
-        type=ModelPersistenceMode,
-        choices=[e.value for e in ModelPersistenceMode],
-        default=ModelPersistenceMode.SKLEARN_WITH_OPTUNAZ.value,
-    )
-    parser.add_argument(
         "--no-cache",
         help="Turn off descriptor generation caching ",
         action="store_true",
@@ -81,6 +111,7 @@ def main():
 
     if isinstance(config, OptimizationConfig):
         study_name = str(pathlib.Path(args.config).absolute())
+        pred_pls = False
         if not args.no_cache:
             config.set_cache()
             cache = config._cache
@@ -92,6 +123,7 @@ def main():
         if args.best_model_outpath or args.merged_model_outpath:
             buildconfig = buildconfig_best(study)
     elif isinstance(config, BuildConfig):
+        pred_pls = True
         buildconfig = config
         cache = None
         cache_dir = None
@@ -106,15 +138,17 @@ def main():
         build_best(
             buildconfig,
             args.best_model_outpath,
-            args.model_persistence_mode,
             cache=cache,
         )
+        if not args.merged_model_outpath and pred_pls:
+            predict_pls(args.best_model_outpath, args.inference_uncert)
     if args.merged_model_outpath:
         build_merged(
             buildconfig,
             args.merged_model_outpath,
-            args.model_persistence_mode,
             cache=cache,
         )
+        if pred_pls:
+            predict_pls(args.merged_model_outpath, args.inference_uncert)
     if cache_dir is not None:
         cache_dir.cleanup()

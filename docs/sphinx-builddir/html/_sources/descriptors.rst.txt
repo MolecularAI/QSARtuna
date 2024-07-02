@@ -18,6 +18,12 @@ ECFP_counts
     :members:
 
 
+PathFP
+###########
+..  autoclass:: optunaz.descriptors.PathFP
+    :members:
+
+
 MACCS_keys
 ##########
 ..  autoclass:: optunaz.descriptors.MACCS_keys
@@ -36,6 +42,12 @@ UnscaledJazzyDescriptors
     :members:
 
 
+UnscaledZScalesDescriptors
+###########
+..  autoclass:: optunaz.descriptors.UnscaledZScalesDescriptors
+    :members:
+
+
 PhyschemDescriptors
 ###################
 ..  autoclass:: optunaz.descriptors.PhyschemDescriptors
@@ -51,6 +63,12 @@ JazzyDescriptors
 PrecomputedDescriptorFromFile
 #############################
 ..  autoclass:: optunaz.descriptors.PrecomputedDescriptorFromFile
+    :members:
+
+
+ZScales
+###########
+..  autoclass:: optunaz.descriptors.ZScalesDescriptors
     :members:
 
 
