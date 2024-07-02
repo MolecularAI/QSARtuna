@@ -103,7 +103,7 @@ ChemPropHyperoptRegressor
     :members:
 
 
-ChemPropHyperoptRegressorPretrained
+ChemPropRegressorPretrained
 #########################
 ..  autoclass:: optunaz.config.optconfig.ChemPropRegressorPretrained
     :members:
