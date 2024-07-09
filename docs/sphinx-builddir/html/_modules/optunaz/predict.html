@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.predict &mdash; QSARtuna 3.1.0 documentation</title>
+  <title>optunaz.predict &mdash; QSARtuna 3.1.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -159,10 +159,12 @@
                     <span class="s2">&quot;Inference for &gt; precomputed descriptor not currently available&quot;</span>
                 <span class="p">)</span>
             <span class="n">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptors</span><span class="p">[</span><span class="n">precomp_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">parameters</span>
-            <span class="n">params</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span>
-            <span class="n">params</span><span class="o">.</span><span class="n">input_column</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span>
-            <span class="n">params</span><span class="o">.</span><span class="n">response_column</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span>
+            <span class="n">precomp_desc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptors</span><span class="p">[</span><span class="n">precomp_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">precomp_desc</span><span class="o">.</span><span class="n">inference_parameters</span><span class="p">(</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">elif</span> <span class="n">descriptor_str</span> <span class="o">!=</span> <span class="s2">&quot;PrecomputedDescriptorFromFile&quot;</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Model was trained using </span><span class="si">{</span><span class="n">descriptor_str</span><span class="si">}</span><span class="s2">... ignoring precomputed descriptor parameters&quot;</span>
@@ -170,10 +172,12 @@
         <span class="k">return</span> <span class="n">model</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># must be precomputed</span>
         <span class="n">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">input_column</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">response_column</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span>
+        <span class="n">precomp_desc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span>
+        <span class="n">precomp_desc</span><span class="o">.</span><span class="n">inference_parameters</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span></div>
 
 

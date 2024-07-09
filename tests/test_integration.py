@@ -51,7 +51,6 @@ from optunaz.utils.preprocessing.transform import (
     LogBase,
     LogNegative,
     VectorFromColumn,
-    ZScales,
 )
 from optunaz.utils.files_paths import attach_root_path
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.optbuild &mdash; QSARtuna 3.1.0 documentation</title>
+  <title>optunaz.optbuild &mdash; QSARtuna 3.1.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -102,44 +102,6 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="predict_pls"><a class="viewcode-back" href="../../optunaz.html#optunaz.optbuild.predict_pls">[docs]</a><span class="k">def</span> <span class="nf">predict_pls</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">inference_path</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">inference_path</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inference path is not set so AL predictions not performed&quot;</span><span class="p">)</span>
-        <span class="k">return</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inference path is </span><span class="si">{</span><span class="n">inference_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">predict_args</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;prog&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--model-file&quot;</span><span class="p">,</span>
-        <span class="nb">str</span><span class="p">(</span><span class="n">model_path</span><span class="p">),</span>
-        <span class="s2">&quot;--input-smiles-csv-file&quot;</span><span class="p">,</span>
-        <span class="nb">str</span><span class="p">(</span><span class="n">inference_path</span><span class="p">),</span>
-        <span class="s2">&quot;--input-smiles-csv-column&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Structure&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--output-prediction-csv-file&quot;</span><span class="p">,</span>
-        <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/al.csv&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--predict-uncertainty&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--uncertainty_quantile&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;0.99&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;argv&quot;</span><span class="p">,</span> <span class="n">predict_args</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Performing active learning predictions&quot;</span><span class="p">)</span>
-            <span class="n">predict</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;PLS file not found at </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">, AL predictions not performed&quot;</span>
-        <span class="p">)</span>
-    <span class="k">except</span> <span class="n">predict</span><span class="o">.</span><span class="n">UncertaintyError</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;PLS prediction not performed: algorithm does not support uncertainty prediction&quot;</span>
-        <span class="p">)</span>
-    <span class="k">except</span> <span class="n">predict</span><span class="o">.</span><span class="n">AuxCovariateMissing</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;PLS prediction not performed: algorithm requires corvariate auxiliary data for inference&quot;</span>
-        <span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../optunaz.html#optunaz.optbuild.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
@@ -177,12 +139,6 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Turn off descriptor generation caching &quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--inference_uncert&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path for uncertainty inference and thresholding.&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/projects/db-mirror/MLDatasets/PLS/pls.csv&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="n">AnyConfig</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">OptimizationConfig</span><span class="p">,</span> <span class="n">BuildConfig</span><span class="p">]</span>
@@ -191,7 +147,6 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">OptimizationConfig</span><span class="p">):</span>
         <span class="n">study_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
-        <span class="n">pred_pls</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cache</span><span class="p">:</span>
             <span class="n">config</span><span class="o">.</span><span class="n">set_cache</span><span class="p">()</span>
             <span class="n">cache</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_cache</span>
@@ -203,7 +158,6 @@
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">:</span>
             <span class="n">buildconfig</span> <span class="o">=</span> <span class="n">buildconfig_best</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">BuildConfig</span><span class="p">):</span>
-        <span class="n">pred_pls</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">buildconfig</span> <span class="o">=</span> <span class="n">config</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">cache_dir</span> <span class="o">=</span> <span class="kc">None</span>
@@ -220,16 +174,12 @@
             <span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span><span class="p">,</span>
             <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span> <span class="ow">and</span> <span class="n">pred_pls</span><span class="p">:</span>
-            <span class="n">predict_pls</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">inference_uncert</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">:</span>
         <span class="n">build_merged</span><span class="p">(</span>
             <span class="n">buildconfig</span><span class="p">,</span>
             <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">,</span>
             <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">pred_pls</span><span class="p">:</span>
-            <span class="n">predict_pls</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">inference_uncert</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cache_dir</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
 </pre></div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.objective &mdash; QSARtuna 3.1.0 documentation</title>
+  <title>optunaz.objective &mdash; QSARtuna 3.1.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -87,7 +87,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">serialize</span><span class="p">,</span> <span class="n">deserialize</span>
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Memory</span><span class="p">,</span> <span class="n">effective_n_jobs</span>
-
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">import</span> <span class="nn">sklearn.model_selection</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">make_scorer</span>
@@ -215,9 +215,14 @@
             <span class="n">descriptor</span><span class="p">,</span> <span class="n">valid_descriptors</span><span class="p">,</span> <span class="n">aux_weight_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_descriptor</span><span class="p">(</span>
                 <span class="n">trial</span><span class="p">,</span> <span class="n">build_alg</span>
             <span class="p">)</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">failed_idx</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">train_smiles</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_descriptor_from_config</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+                    <span class="n">descriptor_from_config</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span>
+                <span class="p">)</span>
+                <span class="n">cache_desc_from_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="n">_descriptor_from_config</span><span class="p">)</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">failed_idx</span> <span class="o">=</span> <span class="n">cache_desc_from_conf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_smiles</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">failed_idx</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_smiles</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">ScalingFittingError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -234,7 +239,8 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">optconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">cross_validation</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TrialPruned</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Issue with structures or descriptor config. Insufficient descriptors (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2"> generated for: </span><span class="si">{</span><span class="n">descriptor</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Issue with structures or descriptor config. Insufficient descriptors (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2"> generated for: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">descriptor</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># Check trial duplication, prune if this is detected.</span>
@@ -371,7 +377,7 @@
         <span class="n">build_alg</span> <span class="o">=</span> <span class="n">suggest_alg_params</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">alg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">build_alg</span>
 
-    <span class="k">def</span> <span class="nf">_get_descriptor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">,</span> <span class="n">algo</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_descriptor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">,</span> <span class="n">algo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">AnyDescriptor</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates a descriptor (fingerprint) for the trial.&quot;&quot;&quot;</span>
 
         <span class="n">valid_descriptors</span> <span class="o">=</span> <span class="n">check_invalid_descriptor_param</span><span class="p">(</span><span class="n">algo</span><span class="p">)</span>

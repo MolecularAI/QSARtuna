@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qsartuna"
-version = "3.1.0"
+version = "3.1.1"
 description = "QSARtuna: QSAR using Optimization for Hyperparameter Tuning"
 authors = ["Molecular AI, AstraZeneca"]
 license = "Apache-2.0"
@@ -55,6 +55,8 @@ plotly = "5.15.0"
 [tool.poetry.group.peptide.dependencies]
 peptides = "0.3.2"
 chemistry-adapters = "0.0.2"
+mapchiral = "0.0.5"
+amorprot = "0.0.5"
 
 [tool.poetry.scripts]
 qsartuna-optimize = "qsartuna.optbuild:main"

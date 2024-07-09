@@ -13,6 +13,12 @@ import numpy as np
 from optunaz.config import NameParameterDataclass
 
 
+class DataTransformError(Exception):
+    """Raised when insufficient molecules for UnfittedSklearnSclaer to fit"""
+
+    pass
+
+
 class DataTransform(NameParameterDataclass, abc.ABC):
     """Base class for auxiliary transformers.
 
@@ -282,4 +288,35 @@ class ZScales(AuxTransformer):
         return np.array([list(Peptide(val).z_scales()) for val in auxiliary_data])
 
 
-AnyAuxTransformer = Union[VectorFromColumn, ZScales]
+@dataclass
+class AmorProt(AuxTransformer):
+    """AmorProt from column
+
+    Calculates AmorProt for sequences or a predefined list of peptide/protein targets"""
+
+    @apischema.type_name("AmorProtParams")
+    @dataclass
+    class Parameters:
+        pass
+
+    name: Literal["AmorProt"] = "AmorProt"
+    parameters: Parameters = Parameters()
+
+    def __post_init__(self):
+        from amorprot import AmorProt
+
+        self.ap = AmorProt()
+
+    def transform(self, auxiliary_data: np.ndarray) -> np.ndarray:
+        aux_array = []
+        for val_idx, val in enumerate(auxiliary_data):
+            try:
+                aux_array.append(self.ap.fingerprint(val))
+            except KeyError:
+                raise DataTransformError(
+                    f"AmorProt transform failed on line {val_idx}, for seq: {val}"
+                )
+        return np.array(aux_array)
+
+
+AnyAuxTransformer = Union[VectorFromColumn, ZScales, AmorProt]

@@ -336,3 +336,132 @@ build_best(buildconfig, "target/best.pkl")
 # Build (Train) and save the model on the merged train+test data.
 build_merged(buildconfig, "target/merged.pkl")
 ```
+
+
+## Adding descriptors to QSARtuna
+
+
+Add the descriptor code to the optunaz.descriptor.py file like so:
+
+```python
+@dataclass
+class YourNewDescriptor(RdkitDescriptor):
+    """YOUR DESCRIPTION GOES HERE"""
+
+    @apischema.type_name("YourNewDescriptorParams")
+    @dataclass
+    class Parameters:
+        # Any parameters to pass to your descriptor here
+        exampleOfAParameter: Annotated[
+            int,
+            schema(
+                min=1,
+                title="exampleOfAParameter",
+                description="This is an example int parameter.",
+            ),
+        ] = field(
+            default=1,
+        )
+
+    name: Literal["YourNewDescriptor"]
+    parameters: Parameters
+
+    def calculate_from_smi(self, smi: str):
+        # Insert your code to calculate from SMILES here
+        fp = code_to_calculate_fp(smi)
+        return fp
+```
+
+Then add the descriptor to the list here:
+
+```python
+AnyUnscaledDescriptor = Union[
+    Avalon,
+    ECFP,
+    ECFP_counts,
+    PathFP,
+    AmorProtDescriptors,
+    MACCS_keys,
+    PrecomputedDescriptorFromFile,
+    UnscaledMAPC,
+    UnscaledPhyschemDescriptors,
+    UnscaledJazzyDescriptors,
+    UnscaledZScalesDescriptors,
+    YourNewDescriptor, #Ensure your new descriptor added here
+]
+```
+
+and here:
+
+```python
+CompositeCompatibleDescriptor = Union[
+    AnyUnscaledDescriptor,
+    ScaledDescriptor,
+    MAPC,
+    PhyschemDescriptors,
+    JazzyDescriptors,
+    ZScalesDescriptors,
+    YourNewDescriptor, #Ensure your new descriptor added here
+]
+```
+
+Then you can use YourNewDescriptor inside your Notebook:
+```python
+from qptuna.descriptors import YourNewDescriptor
+
+config = OptimizationConfig(
+    data=Dataset(
+        input_column="canonical",
+        response_column="molwt",
+        training_dataset_file="tests/data/DRD2/subset-50/train.csv",
+    ),
+    descriptors=[YourNewDescriptor.new()],
+    algorithms=[
+        SVR.new(),
+    ],
+    settings=OptimizationConfig.Settings(
+        mode=ModelMode.REGRESSION,
+        cross_validation=3,
+        n_trials=100,
+        direction=OptimizationDirection.MAXIMIZATION,
+    ),
+)
+```
+
+or in a new config:
+
+```json
+{
+  "task": "optimization",
+  "data": {
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "input_column": "canonical",
+    "response_column": "molwt"
+  },
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 5,
+    "direction": "maximize",
+    "n_trials": 100,
+    "n_startup_trials": 30
+  },
+  "descriptors": [
+    {
+      "name": "YourNewDescriptor",
+      "parameters": {
+        "exampleOfAParameter": 3
+      }
+    }
+  ],
+  "algorithms": [
+    {
+      "name": "RandomForestRegressor",
+      "parameters": {
+        "max_depth": {"low": 2, "high": 32},
+        "n_estimators": {"low": 10, "high": 250},
+        "max_features": ["auto"]
+      }
+    }
+  ]
+}
+```

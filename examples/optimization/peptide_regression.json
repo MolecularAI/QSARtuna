@@ -12,11 +12,6 @@
         "radius": 3,
         "nBits": 2048
       }
-    },
-    {
-      "name": "SmilesFromFile",
-      "parameters": {
-      }
     }
   ],
   "settings": {
@@ -87,14 +82,6 @@
           "low": 1,
           "high": 2
         }
-      }
-    },
-    {
-      "name": "ChemPropHyperoptRegressor",
-      "parameters": {
-        "ensemble_size": 1,
-        "epochs": 4,
-        "num_iters": 1
       }
     }
   ]

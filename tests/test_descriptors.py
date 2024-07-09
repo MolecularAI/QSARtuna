@@ -88,7 +88,25 @@ def conf_peptide(shared_datadir):
     conf["data"]["test_dataset_file"] = str(
         shared_datadir / "peptide/toxinpred3/test.csv"
     )
+    return conf
 
+
+@pytest.fixture
+def conf_peptide_reg(shared_datadir):
+    conf = load_json.loadJSON(
+        path=os.path.join(
+            files_paths.move_up_directory(__file__, 1),
+            "examples",
+            "optimization",
+            "peptide_regression.json",
+        )
+    )
+    conf["data"]["training_dataset_file"] = str(
+        shared_datadir / "peptide/permeability/train.csv"
+    )
+    conf["data"]["test_dataset_file"] = str(
+        shared_datadir / "peptide/permeability/train.csv"
+    )
     return conf
 
 
@@ -246,6 +264,46 @@ def test_JazzyDescriptors(conf):
     conf.Settings.n_jobs = 1
     train_smiles, train_y, _, _, _, _ = conf.data.get_sets()
     obj = Objective(optconfig=conf, train_smiles=train_smiles, train_y=train_y)
+    study = optuna.create_study(direction=conf.settings.direction)
+    study.optimize(obj, n_trials=1)
+
+
+def test_MAPC(conf_peptide_reg):
+    # overwrite descriptor specification
+    confDict = conf_peptide_reg
+    confDict[_OC.DESCRIPTORS] = [
+        {"name": _OC.DESCRIPTORS_MAPC, _OC.GENERAL_PARAMETERS: {}}
+    ]
+    confDict[_OC.SETTINGS][_OC.SETTINGS_N_JOBS] = -1
+
+    # generate optimization configuration and execute it
+    conf = deserialize(OptimizationConfig, confDict)
+    conf.set_cache()
+    cache = conf._cache
+    train_smiles, train_y, _, _, _, _ = conf.data.get_sets()
+    obj = Objective(
+        optconfig=conf, train_smiles=train_smiles, train_y=train_y, cache=cache
+    )
+    study = optuna.create_study(direction=conf.settings.direction)
+    study.optimize(obj, n_trials=1)
+
+
+def test_AmorProtDescriptors(conf_peptide_reg):
+    # overwrite descriptor specification
+    confDict = conf_peptide_reg
+    confDict[_OC.DESCRIPTORS] = [
+        {"name": _OC.DESCRIPTORS_AMORPROT, _OC.GENERAL_PARAMETERS: {}}
+    ]
+    confDict[_OC.SETTINGS][_OC.SETTINGS_N_JOBS] = -1
+
+    # generate optimization configuration and execute it
+    conf = deserialize(OptimizationConfig, confDict)
+    conf.set_cache()
+    cache = conf._cache
+    train_smiles, train_y, _, _, _, _ = conf.data.get_sets()
+    obj = Objective(
+        optconfig=conf, train_smiles=train_smiles, train_y=train_y, cache=cache
+    )
     study = optuna.create_study(direction=conf.settings.direction)
     study.optimize(obj, n_trials=1)
 

@@ -193,6 +193,84 @@ class RdkitDescriptor(MolDescriptor, abc.ABC):
 
 
 @dataclass
+class AmorProtDescriptors(MolDescriptor):
+    """AmorProtDescriptors
+
+    These descriptors are intended to be used with Peptide SMILES
+    """
+
+    from amorprot import AmorProt
+
+    class _AmorProt(AmorProt):
+        def __init__(
+            self,
+            maccs=True,
+            ecfp4=True,
+            ecfp6=True,
+            rdkit=True,
+            W=10,
+            A=10,
+            R=0.85,
+            smi=None,
+        ):
+            self.AA_dict = {smi: smi}
+            self.maccs = maccs
+            self.ecfp4 = ecfp4
+            self.ecfp6 = ecfp6
+            self.rdkit = rdkit
+            self.W = W
+            self.A = A
+            self.R = R
+
+            if smi is None:
+                return
+
+            if self.maccs:
+                self.maccs_dict = {}
+                for aa in self.AA_dict.keys():
+                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                    self.maccs_dict[aa] = np.array(MACCSkeys.GenMACCSKeys(mol)).tolist()
+
+            if self.ecfp4:
+                self.ecfp4_dict = {}
+                for aa in self.AA_dict.keys():
+                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                    self.ecfp4_dict[aa] = np.array(
+                        AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, nBits=1024)
+                    ).tolist()
+
+            if self.ecfp6:
+                self.ecfp6_dict = {}
+                for aa in self.AA_dict.keys():
+                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                    self.ecfp6_dict[aa] = np.array(
+                        AllChem.GetMorganFingerprintAsBitVect(mol, radius=3, nBits=1024)
+                    ).tolist()
+
+            if self.rdkit:
+                self.rdkit_dict = {}
+                for aa in self.AA_dict.keys():
+                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                    self.rdkit_dict[aa] = np.array(AllChem.RDKFingerprint(mol)).tolist()
+
+        @abc.abstractmethod
+        def calculate_from_smi(self, smi: str) -> np.ndarray:
+            self.__init__(smi=smi)
+            return self.fingerprint([smi])
+
+    @apischema.type_name("AmorProtDescParams")
+    @dataclass
+    class Parameters:
+        pass
+
+    name: Literal["AmorProtDescriptors"]
+    parameters: Parameters
+
+    def calculate_from_smi(self, smi: str):
+        return self._AmorProt().calculate_from_smi(smi)
+
+
+@dataclass
 class Avalon(RdkitDescriptor):
     """Avalon Descriptor
 
@@ -458,6 +536,60 @@ class FittedSklearnScaler:
 
 
 @dataclass
+class UnscaledMAPC(RdkitDescriptor):
+    """Unscaled MAPC descriptors
+
+    These MAPC descriptors are unscaled and should be used with caution. MinHashed Atom-Pair Fingerprint Chiral (see
+    Orsi et al. One chiral fingerprint to find them all) is the original version of the MinHashed Atom-Pair
+    fingerprint of radius 2 (MAP4) which combined circular substructure fingerprints and atom-pair fingerprints into
+    a unified framework. This combination allowed for improved substructure perception and performance in small
+    molecule benchmarks while retaining information about bond distances for molecular size and shape perception.
+
+    These fingerprints expand the functionality of MAP4 to include encoding of stereochemistry into the fingerprint.
+    CIP descriptors of chiral atoms are encoded into the fingerprint at the highest radius. This allows MAPC
+    to modulate the impact of stereochemistry on fingerprints, making it scale with increasing molecular size
+    without disproportionally affecting structural fingerprints/similarity.
+    """
+
+    @apischema.type_name("UnscaledMAPCParams")
+    @dataclass
+    class Parameters:
+        maxRadius: Annotated[
+            int,
+            schema(
+                min=1,
+                title="maxRadius",
+                description="Maximum radius of the fingerprint.",
+            ),
+        ] = field(
+            default=2,
+        )
+        nPermutations: Annotated[
+            int,
+            schema(
+                min=1,
+                title="nPermutations",
+                description="Number of permutations to perform.",
+            ),
+        ] = field(
+            default=2048,
+        )
+
+    name: Literal["UnscaledMAPC"]
+    parameters: Parameters
+
+    def calculate_from_mol(self, mol: Chem.Mol):
+        from mapchiral.mapchiral import get_fingerprint
+
+        fp = get_fingerprint(
+            mol,
+            max_radius=self.parameters.maxRadius,
+            n_permutations=self.parameters.nPermutations,
+        )
+        return fp
+
+
+@dataclass
 class UnscaledPhyschemDescriptors(RdkitDescriptor):
     """Base (unscaled) PhyschemDescriptors (RDKit) for PhyschemDescriptors
 
@@ -563,7 +695,7 @@ class UnscaledJazzyDescriptors(MolDescriptor):
 class UnscaledZScalesDescriptors(MolDescriptor):
     """Unscaled Z-Scales.
 
-    Compute the Z-scales of a peptide SMILES.
+    Compute the Z-scales of a peptide SMILES. These Z-Scales descriptors are unscaled and should be used with caution.
     """
 
     @apischema.type_name("UnscaledZScalesDescParams")
@@ -624,12 +756,32 @@ class PrecomputedDescriptorFromFile(MolDescriptor):
     name: Literal["PrecomputedDescriptorFromFile"]
     parameters: Parameters
 
-    def calculate_from_smi(self, smi: str) -> np.ndarray:
+    def __post_init__(self):
         file = self.parameters.file
         df = pd.read_csv(file, skipinitialspace=True)
-        rows = df[df[self.parameters.input_column].str.replace(">>", ".") == smi][
-            [self.parameters.input_column, self.parameters.response_column]
-        ].drop_duplicates()
+        out_cols = [self.parameters.input_column, self.parameters.response_column]
+
+        # Add canonicalised SMILES to end of file dataframe
+        can_smiles = descriptor_from_config(
+            df[self.parameters.input_column],
+            CanonicalSmiles.new(),
+            return_failed_idx=False,
+        )
+        can_df = pd.DataFrame({self.parameters.input_column: can_smiles})
+        can_df[self.parameters.response_column] = df[self.parameters.response_column]
+        df = pd.concat((df, can_df)).reset_index(drop=True)
+        df.dropna(subset=out_cols, inplace=True)
+        df.drop_duplicates(subset=out_cols, inplace=True)
+
+        # Allow reaction SMILES compatability
+        df.loc[:, self.parameters.input_column] = df[
+            self.parameters.input_column
+        ].str.replace(">>", ".")
+
+        self.df = df[[self.parameters.input_column, self.parameters.response_column]]
+
+    def calculate_from_smi(self, smi: str) -> np.ndarray:
+        rows = self.df[self.df[self.parameters.input_column] == smi]
         if len(rows) < 1:
             logger.warning(
                 f"Could not find descriptor for {smi} in file {self.parameters.file}."
@@ -648,6 +800,14 @@ class PrecomputedDescriptorFromFile(MolDescriptor):
                 return None
             else:
                 return fp
+
+    def inference_parameters(self, file: str, input_column: str, response_column: str):
+        """This function allows precomputed descriptors to be used for inference for a new file"""
+
+        self.parameters.file = file
+        self.parameters.input_column = input_column
+        self.parameters.response_column = response_column
+        self.__post_init__()
 
 
 @dataclass
@@ -760,8 +920,10 @@ AnyUnscaledDescriptor = Union[
     ECFP,
     ECFP_counts,
     PathFP,
+    AmorProtDescriptors,
     MACCS_keys,
     PrecomputedDescriptorFromFile,
+    UnscaledMAPC,
     UnscaledPhyschemDescriptors,
     UnscaledJazzyDescriptors,
     UnscaledZScalesDescriptors,
@@ -960,6 +1122,52 @@ class JazzyDescriptors(ScaledDescriptor):
 
 
 @dataclass
+class MAPC(ScaledDescriptor):
+    """Scaled MAPC descriptors
+
+    MAPC (MinHashed Atom-Pair Fingerprint Chiral) (see Orsi et al. One chiral fingerprint to find them all) is the
+    original version of the MinHashed Atom-Pair fingerprint of radius 2 (MAP4) which combined circular substructure
+    fingerprints and atom-pair fingerprints into a unified framework. This combination allowed for improved
+    substructure perception and performance in small molecule benchmarks while retaining information about bond
+    distances for molecular size and shape perception.
+
+    These fingerprints expand the functionality of MAP4 to include encoding of stereochemistry into the fingerprint.
+    CIP descriptors of chiral atoms are encoded into the fingerprint at the highest radius. This allows MAPC
+    to modulate the impact of stereochemistry on fingerprints, making it scale with increasing molecular size
+    without disproportionally affecting structural fingerprints/similarity.
+    """
+
+    @apischema.type_name("MAP4CParams")
+    @dataclass
+    class Parameters:
+        maxRadius: int = 2
+        nPermutations: int = 2048
+        scaler: Union[
+            FittedSklearnScaler,
+            UnfittedSklearnScaler,
+        ] = UnfittedSklearnScaler()
+        descriptor: AnyUnscaledDescriptor = UnscaledMAPC
+
+    name: Literal["MAPC"] = "MAPC"
+    parameters: Parameters = Parameters()
+
+    def __post_init__(self):
+        self.parameters.descriptor = UnscaledMAPC.new(
+            maxRadius=self.parameters.maxRadius,
+            nPermutations=self.parameters.nPermutations,
+        )
+
+        if (
+            isinstance(self.parameters.scaler, UnfittedSklearnScaler)
+            and self.parameters.scaler.mol_data.file_path is not None
+        ):
+            try:
+                self._ensure_scaler_is_fitted()
+            except ScalingFittingError:
+                logger.warning("MAPC scaling failed")
+
+
+@dataclass
 class ZScalesDescriptors(ScaledDescriptor):
     """Scaled Z-Scales descriptors.
 
@@ -999,6 +1207,7 @@ class ZScalesDescriptors(ScaledDescriptor):
 CompositeCompatibleDescriptor = Union[
     AnyUnscaledDescriptor,
     ScaledDescriptor,
+    MAPC,
     PhyschemDescriptors,
     JazzyDescriptors,
     ZScalesDescriptors,

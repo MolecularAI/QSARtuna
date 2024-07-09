@@ -98,4 +98,4 @@ def test_zscales(peptide_toxinpred3):
         aux_transform=ZScales.new()
     )
     train_smiles, train_y, train_aux, test_smiles, test_y, test_aux = data.get_sets()
-    assert train_aux.shape == (8828, 5)
+    assert train_aux.shape == (8825, 5)

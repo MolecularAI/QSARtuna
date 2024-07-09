@@ -51,6 +51,15 @@ class ConfigurationEnum:
     DESCRIPTORS_PHYSCHEM = "PhyschemDescriptors"
     DESCRIPTORS_PHYSCHEM_RDKITNAMES = "rdkit_names"
 
+    # AMORPROT
+    DESCRIPTORS_AMORPROT = "AmorProtDescriptors"
+
+    # MAPC
+    DESCRIPTORS_UNSC_MAPC = "UnscaledMAPC"
+    DESCRIPTORS_MAPC = "MAPC"
+    DESCRIPTORS_MAPC_MAXRADIUS = "maxRadius"
+    DESCRIPTORS_MAPC_NPERMUTATIONS = "nPermutations"
+
     # Jazzy
     DESCRIPTORS_UNSC_JAZZY = "UnscaledJazzyDescriptors"
     DESCRIPTORS_JAZZY = "JazzyDescriptors"
