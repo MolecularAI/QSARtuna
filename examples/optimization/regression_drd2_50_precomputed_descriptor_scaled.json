@@ -1,0 +1,109 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt",
+    "training_dataset_file": "tests/data/precomputed_descriptor/train_with_fp.csv"
+  },
+  "descriptors": [
+    {
+      "name": "ScaledDescriptor",
+      "parameters": {
+        "scaler": {
+          "name": "UnfittedSklearnScaler"
+        },
+        "descriptor": {
+          "name": "PrecomputedDescriptorFromFile",
+          "parameters": {
+            "file": "tests/data/precomputed_descriptor/train_with_fp.csv",
+            "input_column": "canonical",
+            "response_column": "fp"
+          }
+        }
+      }
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 3,
+    "direction": "maximize",
+    "n_trials": 15,
+    "n_startup_trials": 10
+  },
+  "visualization": null,
+  "algorithms": [
+    {
+      "name": "SVR",
+      "parameters": {
+        "C": {
+          "low": 1E-10,
+          "high": 100.0
+        },
+        "gamma": {
+          "low": 0.0001,
+          "high": 100.0
+        }
+      }
+    },
+    {
+      "name": "RandomForestRegressor",
+      "parameters": {
+        "max_depth": {
+          "low": 2,
+          "high": 32
+        },
+        "n_estimators": {
+          "low": 10,
+          "high": 250
+        },
+        "max_features": [
+          "auto"
+        ]
+      }
+    },
+    {
+      "name": "Ridge",
+      "parameters": {
+        "alpha": {
+          "low": 0,
+          "high": 2
+        }
+      }
+    },
+    {
+      "name": "Lasso",
+      "parameters": {
+        "alpha": {
+          "low": 0,
+          "high": 2
+        }
+      }
+    },
+    {
+      "name": "PLSRegression",
+      "parameters": {
+        "n_components": {
+          "low": 2,
+          "high": 3
+        }
+      }
+    },
+    {
+      "name": "XGBRegressor",
+      "parameters": {
+        "max_depth": {
+          "low": 2,
+          "high": 32
+        },
+        "n_estimators": {
+          "low": 3,
+          "high": 100
+        },
+        "learning_rate": {
+          "low": 0.1,
+          "high": 0.1
+        }
+      }
+    }
+  ]
+}

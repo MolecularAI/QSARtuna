@@ -125,6 +125,23 @@
             <span class="k">raise</span> <span class="n">UncertaintyError</span><span class="p">(</span><span class="s2">&quot;Uncertainty not availble for this model&quot;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="set_inference_params"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.set_inference_params">[docs]</a><span class="k">def</span> <span class="nf">set_inference_params</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">desc</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">&quot;descriptor&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
+        <span class="n">desc</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span><span class="p">,</span> <span class="s2">&quot;inference_parameters&quot;</span>
+    <span class="p">):</span>  <span class="c1"># Scaled precomputed descriptors handled here</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="s2">&quot;inference_parameters&quot;</span><span class="p">):</span>
+        <span class="n">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">desc</span><span class="o">.</span><span class="n">inference_parameters</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Precomputed descriptor inference params set&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
 <div class="viewcode-block" id="check_precomp_args"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.check_precomp_args">[docs]</a><span class="k">def</span> <span class="nf">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">assert</span> <span class="p">(</span>
@@ -142,42 +159,29 @@
 
 <div class="viewcode-block" id="validate_set_precomputed"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.validate_set_precomputed">[docs]</a><span class="k">def</span> <span class="nf">validate_set_precomputed</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="n">descriptor_str</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">if</span> <span class="n">descriptor_str</span> <span class="o">==</span> <span class="s2">&quot;CompositeDescriptor&quot;</span><span class="p">:</span>
-        <span class="n">precomp_idx</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">idx</span>
-            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptors</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;PrecomputedDescriptorFromFile&quot;</span>
-        <span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">precomp_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">set_inference_params</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">model</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">&quot;descriptors&quot;</span><span class="p">):</span>
+        <span class="n">n_precomp</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptors</span><span class="p">:</span>
+            <span class="n">n_precomp</span> <span class="o">+=</span> <span class="n">set_inference_params</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_precomp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">descriptor_str</span><span class="si">}</span><span class="s2"> has no Precomputed descriptors... ignoring precomputed descriptor parameters&quot;</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">model</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">precomp_idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PrecomputedError</span><span class="p">(</span>
-                    <span class="s2">&quot;Inference for &gt; precomputed descriptor not currently available&quot;</span>
-                <span class="p">)</span>
-            <span class="n">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-            <span class="n">precomp_desc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptors</span><span class="p">[</span><span class="n">precomp_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-            <span class="n">precomp_desc</span><span class="o">.</span><span class="n">inference_parameters</span><span class="p">(</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span><span class="p">,</span>
+        <span class="k">elif</span> <span class="n">n_precomp</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PrecomputedError</span><span class="p">(</span>
+                <span class="s2">&quot;Inference for &gt; precomputed descriptor not currently available&quot;</span>
             <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">descriptor_str</span> <span class="o">!=</span> <span class="s2">&quot;PrecomputedDescriptorFromFile&quot;</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Model was trained using </span><span class="si">{</span><span class="n">descriptor_str</span><span class="si">}</span><span class="s2">... ignoring precomputed descriptor parameters&quot;</span>
-        <span class="p">)</span>
         <span class="k">return</span> <span class="n">model</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># must be precomputed</span>
-        <span class="n">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="n">precomp_desc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span>
-        <span class="n">precomp_desc</span><span class="o">.</span><span class="n">inference_parameters</span><span class="p">(</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span><span class="p">,</span>
-        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Model was trained using </span><span class="si">{</span><span class="n">descriptor_str</span><span class="si">}</span><span class="s2">... ignoring precomputed descriptor parameters&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">PrecomputedError</span><span class="p">:</span>
+            <span class="k">pass</span>
     <span class="k">return</span> <span class="n">model</span></div>
 
 

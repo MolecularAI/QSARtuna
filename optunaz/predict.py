@@ -45,6 +45,23 @@ def validate_uncertainty(args, model):
             raise UncertaintyError("Uncertainty not availble for this model")
 
 
+def set_inference_params(args, desc):
+    if hasattr(desc.parameters, "descriptor") and hasattr(
+        desc.parameters.descriptor, "inference_parameters"
+    ):  # Scaled precomputed descriptors handled here
+        desc = desc.parameters.descriptor
+    if hasattr(desc, "inference_parameters"):
+        check_precomp_args(args)
+        desc.inference_parameters(
+            args.input_precomputed_file,
+            args.input_precomputed_input_column,
+            args.input_precomputed_response_column,
+        )
+        logging.info("Precomputed descriptor inference params set")
+        return True
+    return False
+
+
 def check_precomp_args(args):
     try:
         assert (
@@ -62,42 +79,29 @@ def check_precomp_args(args):
 
 def validate_set_precomputed(args, model):
     descriptor_str = model.descriptor.name
-    if descriptor_str == "CompositeDescriptor":
-        precomp_idx = [
-            idx
-            for idx, d in enumerate(model.descriptor.parameters.descriptors)
-            if d.name == "PrecomputedDescriptorFromFile"
-        ]
-        if len(precomp_idx) == 0:
+    if set_inference_params(args, model.descriptor):
+        return model
+    elif hasattr(model.descriptor.parameters, "descriptors"):
+        n_precomp = 0
+        for d in model.descriptor.parameters.descriptors:
+            n_precomp += set_inference_params(args, d)
+        if n_precomp == 0:
             logging.warning(
                 f"{descriptor_str} has no Precomputed descriptors... ignoring precomputed descriptor parameters"
             )
-            return model
-        else:
-            if len(precomp_idx) > 1:
-                raise PrecomputedError(
-                    "Inference for > precomputed descriptor not currently available"
-                )
-            check_precomp_args(args)
-            precomp_desc = model.descriptor.parameters.descriptors[precomp_idx[0]]
-            precomp_desc.inference_parameters(
-                args.input_precomputed_file,
-                args.input_precomputed_input_column,
-                args.input_precomputed_response_column,
+        elif n_precomp > 1:
+            raise PrecomputedError(
+                "Inference for > precomputed descriptor not currently available"
             )
-    elif descriptor_str != "PrecomputedDescriptorFromFile":
-        logging.warning(
-            f"Model was trained using {descriptor_str}... ignoring precomputed descriptor parameters"
-        )
         return model
-    else:  # must be precomputed
-        check_precomp_args(args)
-        precomp_desc = model.descriptor
-        precomp_desc.inference_parameters(
-            args.input_precomputed_file,
-            args.input_precomputed_input_column,
-            args.input_precomputed_response_column,
-        )
+    else:
+        try:
+            check_precomp_args(args)
+            logging.warning(
+                f"Model was trained using {descriptor_str}... ignoring precomputed descriptor parameters"
+            )
+        except PrecomputedError:
+            pass
     return model
 
 
