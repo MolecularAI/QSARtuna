@@ -407,7 +407,7 @@ CompositeCompatibleDescriptor = Union[
 
 Then you can use YourNewDescriptor inside your Notebook:
 ```python
-from qptuna.descriptors import YourNewDescriptor
+from qsartuna.descriptors import YourNewDescriptor
 
 config = OptimizationConfig(
     data=Dataset(
