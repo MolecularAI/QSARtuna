@@ -291,7 +291,7 @@ class HistogramStratifiedShuffleSplit(SklearnSplitter):
 
     test_fraction: float = 0.1
     n_splits: int = 10
-    bins: str = "fd"
+    bins: str = "fd_merge"
     random_state: Optional[int] = 42
 
     def get_n_splits(self, X=None, y=None, groups=None):
@@ -423,7 +423,7 @@ class ScaffoldSplit(GroupingSplitter):
             description="Algorithm to use for determining histogram bin edges,"
             " see numpy.histogram for possible options, or use default 'fd'",
         ),
-    ] = "fd"
+    ] = "fd_merge"
     random_state: Optional[int] = 42
     make_scaffold_generic: Annotated[
         bool,

@@ -16,7 +16,7 @@
     "mode": "regression",
     "cross_validation": 2,
     "direction": "maximize",
-    "n_trials": 3
+    "n_trials": 1
   },
   "algorithms": [
     {

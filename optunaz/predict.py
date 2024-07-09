@@ -79,10 +79,12 @@ def validate_set_precomputed(args, model):
                     "Inference for > precomputed descriptor not currently available"
                 )
             check_precomp_args(args)
-            params = model.descriptor.parameters.descriptors[precomp_idx[0]].parameters
-            params.file = args.input_precomputed_file
-            params.input_column = args.input_precomputed_input_column
-            params.response_column = args.input_precomputed_response_column
+            precomp_desc = model.descriptor.parameters.descriptors[precomp_idx[0]]
+            precomp_desc.inference_parameters(
+                args.input_precomputed_file,
+                args.input_precomputed_input_column,
+                args.input_precomputed_response_column,
+            )
     elif descriptor_str != "PrecomputedDescriptorFromFile":
         logging.warning(
             f"Model was trained using {descriptor_str}... ignoring precomputed descriptor parameters"
@@ -90,10 +92,12 @@ def validate_set_precomputed(args, model):
         return model
     else:  # must be precomputed
         check_precomp_args(args)
-        params = model.descriptor.parameters
-        params.file = args.input_precomputed_file
-        params.input_column = args.input_precomputed_input_column
-        params.response_column = args.input_precomputed_response_column
+        precomp_desc = model.descriptor
+        precomp_desc.inference_parameters(
+            args.input_precomputed_file,
+            args.input_precomputed_input_column,
+            args.input_precomputed_response_column,
+        )
     return model
 
 

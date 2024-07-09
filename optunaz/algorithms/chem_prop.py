@@ -4,7 +4,6 @@ import io
 from io import StringIO
 import os
 import logging.config
-import math
 import chemprop
 import torch
 import pickle

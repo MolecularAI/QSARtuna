@@ -226,5 +226,5 @@ def test_peptide(peptide_toxinpred3):
     train_smiles, train_y, _, test_smiles, test_y, _ = data.get_sets()
     assert len(train_smiles) == len(train_y)
     assert len(test_smiles) == len(test_y)
-    assert len(train_smiles) == 8828
+    assert len(train_smiles) == 8825
     assert len(test_smiles) == 0

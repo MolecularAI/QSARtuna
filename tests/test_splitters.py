@@ -103,7 +103,7 @@ def test_stratified_firstbin_lessthan10(hist_file):
 def test_scaffold(drd2_100, cutoff, te, tr):
     # test to increase the distance threshold for scaffold clustering
     dataset = pd.read_csv(drd2_100)
-    sp = ScaffoldSplit(make_scaffold_generic=True, butina_cluster=cutoff)
+    sp = ScaffoldSplit(make_scaffold_generic=True, butina_cluster=cutoff, bins="fd")
     scaffolds = sp.groups(dataset, "canonical")
     assert len(scaffolds) == 100
     assert len(set(scaffolds.values())) == 94

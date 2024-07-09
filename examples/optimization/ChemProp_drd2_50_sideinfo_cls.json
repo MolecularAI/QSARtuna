@@ -19,7 +19,7 @@
     "cross_validation": 2,
     "direction": "maximize",
     "n_startup_trials": 2,
-    "n_trials": 4
+    "n_trials": 1
   },
   "algorithms": [
     {

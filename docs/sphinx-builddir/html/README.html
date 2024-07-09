@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA) &mdash; QSARtuna 3.1.0 documentation</title>
+  <title>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA) &mdash; QSARtuna 3.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -60,6 +60,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#run-from-python-jupyter-notebook">Run from Python/Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-descriptors-to-qsartuna">Adding descriptors to QSARtuna</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
@@ -424,6 +425,125 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <span class="c1">##</span>
 <span class="c1"># Build (Train) and save the model on the merged train+test data.</span>
 <span class="n">build_merged</span><span class="p">(</span><span class="n">buildconfig</span><span class="p">,</span> <span class="s2">&quot;target/merged.pkl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-descriptors-to-qsartuna">
+<h2>Adding descriptors to QSARtuna<a class="headerlink" href="#adding-descriptors-to-qsartuna" title="Permalink to this heading"></a></h2>
+<p>Add the descriptor code to the optunaz.descriptor.py file like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">YourNewDescriptor</span><span class="p">(</span><span class="n">RdkitDescriptor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;YOUR DESCRIPTION GOES HERE&quot;&quot;&quot;</span>
+
+    <span class="nd">@apischema</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="s2">&quot;YourNewDescriptorParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="c1"># Any parameters to pass to your descriptor here</span>
+        <span class="n">exampleOfAParameter</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">int</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;exampleOfAParameter&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is an example int parameter.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;YourNewDescriptor&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
+
+    <span class="k">def</span> <span class="nf">calculate_from_smi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smi</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># Insert your code to calculate from SMILES here</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">code_to_calculate_fp</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fp</span>
+</pre></div>
+</div>
+<p>Then add the descriptor to the list here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AnyUnscaledDescriptor</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">Avalon</span><span class="p">,</span>
+    <span class="n">ECFP</span><span class="p">,</span>
+    <span class="n">ECFP_counts</span><span class="p">,</span>
+    <span class="n">PathFP</span><span class="p">,</span>
+    <span class="n">AmorProtDescriptors</span><span class="p">,</span>
+    <span class="n">MACCS_keys</span><span class="p">,</span>
+    <span class="n">PrecomputedDescriptorFromFile</span><span class="p">,</span>
+    <span class="n">UnscaledMAPC</span><span class="p">,</span>
+    <span class="n">UnscaledPhyschemDescriptors</span><span class="p">,</span>
+    <span class="n">UnscaledJazzyDescriptors</span><span class="p">,</span>
+    <span class="n">UnscaledZScalesDescriptors</span><span class="p">,</span>
+    <span class="n">YourNewDescriptor</span><span class="p">,</span> <span class="c1">#Ensure your new descriptor added here</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>and here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CompositeCompatibleDescriptor</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">AnyUnscaledDescriptor</span><span class="p">,</span>
+    <span class="n">ScaledDescriptor</span><span class="p">,</span>
+    <span class="n">MAPC</span><span class="p">,</span>
+    <span class="n">PhyschemDescriptors</span><span class="p">,</span>
+    <span class="n">JazzyDescriptors</span><span class="p">,</span>
+    <span class="n">ZScalesDescriptors</span><span class="p">,</span>
+    <span class="n">YourNewDescriptor</span><span class="p">,</span> <span class="c1">#Ensure your new descriptor added here</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Then you can use YourNewDescriptor inside your Notebook:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qptuna.descriptors</span> <span class="kn">import</span> <span class="n">YourNewDescriptor</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">OptimizationConfig</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
+        <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;molwt&quot;</span><span class="p">,</span>
+        <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;tests/data/DRD2/subset-50/train.csv&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">descriptors</span><span class="o">=</span><span class="p">[</span><span class="n">YourNewDescriptor</span><span class="o">.</span><span class="n">new</span><span class="p">()],</span>
+    <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">SVR</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span>
+    <span class="p">],</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">OptimizationConfig</span><span class="o">.</span><span class="n">Settings</span><span class="p">(</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">,</span>
+        <span class="n">cross_validation</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">n_trials</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">direction</span><span class="o">=</span><span class="n">OptimizationDirection</span><span class="o">.</span><span class="n">MAXIMIZATION</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>or in a new config:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optimization&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;training_dataset_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tests/data/DRD2/subset-50/train.csv&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;input_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;response_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;molwt&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cross_validation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;maximize&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;n_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;n_startup_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;descriptors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YourNewDescriptor&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;exampleOfAParameter&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;algorithms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RandomForestRegressor&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;max_depth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;n_estimators&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">250</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;max_features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

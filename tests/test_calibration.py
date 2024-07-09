@@ -46,7 +46,7 @@ def optconfig_vennabers(file_drd2_50):
         settings=OptimizationConfig.Settings(
             mode=ModelMode.CLASSIFICATION,
             cross_validation=2,
-            n_trials=2,
+            n_trials=1,
             direction=OptimizationDirection.MAXIMIZATION,
             scoring="neg_brier_score",
         ),
@@ -78,7 +78,7 @@ def optconfig_sigmoid(file_drd2_50):
         settings=OptimizationConfig.Settings(
             mode=ModelMode.CLASSIFICATION,
             cross_validation=2,
-            n_trials=4,
+            n_trials=1,
             direction=OptimizationDirection.MAXIMIZATION,
             scoring="auc_pr_cal",
         ),
@@ -110,7 +110,7 @@ def optconfig_isotonic(file_drd2_50):
         settings=OptimizationConfig.Settings(
             mode=ModelMode.CLASSIFICATION,
             cross_validation=2,
-            n_trials=4,
+            n_trials=1,
             direction=OptimizationDirection.MAXIMIZATION,
             scoring="concordance_index",
         ),

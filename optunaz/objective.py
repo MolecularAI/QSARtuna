@@ -7,7 +7,7 @@ import numpy as np
 import warnings
 from apischema import serialize, deserialize
 from joblib import Memory, effective_n_jobs
-
+from functools import partial
 
 import sklearn.model_selection
 from sklearn.metrics import make_scorer
@@ -135,9 +135,14 @@ class Objective:
             descriptor, valid_descriptors, aux_weight_pc = self._get_descriptor(
                 trial, build_alg
             )
-            X, failed_idx = descriptor_from_config(
-                self.train_smiles, descriptor, cache=self.cache
-            )
+            if self.cache is not None:
+                _descriptor_from_config = partial(
+                    descriptor_from_config, cache=self.cache
+                )
+                cache_desc_from_conf = self.cache.cache(_descriptor_from_config)
+                X, failed_idx = cache_desc_from_conf(self.train_smiles, descriptor)
+            else:
+                X, failed_idx = descriptor_from_config(self.train_smiles, descriptor)
             if len(X) == 0:
                 raise ValueError
         except (ScalingFittingError, ValueError) as e:
@@ -154,7 +159,8 @@ class Objective:
             )
         if len(X) < self.optconfig.settings.cross_validation:
             raise TrialPruned(
-                f"Issue with structures or descriptor config. Insufficient descriptors ({len(X)} generated for: {descriptor.name}"
+                f"Issue with structures or descriptor config. Insufficient descriptors ({len(X)} generated for: "
+                f"{descriptor.name}"
             )
 
         # Check trial duplication, prune if this is detected.
@@ -291,7 +297,7 @@ class Objective:
         build_alg = suggest_alg_params(trial, alg)
         return build_alg
 
-    def _get_descriptor(self, trial, algo):
+    def _get_descriptor(self, trial, algo) -> [AnyDescriptor, tuple, int | None]:
         """Calculates a descriptor (fingerprint) for the trial."""
 
         valid_descriptors = check_invalid_descriptor_param(algo)
