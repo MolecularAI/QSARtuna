@@ -1,8 +1,11 @@
 import csv
 import json
 import os
+import sys
 import tempfile
-
+from unittest.mock import patch
+import numpy as np
+import pandas as pd
 import numpy.testing as npt
 from apischema import deserialize
 
@@ -10,11 +13,9 @@ import optunaz.three_step_opt_build_merge
 from optunaz.config.optconfig import OptimizationConfig
 from optunaz.descriptors import PrecomputedDescriptorFromFile, ECFP
 from optunaz.utils.preprocessing.transform import VectorFromColumn
-
-import numpy as np
-import pandas as pd
-
+from optunaz import optbuild
 from optunaz.utils.files_paths import attach_root_path
+from optunaz import predict
 
 
 def test_1():
@@ -147,3 +148,51 @@ def test_5(shared_datadir):
     )
 
     os.unlink(f.name)
+
+
+def test_scaled_precomputed(shared_datadir):
+    testargs = [
+        "prog",
+        "--config",
+        str(
+            attach_root_path(
+                "examples/optimization/regression_drd2_50_precomputed_descriptor_scaled.json"
+            )
+        ),
+        "--best-buildconfig-outpath",
+        str(shared_datadir / "buildconfig.json"),
+        "--best-model-outpath",
+        str(shared_datadir / "best.pkl"),
+    ]
+    with patch.object(sys, "argv", testargs):
+        optbuild.main()
+
+    predict_args = [
+        "prog",
+        "--model-file",
+        str(shared_datadir / "best.pkl"),
+        "--input-smiles-csv-file",
+        str(shared_datadir / "precomputed_descriptor/train_with_fp.csv"),
+        "--input-smiles-csv-column",
+        "canonical",
+        "--input-precomputed-file",
+        str(shared_datadir / "precomputed_descriptor/train_with_fp.csv"),
+        "--input-precomputed-input-column",
+        "canonical",
+        "--input-precomputed-response-column",
+        "fp",
+        "--output-prediction-csv-file",
+        str(shared_datadir / "outprediction"),
+    ]
+    with patch.object(sys, "argv", predict_args):
+        predict.main()
+
+        predictions = pd.read_csv(
+            str(shared_datadir / "outprediction"), usecols=["Prediction"]
+        )
+        npt.assert_allclose(
+            predictions.loc[[0, 1, 2]].values.flatten(),
+            [385.872, 388.57, 379.173],
+            rtol=1e-05,
+            atol=1e-05,
+        )
