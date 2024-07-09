@@ -53,13 +53,15 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#json-based-command-line-interface">JSON-based Command-line interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#configuration-file">Configuration file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#running-via-singulartity">Running via singulartity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#submitting-to-slurm">Submitting to SLURM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#using-the-model">Using the model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#optional-inspect">Optional: inspect</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#run-from-python-jupyter-notebook">Run from Python/Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-via-cli">Running via CLI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submitting-to-slurm">Submitting to SLURM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-the-model">Using the model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-inspect">Optional: inspect</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-descriptors-to-qsartuna">Adding descriptors to QSARtuna</a></li>
 </ul>
 </li>
@@ -245,110 +247,6 @@ In this example it specifies a relative path to the <code class="docutils litera
 and optimization is free to pair any specified descriptor with any of the algorithms.</p>
 <p>When we have our data and our configuration, it is time to start the optimization.</p>
 </section>
-<section id="running-via-singulartity">
-<h3>Running via singulartity<a class="headerlink" href="#running-via-singulartity" title="Permalink to this heading"></a></h3>
-<p>QSARtuna can be deployed using <a class="reference external" href="https://sylabs.io/guides/3.7/user-guide/index.html">Singularity</a> container.</p>
-<p>To run commands inside the container, Singularity uses the following syntax:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;container.sif&gt;<span class="w"> </span>&lt;command&gt;
-</pre></div>
-</div>
-<p>We can run three-step-process from command line with the following command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/projects/cc/mai/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--config<span class="w"> </span>examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
-</pre></div>
-</div>
-<p>Since optimization can be a long process,
-we should avoid running it on the login node,
-and we should submit it to the SLURM queue instead.</p>
-</section>
-<section id="submitting-to-slurm">
-<h3>Submitting to SLURM<a class="headerlink" href="#submitting-to-slurm" title="Permalink to this heading"></a></h3>
-<p>We can submit our script to the queue by giving <code class="docutils literal notranslate"><span class="pre">sbatch</span></code> the following script:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
-<span class="c1">#SBATCH --nodes=1</span>
-<span class="c1">#SBATCH --ntasks=1</span>
-<span class="c1">#SBATCH --cpus-per-task=5</span>
-<span class="c1">#SBATCH --mem-per-cpu=4G</span>
-<span class="c1">#SBATCH --time=100:0:0</span>
-<span class="c1">#SBATCH --partition core</span>
-
-<span class="c1"># This script illustrates how to run one configuration from QSARtuna examples.</span>
-<span class="c1"># The example we use is in examples/optimization/regression_drd2_50.json.</span>
-
-<span class="c1"># The example we chose uses relative paths to data files, change directory.</span>
-<span class="nb">cd</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/OptunaAZ-versions/OptunaAZ_latest
-
-singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--config<span class="o">{</span>project_folder<span class="o">}</span>/examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
-</pre></div>
-</div>
-<p>When the script is complete, it will create pickled model files inside your home directory under <code class="docutils literal notranslate"><span class="pre">~/qsartuna-target/</span></code>.</p>
-</section>
-<section id="using-the-model">
-<h3>Using the model<a class="headerlink" href="#using-the-model" title="Permalink to this heading"></a></h3>
-<p>When the model is built, run inference:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_latest.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--model-file<span class="w"> </span>target/merged.pkl<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--input-smiles-csv-column<span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>target/prediction.csv
-</pre></div>
-</div>
-<p>Note that QSARtuna_latest.sif points to the most recent version of QSARtuna.</p>
-<p>Legacy models require the inference with the same QSARtuna version used to train the model.
-This can be specified by modifying the above command and supplying
-<code class="docutils literal notranslate"><span class="pre">/projects/cc/mai/containers/QSARtuna_&lt;version&gt;.sif</span></code> (replace <version> with the version of QSARtuna).</p>
-<p>E.g:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/containers/QSARtuna_2.5.1.sif<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/opt/qsartuna/.venv/bin/qsartuna-predict<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--model-file<span class="w"> </span><span class="m">2</span>.5.1_model.pkl<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--input-smiles-csv-column<span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>target/prediction.csv
-</pre></div>
-</div>
-<p>would generate predictions for a model trained with QSARtuna 2.5.1.</p>
-</section>
-<section id="optional-inspect">
-<h3>Optional: inspect<a class="headerlink" href="#optional-inspect" title="Permalink to this heading"></a></h3>
-<p>To inspect performance of different models tried during optimization,
-use <a class="reference external" href="https://www.mlflow.org/docs/latest/tracking.html">MLFlow Tracking UI</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>mlflow
-mlflow<span class="w"> </span>ui
-</pre></div>
-</div>
-<p>Then open mlflow link your browser.</p>
-<p><img alt="mlflow select experiment" src="_images/mlflow-select-experiment.png" /></p>
-<p>If you run <code class="docutils literal notranslate"><span class="pre">mlflow</span> <span class="pre">ui</span></code> on SCP,
-you can forward your mlflow port
-with a separate SSH session started on your local (”non-SCP”) machine:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>-N<span class="w"> </span>-L<span class="w"> </span>localhost:5000:localhost:5000<span class="w"> </span>user@login.intranet.net
-</pre></div>
-</div>
-<p>(”-L” forwards ports, and “-N” just to not execute any commands).</p>
-<p>In the MLFlow Tracking UI, select experiment to the left,
-it is named after the input file path.
-Then select all runs/trials in the experiment, and choose “Compare”.
-You will get a comparison page for selected runs/trials in the experiment.</p>
-<p><img alt="mlflow inspecting trials" src="_images/mlflow-inspecting-trials.png" /></p>
-<p>Comparison page will show MLFlow Runs (called Trials in Optuna),
-as well as their Parameters and Metrics.
-At the bottom there are plots.
-For X-axis, select “trial_number”.
-For Y-axis, start with “optimization_objective_cvmean_r2”.</p>
-<p>You can get more details by clicking individual runs.
-There you can access run/trial build (training) configuration.</p>
-</section>
 </section>
 <section id="run-from-python-jupyter-notebook">
 <h2>Run from Python/Jupyter Notebook<a class="headerlink" href="#run-from-python-jupyter-notebook" title="Permalink to this heading"></a></h2>
@@ -359,7 +257,7 @@ conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"
 conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qsartuna
 module<span class="w"> </span>purge<span class="w">  </span><span class="c1"># Just in case.</span>
 which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Check. Should output path that contains &quot;my_env_with_qsartuna&quot;.</span>
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>https://github.com/MolecularAI/QSARtuna/releases/download/3.1.0/qsartuna-3.1.0.tar.gz
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>https://github.com/MolecularAI/QSARtuna/releases/download/3.1.1/qsartuna-3.1.1.tar.gz
 </pre></div>
 </div>
 <p>Then you can use QSARtuna inside your Notebook:</p>
@@ -428,6 +326,154 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 </pre></div>
 </div>
 </section>
+<section id="running-via-cli">
+<h2>Running via CLI<a class="headerlink" href="#running-via-cli" title="Permalink to this heading"></a></h2>
+<p>QSARtuna can be deployed directly from the CLI</p>
+<p>To run commands QSARtuna uses the following syntax:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qsartuna-&lt;optimize<span class="p">|</span>build<span class="p">|</span>predict<span class="p">|</span>schemagen&gt;<span class="w"> </span>&lt;command&gt;
+</pre></div>
+</div>
+<p>We can run three-step-process from command line with the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">  </span>qsartuna-optimize<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config<span class="w"> </span>examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
+</pre></div>
+</div>
+<p>Optimization accepts the following command line arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span>
+<span class="n">qsartuna</span><span class="o">-</span><span class="n">optimize</span> <span class="o">-</span><span class="n">h</span> 
+<span class="n">usage</span><span class="p">:</span> <span class="n">qsartuna</span><span class="o">-</span><span class="n">optimize</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="o">--</span><span class="n">best</span><span class="o">-</span><span class="n">buildconfig</span><span class="o">-</span><span class="n">outpath</span> <span class="n">BEST_BUILDCONFIG_OUTPATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">best</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">outpath</span> <span class="n">BEST_MODEL_OUTPATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">merged</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">outpath</span> <span class="n">MERGED_MODEL_OUTPATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="p">]</span>
+
+<span class="n">optbuild</span><span class="p">:</span> <span class="n">Optimize</span> <span class="n">hyper</span><span class="o">-</span><span class="n">parameters</span> <span class="ow">and</span> <span class="n">build</span> <span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="n">the</span> <span class="n">best</span> <span class="n">model</span><span class="o">.</span>
+
+<span class="n">options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+  <span class="o">--</span><span class="n">best</span><span class="o">-</span><span class="n">buildconfig</span><span class="o">-</span><span class="n">outpath</span> <span class="n">BEST_BUILDCONFIG_OUTPATH</span>
+                        <span class="n">Path</span> <span class="n">where</span> <span class="n">to</span> <span class="n">write</span> <span class="n">Json</span> <span class="n">of</span> <span class="n">the</span> <span class="n">best</span> <span class="n">build</span> <span class="n">configuration</span><span class="o">.</span>
+  <span class="o">--</span><span class="n">best</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">outpath</span> <span class="n">BEST_MODEL_OUTPATH</span>
+                        <span class="n">Path</span> <span class="n">where</span> <span class="n">to</span> <span class="n">write</span> <span class="p">(</span><span class="n">persist</span><span class="p">)</span> <span class="n">the</span> <span class="n">best</span> <span class="n">model</span><span class="o">.</span>
+  <span class="o">--</span><span class="n">merged</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">outpath</span> <span class="n">MERGED_MODEL_OUTPATH</span>
+                        <span class="n">Path</span> <span class="n">where</span> <span class="n">to</span> <span class="n">write</span> <span class="p">(</span><span class="n">persist</span><span class="p">)</span> <span class="n">the</span> <span class="n">model</span> <span class="n">trained</span> <span class="n">on</span> <span class="n">merged</span> <span class="n">train</span><span class="o">+</span><span class="n">test</span> <span class="n">data</span><span class="o">.</span>
+  <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span>            <span class="n">Turn</span> <span class="n">off</span> <span class="n">descriptor</span> <span class="n">generation</span> <span class="n">caching</span>
+
+<span class="n">required</span> <span class="n">named</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span>       <span class="n">Path</span> <span class="n">to</span> <span class="nb">input</span> <span class="n">configuration</span> <span class="n">file</span> <span class="p">(</span><span class="n">JSON</span><span class="p">):</span> <span class="n">either</span> <span class="n">Optimization</span> <span class="n">configuration</span><span class="p">,</span> <span class="ow">or</span> <span class="n">Build</span> <span class="p">(</span><span class="n">training</span><span class="p">)</span> <span class="n">configuration</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Since optimization can be a long process,
+we should avoid running it on the login node,
+and we should submit it to the SLURM queue instead.</p>
+<section id="submitting-to-slurm">
+<h3>Submitting to SLURM<a class="headerlink" href="#submitting-to-slurm" title="Permalink to this heading"></a></h3>
+<p>We can submit our script to the queue by giving <code class="docutils literal notranslate"><span class="pre">sbatch</span></code> the following script:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+<span class="c1">#SBATCH --nodes=1</span>
+<span class="c1">#SBATCH --ntasks=1</span>
+<span class="c1">#SBATCH --cpus-per-task=5</span>
+<span class="c1">#SBATCH --mem-per-cpu=4G</span>
+<span class="c1">#SBATCH --time=100:0:0</span>
+<span class="c1">#SBATCH --partition core</span>
+
+<span class="c1"># This script illustrates how to run one configuration from QSARtuna examples.</span>
+<span class="c1"># The example we use is in examples/optimization/regression_drd2_50.json.</span>
+
+module<span class="w"> </span>load<span class="w"> </span>Miniconda3
+conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qsartuna
+
+<span class="c1"># The example we chose uses relative paths to data files, change directory.</span>
+<span class="nb">cd</span><span class="w"> </span>/<span class="o">{</span>project_folder<span class="o">}</span>/
+
+<span class="w">  </span>/&lt;your-project-dir&gt;/qsartuna-optimize<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config<span class="w"> </span><span class="o">{</span>project_folder<span class="o">}</span>/examples/optimization/regression_drd2_50.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-buildconfig-outpath<span class="w"> </span>~/qsartuna-target/best.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--best-model-outpath<span class="w"> </span>~/qsartuna-target/best.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--merged-model-outpath<span class="w"> </span>~/qsartuna-target/merged.pkl
+</pre></div>
+</div>
+<p>When the script is complete, it will create pickled model files inside your home directory under <code class="docutils literal notranslate"><span class="pre">~/qsartuna-target/</span></code>.</p>
+</section>
+<section id="using-the-model">
+<h3>Using the model<a class="headerlink" href="#using-the-model" title="Permalink to this heading"></a></h3>
+<p>When the model is built, run inference:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">  </span>qsartuna-predict<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--model-file<span class="w"> </span>target/merged.pkl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>tests/data/DRD2/subset-50/test.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-smiles-csv-column<span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>target/prediction.csv
+</pre></div>
+</div>
+<p>Note that prediction accepts a variety of command line arguments:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>qsartuna-predict<span class="w"> </span>-h
+usage:<span class="w"> </span>qsartuna-predict<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span>--model-file<span class="w"> </span>MODEL_FILE<span class="w"> </span><span class="o">[</span>--input-smiles-csv-file<span class="w"> </span>INPUT_SMILES_CSV_FILE<span class="o">]</span><span class="w"> </span><span class="o">[</span>--input-smiles-csv-column<span class="w"> </span>INPUT_SMILES_CSV_COLUMN<span class="o">]</span><span class="w"> </span><span class="o">[</span>--input-aux-column<span class="w"> </span>INPUT_AUX_COLUMN<span class="o">]</span>
+<span class="w">                        </span><span class="o">[</span>--input-precomputed-file<span class="w"> </span>INPUT_PRECOMPUTED_FILE<span class="o">]</span><span class="w"> </span><span class="o">[</span>--input-precomputed-input-column<span class="w"> </span>INPUT_PRECOMPUTED_INPUT_COLUMN<span class="o">]</span>
+<span class="w">                        </span><span class="o">[</span>--input-precomputed-response-column<span class="w"> </span>INPUT_PRECOMPUTED_RESPONSE_COLUMN<span class="o">]</span><span class="w"> </span><span class="o">[</span>--output-prediction-csv-column<span class="w"> </span>OUTPUT_PREDICTION_CSV_COLUMN<span class="o">]</span>
+<span class="w">                        </span><span class="o">[</span>--output-prediction-csv-file<span class="w"> </span>OUTPUT_PREDICTION_CSV_FILE<span class="o">]</span><span class="w"> </span><span class="o">[</span>--predict-uncertainty<span class="o">]</span><span class="w"> </span><span class="o">[</span>--predict-explain<span class="o">]</span><span class="w"> </span><span class="o">[</span>--uncertainty_quantile<span class="w"> </span>UNCERTAINTY_QUANTILE<span class="o">]</span>
+
+Predict<span class="w"> </span>responses<span class="w"> </span><span class="k">for</span><span class="w"> </span>a<span class="w"> </span>given<span class="w"> </span>OptunaAZ<span class="w"> </span>model
+
+options:
+<span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">            </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
+<span class="w">  </span>--input-smiles-csv-file<span class="w"> </span>INPUT_SMILES_CSV_FILE
+<span class="w">                        </span>Name<span class="w"> </span>of<span class="w"> </span>input<span class="w"> </span>CSV<span class="w"> </span>file<span class="w"> </span>with<span class="w"> </span>Input<span class="w"> </span>SMILES
+<span class="w">  </span>--input-smiles-csv-column<span class="w"> </span>INPUT_SMILES_CSV_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>SMILES<span class="w"> </span>column<span class="w"> </span><span class="k">in</span><span class="w"> </span>input<span class="w"> </span>CSV<span class="w"> </span>file
+<span class="w">  </span>--input-aux-column<span class="w"> </span>INPUT_AUX_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>auxiliary<span class="w"> </span>descriptors<span class="w"> </span><span class="k">in</span><span class="w"> </span>input<span class="w"> </span>CSV<span class="w"> </span>file
+<span class="w">  </span>--input-precomputed-file<span class="w"> </span>INPUT_PRECOMPUTED_FILE
+<span class="w">                        </span>Filename<span class="w"> </span>of<span class="w"> </span>precomputed<span class="w"> </span>descriptors<span class="w"> </span>input<span class="w"> </span>CSV<span class="w"> </span>file
+<span class="w">  </span>--input-precomputed-input-column<span class="w"> </span>INPUT_PRECOMPUTED_INPUT_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>precomputed<span class="w"> </span>descriptors<span class="w"> </span>identifier
+<span class="w">  </span>--input-precomputed-response-column<span class="w"> </span>INPUT_PRECOMPUTED_RESPONSE_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>precomputed<span class="w"> </span>descriptors<span class="w"> </span>response<span class="w"> </span>column
+<span class="w">  </span>--output-prediction-csv-column<span class="w"> </span>OUTPUT_PREDICTION_CSV_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>prediction<span class="w"> </span>column<span class="w"> </span><span class="k">in</span><span class="w"> </span>output<span class="w"> </span>CSV<span class="w"> </span>file
+<span class="w">  </span>--output-prediction-csv-file<span class="w"> </span>OUTPUT_PREDICTION_CSV_FILE
+<span class="w">                        </span>Name<span class="w"> </span>of<span class="w"> </span>output<span class="w"> </span>CSV<span class="w"> </span>file
+<span class="w">  </span>--predict-uncertainty
+<span class="w">                        </span>Predict<span class="w"> </span>with<span class="w"> </span>uncertainties<span class="w"> </span><span class="o">(</span>model<span class="w"> </span>must<span class="w"> </span>provide<span class="w"> </span>this<span class="w"> </span>functionality<span class="o">)</span>
+<span class="w">  </span>--predict-explain<span class="w">     </span>Predict<span class="w"> </span>with<span class="w"> </span>SHAP<span class="w"> </span>or<span class="w"> </span>ChemProp<span class="w"> </span>explainability
+<span class="w">  </span>--uncertainty_quantile<span class="w"> </span>UNCERTAINTY_QUANTILE
+<span class="w">                        </span>Apply<span class="w"> </span>uncertainty<span class="w"> </span>threshold<span class="w"> </span>to<span class="w"> </span>predictions
+
+required<span class="w"> </span>named<span class="w"> </span>arguments:
+<span class="w">  </span>--model-file<span class="w"> </span>MODEL_FILE
+<span class="w">                        </span>Model<span class="w"> </span>file<span class="w"> </span>name
+</pre></div>
+</div>
+</section>
+</section>
+<section id="optional-inspect">
+<h2>Optional: inspect<a class="headerlink" href="#optional-inspect" title="Permalink to this heading"></a></h2>
+<p>To inspect performance of different models tried during optimization,
+use <a class="reference external" href="https://www.mlflow.org/docs/latest/tracking.html">MLFlow Tracking UI</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>mlflow
+mlflow<span class="w"> </span>ui
+</pre></div>
+</div>
+<p>Then open mlflow link your browser.</p>
+<p><img alt="mlflow select experiment" src="_images/mlflow-select-experiment.png" /></p>
+<p>If you run <code class="docutils literal notranslate"><span class="pre">mlflow</span> <span class="pre">ui</span></code> on SCP,
+you can forward your mlflow port
+with a separate SSH session started on your local (”non-SCP”) machine:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>-N<span class="w"> </span>-L<span class="w"> </span>localhost:5000:localhost:5000<span class="w"> </span>user@login.intranet.net
+</pre></div>
+</div>
+<p>(”-L” forwards ports, and “-N” just to not execute any commands).</p>
+<p>In the MLFlow Tracking UI, select experiment to the left,
+it is named after the input file path.
+Then select all runs/trials in the experiment, and choose “Compare”.
+You will get a comparison page for selected runs/trials in the experiment.</p>
+<p><img alt="mlflow inspecting trials" src="_images/mlflow-inspecting-trials.png" /></p>
+<p>Comparison page will show MLFlow Runs (called Trials in Optuna),
+as well as their Parameters and Metrics.
+At the bottom there are plots.
+For X-axis, select “trial_number”.
+For Y-axis, start with “optimization_objective_cvmean_r2”.</p>
+<p>You can get more details by clicking individual runs.
+There you can access run/trial build (training) configuration.</p>
+</section>
 <section id="adding-descriptors-to-qsartuna">
 <h2>Adding descriptors to QSARtuna<a class="headerlink" href="#adding-descriptors-to-qsartuna" title="Permalink to this heading"></a></h2>
 <p>Add the descriptor code to the optunaz.descriptor.py file like so:</p>
@@ -489,7 +535,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 </pre></div>
 </div>
 <p>Then you can use YourNewDescriptor inside your Notebook:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qptuna.descriptors</span> <span class="kn">import</span> <span class="n">YourNewDescriptor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qsartuna.descriptors</span> <span class="kn">import</span> <span class="n">YourNewDescriptor</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">OptimizationConfig</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">Dataset</span><span class="p">(</span>
