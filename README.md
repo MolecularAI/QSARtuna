@@ -268,7 +268,7 @@ conda create --name my_env_with_qsartuna python=3.10.10 jupyter pip
 conda activate my_env_with_qsartuna
 module purge  # Just in case.
 which python  # Check. Should output path that contains "my_env_with_qsartuna".
-python -m pip install https://github.com/MolecularAI/QSARtuna/releases/download/3.1.0/qsartuna-3.1.0.tar.gz
+python -m pip install https://github.com/MolecularAI/QSARtuna/releases/download/3.1.1/qsartuna-3.1.1.tar.gz
 ```
 
 Then you can use QSARtuna inside your Notebook:
