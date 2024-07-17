@@ -1,12 +1,11 @@
 import abc
 from dataclasses import dataclass, field
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, Literal
 
 import pandas as pd
 from apischema import deserializer, serializer, schema, identity
 from apischema.conversions import Conversion
 from apischema.metadata import none_as_undefined
-from typing_extensions import Literal  # Python 3.7
 
 
 class Deduplicator:

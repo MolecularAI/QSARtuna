@@ -4,7 +4,7 @@ import logging
 import os
 import pathlib
 from dataclasses import dataclass, field
-from typing import List, Union, Type, Optional, Any, Tuple, Dict
+from typing import List, Union, Type, Optional, Any, Tuple, Dict, Literal, Annotated
 from functools import partial
 
 import apischema
@@ -34,7 +34,6 @@ from rdkit.ML.Descriptors.MoleculeDescriptors import MolecularDescriptorCalculat
 from jazzy.api import molecular_vector_from_smiles
 from jazzy.exception import JazzyError
 from sklearn import preprocessing
-from typing_extensions import Literal, Annotated
 from joblib import Parallel, delayed, effective_n_jobs
 from optunaz.config import NameParameterDataclass
 from optunaz.utils import load_df_from_file
