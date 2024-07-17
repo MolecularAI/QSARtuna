@@ -45,6 +45,21 @@ def validate_uncertainty(args, model):
             raise UncertaintyError("Uncertainty not availble for this model")
 
 
+def check_precomp_args(args):
+    try:
+        assert (
+            args.input_precomputed_file is not None
+        ), "Must supply precomputed descriptor parameters"
+        assert (
+            args.input_precomputed_input_column
+        ), "Must supply input column for precomputed descriptor"
+        assert (
+            args.input_precomputed_response_column
+        ), "Must supply response column for precomputed descriptor"
+    except AssertionError as e:
+        raise PrecomputedError(e)
+
+
 def set_inference_params(args, desc):
     if hasattr(desc.parameters, "descriptor") and hasattr(
         desc.parameters.descriptor, "inference_parameters"
@@ -60,21 +75,6 @@ def set_inference_params(args, desc):
         logging.info("Precomputed descriptor inference params set")
         return True
     return False
-
-
-def check_precomp_args(args):
-    try:
-        assert (
-            args.input_precomputed_file is not None
-        ), "Must supply precomputed descriptor parameters"
-        assert (
-            args.input_precomputed_input_column
-        ), "Must supply input column for precomputed descriptor"
-        assert (
-            args.input_precomputed_response_column
-        ), "Must supply response column for precomputed descriptor"
-    except AssertionError as e:
-        raise PrecomputedError(e)
 
 
 def validate_set_precomputed(args, model):

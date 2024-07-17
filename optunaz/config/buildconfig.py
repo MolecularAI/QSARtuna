@@ -1,6 +1,6 @@
 import abc
 from dataclasses import dataclass, field
-from typing import Optional, Union
+from typing import Optional, Union, Literal
 
 import sklearn
 import sklearn.cross_decomposition
@@ -11,7 +11,6 @@ import sklearn.svm
 import xgboost
 from apischema import schema
 from sklearn.base import BaseEstimator
-from typing_extensions import Literal
 
 import optunaz
 from optunaz import algorithms

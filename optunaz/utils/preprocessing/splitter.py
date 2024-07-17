@@ -1,6 +1,6 @@
 import abc
 from dataclasses import dataclass, field
-from typing import Optional, Iterator, Tuple, Union, Dict
+from typing import Optional, Iterator, Tuple, Union, Dict, Literal, Annotated
 
 import numpy as np
 import sklearn
@@ -13,7 +13,6 @@ from sklearn.model_selection import (
     PredefinedSplit,
     StratifiedGroupKFold,
 )
-from typing_extensions import Literal, Annotated  # Python 3.7
 
 
 class SklearnSplitter(abc.ABC):

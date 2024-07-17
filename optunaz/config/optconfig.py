@@ -1,11 +1,10 @@
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Union, Optional, List, Iterable, Type, Any
+from typing import Union, Optional, List, Iterable, Type, Any, Literal, Annotated
 
 from apischema import schema, type_name, serialize
 from apischema.metadata import none_as_undefined, required
-from typing_extensions import Literal, Annotated
 
 from optunaz.config import (
     ModelMode,
