@@ -64,9 +64,7 @@ Below is the example of such a file
   "data": {
     "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
     "input_column": "canonical",
-    "response_column": "molwt",
-    "intermediate_test_dataset_file": "intermediate_test_dataset_file.csv",
-    "intermediate_training_dataset_file": "intermediate_training_dataset_file.csv"
+    "response_column": "molwt"
   },
   "settings": {
     "mode": "regression",
