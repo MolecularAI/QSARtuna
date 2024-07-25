@@ -172,9 +172,9 @@ from qsartuna.descriptors import ECFP, MACCS_keys, ECFP_counts, PathFP
 # Prepare hyperparameter optimization configuration.
 config = OptimizationConfig(
     data=Dataset(
-        input_column="smiles_isomeric",
-        response_column="donor_strength",
-        training_dataset_file="jazzy_train_data.csv",
+        input_column="canonical",
+        response_column="molwt",
+        training_dataset_file="tests/data/DRD2/subset-50/train.csv",
     ),
     descriptors=[ECFP.new(), ECFP_counts.new(), MACCS_keys.new(), PathFP.new()],
     algorithms=[
@@ -187,13 +187,13 @@ config = OptimizationConfig(
     settings=OptimizationConfig.Settings(
         mode=ModelMode.REGRESSION,
         cross_validation=3,
-        n_trials=1,
+        n_trials=100,
         direction=OptimizationDirection.MAXIMIZATION,
     ),
 )
 
 # Run Optuna Study.
-study = optimize(config, study_name="jazzy_study")
+study = optimize(config, study_name="my_study")
 
 # Get the best Trial from the Study and make a Build (Training) configuration for it.
 buildconfig = buildconfig_best(study)
