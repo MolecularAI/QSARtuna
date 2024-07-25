@@ -161,56 +161,48 @@ from qsartuna.config import ModelMode, OptimizationDirection
 from qsartuna.config.optconfig import (
     OptimizationConfig,
     SVR,
-    RandomForest,
+    RandomForestRegressor,
     Ridge,
     Lasso,
-    PLS,
-    XGBregressor,
+    XGBRegressor,
 )
 from qsartuna.datareader import Dataset
-from qsartuna.descriptors import ECFP, MACCS_keys, ECFP_counts
+from qsartuna.descriptors import ECFP, MACCS_keys, ECFP_counts, PathFP
 
-##
 # Prepare hyperparameter optimization configuration.
 config = OptimizationConfig(
     data=Dataset(
-        input_column="canonical",
-        response_column="molwt",
-        training_dataset_file="tests/data/DRD2/subset-50/train.csv",
+        input_column="smiles_isomeric",
+        response_column="donor_strength",
+        training_dataset_file="jazzy_train_data.csv",
     ),
-    descriptors=[ECFP.new(), ECFP_counts.new(), MACCS_keys.new()],
+    descriptors=[ECFP.new(), ECFP_counts.new(), MACCS_keys.new(), PathFP.new()],
     algorithms=[
         SVR.new(),
-        RandomForest.new(),
+        RandomForestRegressor.new(),
         Ridge.new(),
         Lasso.new(),
-        PLS.new(),
-        XGBregressor.new(),
+        XGBRegressor.new(),
     ],
     settings=OptimizationConfig.Settings(
         mode=ModelMode.REGRESSION,
         cross_validation=3,
-        n_trials=100,
+        n_trials=1,
         direction=OptimizationDirection.MAXIMIZATION,
     ),
 )
 
-##
 # Run Optuna Study.
-study = optimize(config, study_name="my_study")
+study = optimize(config, study_name="jazzy_study")
 
-##
 # Get the best Trial from the Study and make a Build (Training) configuration for it.
 buildconfig = buildconfig_best(study)
-# Optional: write out JSON of the best configuration.
-import json
-print(json.dumps(buildconfig.json(), indent=2))
+with open("best_config.txt", "w") as f:
+    f.write(str(buildconfig.__dict__))
 
-##
 # Build (re-Train) and save the best model.
 build_best(buildconfig, "target/best.pkl")
 
-##
 # Build (Train) and save the model on the merged train+test data.
 build_merged(buildconfig, "target/merged.pkl")
 ```
