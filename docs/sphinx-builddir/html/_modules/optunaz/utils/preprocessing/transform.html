@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils.preprocessing.transform &mdash; QSARtuna 3.1.1 documentation</title>
+  <title>optunaz.utils.preprocessing.transform &mdash; QSARtuna 3.1.2 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/autodoc_pydantic.css" type="text/css" />
@@ -45,7 +45,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../README.html">Intro and Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../splitters.html">List of available evaluation splits</a></li>
@@ -81,9 +82,9 @@
   <h1>Source code for optunaz.utils.preprocessing.transform</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
 <span class="kn">import</span> <span class="nn">apischema</span>
-<span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">schema</span><span class="p">,</span> <span class="n">deserializer</span><span class="p">,</span> <span class="n">serializer</span><span class="p">,</span> <span class="n">identity</span>
 <span class="kn">from</span> <span class="nn">apischema.conversions</span> <span class="kn">import</span> <span class="n">Conversion</span>
@@ -364,7 +365,12 @@
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ZScales.transform"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.transform.ZScales.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auxiliary_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">peptides</span> <span class="kn">import</span> <span class="n">Peptide</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">peptides</span> <span class="kn">import</span> <span class="n">Peptide</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                <span class="s2">&quot;peptides package must be installed to use Z-Scales transform&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">Peptide</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">z_scales</span><span class="p">())</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">auxiliary_data</span><span class="p">])</span></div></div>
 
@@ -384,7 +390,10 @@
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">amorprot</span> <span class="kn">import</span> <span class="n">AmorProt</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">amorprot</span> <span class="kn">import</span> <span class="n">AmorProt</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;AmorProt must be installed to use AmorProt transform&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ap</span> <span class="o">=</span> <span class="n">AmorProt</span><span class="p">()</span>
 

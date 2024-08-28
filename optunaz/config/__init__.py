@@ -1,12 +1,21 @@
 import abc
+import json
 from dataclasses import dataclass
 from enum import Enum
+import os
 from pathlib import Path
 from typing import Optional, Any, Dict
 
 from apischema import deserialize
 
 from optunaz.utils import mkdict
+
+current_module_dir = os.path.dirname(os.path.abspath(__file__))
+default_logging_config_file = os.path.join(current_module_dir, "logging_conf.json")
+LOG_PATH = Path(os.getenv("QPTUNA_LOG_CONFIG", default_logging_config_file))
+
+with open(LOG_PATH) as f:
+    LOG_CONFIG = json.load(f)
 
 
 class ModelMode(str, Enum):

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to QSARtuna Documentation! &mdash; QSARtuna 3.1.1 documentation</title>
+  <title>Welcome to QSARtuna Documentation! &mdash; QSARtuna 3.1.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -47,7 +47,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
@@ -116,7 +117,9 @@
 <li class="toctree-l2"><a class="reference internal" href="README.html#run-from-python-jupyter-notebook">Run from Python/Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="README.html#running-via-cli">Running via CLI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="README.html#optional-inspect">Optional: inspect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#automl-automatic-machine-learning">AutoML (Automatic Machine Learning)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="README.html#adding-descriptors-to-qsartuna">Adding descriptors to QSARtuna</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#adding-machine-learning-algorithms-to-qsartuna">Adding machine learning algorithms to QSARtuna</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a><ul>
@@ -129,7 +132,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/preprocess_data.html#Probabilistic-Threshold-Representation-(PTR)-and-experimental-error">Probabilistic Threshold Representation (PTR) and experimental error</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#This-tutorial">This tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Background">Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Preparation">Preparation</a></li>
@@ -144,6 +147,14 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Log-transformation">Log transformation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Covariate-modelling">Covariate modelling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Advanced-options-for-QSARtuna-runs">Advanced options for QSARtuna runs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Note-on-High-Performance-Computing-(HPC)-Setup">Note on High-Performance Computing (HPC) Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Data-extraction-options">Data extraction options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Walkthough-running-an-AutoML-pipeline">Walkthough running an AutoML pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#Schedule-AutoML-as-a-daemon-for-up-to-date-models">Schedule AutoML as a daemon for up-to-date models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a><ul>
@@ -221,7 +232,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="_static/pytest/pytest/index.html">Test report</a></p></li>
 <li><p><a class="reference external" href="_static/pytest/coverage/index.html">Test coverage</a></p></li>
-<li><p><a class="reference external" href="https://github.com/MolecularAI/QSARtuna/">Public release (3.1.0)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/MolecularAI/QSARtuna/">Public release (3.1.2)</a></p></li>
 </ul>
 </section>
 </section>

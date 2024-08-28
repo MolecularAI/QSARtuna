@@ -6,6 +6,11 @@ import sys
 
 import pandas as pd
 
+from optunaz.config import LOG_CONFIG
+
+log_conf = LOG_CONFIG
+logging.config.dictConfig(log_conf)
+logger = logging.getLogger(__name__)
 
 class ArgsError(Exception):
     "Thrown when there is an issue with basic args at inference time"
@@ -86,9 +91,10 @@ def validate_set_precomputed(args, model):
         for d in model.descriptor.parameters.descriptors:
             n_precomp += set_inference_params(args, d)
         if n_precomp == 0:
-            logging.warning(
-                f"{descriptor_str} has no Precomputed descriptors... ignoring precomputed descriptor parameters"
-            )
+            if args.input_precomputed_file is not None:
+                logging.warning(
+                    f"{descriptor_str} has no Precomputed descriptors... ignoring precomputed descriptor parameters"
+                )
         elif n_precomp > 1:
             raise PrecomputedError(
                 "Inference for > precomputed descriptor not currently available"
@@ -120,7 +126,6 @@ def validate_aux(args, model):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(
         description="Predict responses for a given OptunaAZ model"
     )

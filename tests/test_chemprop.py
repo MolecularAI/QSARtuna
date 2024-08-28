@@ -93,7 +93,7 @@ def test_optbuild_pretrained_reg_on_cls(shared_datadir):
 
     with pytest.raises(
         ValueError,
-        match="pretrained dataset_type is classification but regression was supplied",
+        match="Exiting since no trials returned values",
     ):
         with patch.object(sys, "argv", testargs):
             optbuild.main()

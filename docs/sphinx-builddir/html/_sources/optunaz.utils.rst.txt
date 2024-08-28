@@ -37,6 +37,14 @@ optunaz.utils.mlflow module
    :undoc-members:
    :show-inheritance:
 
+optunaz.utils.retraining module
+-------------------------------
+
+.. automodule:: optunaz.utils.retraining
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 optunaz.utils.schema module
 ---------------------------
 

@@ -129,7 +129,7 @@ class Objective:
         build_alg = self._get_estimator(trial)
         try:
             estimator = build_alg.estimator()
-        except FileNotFoundError as e:
+        except (ValueError, FileNotFoundError) as e:
             raise TrialPruned(f"Estimator initiation failed for algorithm: {e}")
         try:
             descriptor, valid_descriptors, aux_weight_pc = self._get_descriptor(

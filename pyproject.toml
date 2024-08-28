@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qsartuna"
-version = "3.1.1"
+version = "3.1.2"
 description = "QSARtuna: QSAR using Optimization for Hyperparameter Tuning"
 authors = ["Molecular AI, AstraZeneca"]
 license = "Apache-2.0"
@@ -23,10 +23,11 @@ apischema = "^0.17"
 chemprop = "1.6.1"
 descriptastorus = "^2.4"  # Chemprop dependency, but chemprop does not install it itself.
 prf = {git = "https://github.com/ireis/PRF.git", rev = "7ed097c26bbe9af0df0e724ac3b720f534cdc510"}  # There are no releases or tags, let's take the latest commit.
-jazzy = "0.0.13"
+jazzy = "0.0.14"
 shap = "0.41.0"
 MAPIE = "0.6.4"
 protobuf = "4.25.3" # 5.26.0 causes an error
+
 
 [tool.poetry.group.optimization.dependencies]
 mlflow = "^1.19"
@@ -51,6 +52,9 @@ sphinx-pydantic = "^0.1.1"
 pandoc = "^2.3"
 plotly = "5.15.0"
 
+[tool.poetry.group.automl.dependencies]
+pid = "3.0.4"
+
 [tool.poetry.group.peptide.dependencies]
 peptides = "0.3.2"
 chemistry-adapters = "0.0.2"
@@ -62,6 +66,8 @@ qsartuna-optimize = "qsartuna.optbuild:main"
 qsartuna-build = "qsartuna.optbuild:main"
 qsartuna-predict = "qsartuna.predict:main"
 qsartuna-schemagen = "qsartuna.schemagen:main"
+qptuna-automl = "qsartuna.automl:main"
+qptuna-metadata = "qsartuna.automl:meta"
 
 [build-system]
 requires = ["poetry-core>=1.5.2"]

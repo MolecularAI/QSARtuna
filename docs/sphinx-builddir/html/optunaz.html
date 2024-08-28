@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz package &mdash; QSARtuna 3.1.1 documentation</title>
+  <title>optunaz package &mdash; QSARtuna 3.1.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -46,7 +46,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
@@ -146,6 +147,7 @@
 <li class="toctree-l2"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.files_paths">optunaz.utils.files_paths module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.load_json">optunaz.utils.load_json module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.mlflow">optunaz.utils.mlflow module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.retraining">optunaz.utils.retraining module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.schema">optunaz.utils.schema module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils.tracking">optunaz.utils.tracking module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optunaz.utils.html#module-optunaz.utils">Module contents</a></li>
@@ -156,6 +158,253 @@
 </section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-optunaz.automl">
+<span id="optunaz-automl-module"></span><h2>optunaz.automl module<a class="headerlink" href="#module-optunaz.automl" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">ModelAutoML</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activity_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'20240828-171643'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelAutoML"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelAutoML" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Prepares the data ready for the model training with ModelDispatcher.
+The ModelAutoML will also store activity for new tasks pending enough data.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.first_run">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_run</span></span><a class="headerlink" href="#optunaz.automl.ModelAutoML.first_run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.processed_timepoints">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">processed_timepoints</span></span><a class="headerlink" href="#optunaz.automl.ModelAutoML.processed_timepoints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.last_timepoint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_timepoint</span></span><a class="headerlink" href="#optunaz.automl.ModelAutoML.last_timepoint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.getAllRetrainingData">
+<span class="sig-name descname"><span class="pre">getAllRetrainingData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelAutoML.getAllRetrainingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelAutoML.getAllRetrainingData" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a dict of the wilcard data with converted datetime as the keys</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.getRetrainingData">
+<span class="sig-name descname"><span class="pre">getRetrainingData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelAutoML.getRetrainingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelAutoML.getRetrainingData" title="Permalink to this definition"></a></dt>
+<dd><p>Get data for the latest unprocessed date bucket or raise NoNewRetrainingData if none</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.setRetrainingData">
+<span class="sig-name descname"><span class="pre">setRetrainingData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelAutoML.setRetrainingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelAutoML.setRetrainingData" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the newest data bucket and timepoint for latest available data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.initProcessedTimepoints">
+<span class="sig-name descname"><span class="pre">initProcessedTimepoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelAutoML.initProcessedTimepoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelAutoML.initProcessedTimepoints" title="Permalink to this definition"></a></dt>
+<dd><p>Initialise the JSON containing timepoints for a first run</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelAutoML.setProcessedTimepoints">
+<span class="sig-name descname"><span class="pre">setProcessedTimepoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelAutoML.setProcessedTimepoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelAutoML.setProcessedTimepoints" title="Permalink to this definition"></a></dt>
+<dd><p>Set the processed timepoints and the currently processing timepoint to JSON</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">ModelDispatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quorum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_timepoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrain_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_req_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_req_partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_req_mem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_al_pool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_al_smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_job_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slurm_partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_previous_models</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Use ModelAutoML config as a basis to prepare QSARtuna jobs, dispatching to SLURM.
+ModelDispatcher always needs a quorum to prepare the model</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.pretrained_model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pretrained_model</span></span><a class="headerlink" href="#optunaz.automl.ModelDispatcher.pretrained_model" title="Permalink to this definition"></a></dt>
+<dd><p>Load a pretrained model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.checkIfRetrainingProcessed">
+<span class="sig-name descname"><span class="pre">checkIfRetrainingProcessed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskcode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.checkIfRetrainingProcessed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.checkIfRetrainingProcessed" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if this timepoint has already been predicted (and therefore processed).
+Timepoints to be skipped with data but no model quorum will also be in .skipped dirs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.checkisLocked">
+<span class="sig-name descname"><span class="pre">checkisLocked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskcode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.checkisLocked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.checkisLocked" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if this timepoint is locked for a given taskcode.
+Locks occur if QSARtuna is unable to run multiple retrain script instances run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.checkRunningSlurmJobs">
+<span class="sig-name descname"><span class="pre">checkRunningSlurmJobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.checkRunningSlurmJobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.checkRunningSlurmJobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.calcSlurmMem">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calcSlurmMem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.calcSlurmMem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.calcSlurmMem" title="Permalink to this definition"></a></dt>
+<dd><p>Dynamic resource allocation for memory from query</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.setDispatcherVariables">
+<span class="sig-name descname"><span class="pre">setDispatcherVariables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskcode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.setDispatcherVariables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.setDispatcherVariables" title="Permalink to this definition"></a></dt>
+<dd><p>Sets environment variables on a per taskcode level</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.setJobLocked">
+<span class="sig-name descname"><span class="pre">setJobLocked</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.setJobLocked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.setJobLocked" title="Permalink to this definition"></a></dt>
+<dd><p>Creates lock file to ensure future runs do not overwrite pending jobs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.processTrain">
+<span class="sig-name descname"><span class="pre">processTrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_taskcode_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.processTrain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.processTrain" title="Permalink to this definition"></a></dt>
+<dd><p>Opens existing training if possible, formats data and attributes set for prev data
+If no retrain, create directory, returns new smiles &amp; y for train</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.processQuorum">
+<span class="sig-name descname"><span class="pre">processQuorum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.processQuorum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.processQuorum" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates quorum &amp; formats retraining data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.isTrained">
+<span class="sig-name descname"><span class="pre">isTrained</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.isTrained"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.isTrained" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.checkSaveTemporalModel">
+<span class="sig-name descname"><span class="pre">checkSaveTemporalModel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.checkSaveTemporalModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.checkSaveTemporalModel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.doTemporalPredictions">
+<span class="sig-name descname"><span class="pre">doTemporalPredictions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.doTemporalPredictions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.doTemporalPredictions" title="Permalink to this definition"></a></dt>
+<dd><p>Start/check temporal (pseudo-prospective) predictions with an old QSARtuna model vs. newest data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.writeSlurm">
+<span class="sig-name descname"><span class="pre">writeSlurm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.writeSlurm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.writeSlurm" title="Permalink to this definition"></a></dt>
+<dd><p>Writes a slurm job for a QSARtuna run for a given taskcode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.writeJson">
+<span class="sig-name descname"><span class="pre">writeJson</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.writeJson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.writeJson" title="Permalink to this definition"></a></dt>
+<dd><p>Writes a QSARtuna json for a given taskcode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.writeDataset">
+<span class="sig-name descname"><span class="pre">writeDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.writeDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.writeDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Writes the training datapoints to file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.setSkippedTimepoint">
+<span class="sig-name descname"><span class="pre">setSkippedTimepoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.setSkippedTimepoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.setSkippedTimepoint" title="Permalink to this definition"></a></dt>
+<dd><p>Annotate the timepoint as not eligable for a taskcode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.checkSkipped">
+<span class="sig-name descname"><span class="pre">checkSkipped</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.checkSkipped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.checkSkipped" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.submitJob">
+<span class="sig-name descname"><span class="pre">submitJob</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.submitJob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.submitJob" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.checkSlurmStatusAndNextProcedure">
+<span class="sig-name descname"><span class="pre">checkSlurmStatusAndNextProcedure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.checkSlurmStatusAndNextProcedure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.checkSlurmStatusAndNextProcedure" title="Permalink to this definition"></a></dt>
+<dd><p>Check a SLURM job completed with no cancellations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.increaseJobTime">
+<span class="sig-name descname"><span class="pre">increaseJobTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minutes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.increaseJobTime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.increaseJobTime" title="Permalink to this definition"></a></dt>
+<dd><p>Increase SLURM model time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.increaseJobMem">
+<span class="sig-name descname"><span class="pre">increaseJobMem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_mem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.increaseJobMem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.increaseJobMem" title="Permalink to this definition"></a></dt>
+<dd><p>Increase SLURM model memory</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.increaseJobCpu">
+<span class="sig-name descname"><span class="pre">increaseJobCpu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.increaseJobCpu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.increaseJobCpu" title="Permalink to this definition"></a></dt>
+<dd><p>Increase SLURM model cpu</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.addSlurmRetry">
+<span class="sig-name descname"><span class="pre">addSlurmRetry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.addSlurmRetry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.addSlurmRetry" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.getSlurmRetry">
+<span class="sig-name descname"><span class="pre">getSlurmRetry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.getSlurmRetry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.getSlurmRetry" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.resubmitAnyFailedJobs">
+<span class="sig-name descname"><span class="pre">resubmitAnyFailedJobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locked_jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">720</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_mem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.resubmitAnyFailedJobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.resubmitAnyFailedJobs" title="Permalink to this definition"></a></dt>
+<dd><p>Resubmit failed jobs, according to reason for failure</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.automl.ModelDispatcher.processRetraining">
+<span class="sig-name descname"><span class="pre">processRetraining</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskcode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#ModelDispatcher.processRetraining"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.ModelDispatcher.processRetraining" title="Permalink to this definition"></a></dt>
+<dd><p>Enumerates through new data, creating the latest files and models</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.automl.process_retraining_task">
+<span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">process_retraining_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskcode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispatcher</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#process_retraining_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.process_retraining_task" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.automl.dispatcher_process">
+<span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">dispatcher_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispatcher</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#dispatcher_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.dispatcher_process" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.automl.meta">
+<span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">meta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.meta" title="Permalink to this definition"></a></dt>
+<dd><p>Tracks temporal performance of QSARtuna models by writing the metadata to JSON files</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.automl.validate_args">
+<span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">validate_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#validate_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.validate_args" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.automl.prepare_dispatcher">
+<span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">prepare_dispatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_conf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#prepare_dispatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.prepare_dispatcher" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="optunaz.automl.main">
+<span class="sig-prename descclassname"><span class="pre">optunaz.automl.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/automl.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.automl.main" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="module-optunaz.builder">
 <span id="optunaz-builder-module"></span><h2>optunaz.builder module<a class="headerlink" href="#module-optunaz.builder" title="Permalink to this heading"></a></h2>
@@ -867,7 +1116,7 @@ descriptors use the “MMFF94” minimisation method. NB: this descriptor employ
 acceptors/donors and a Mw of &lt;1000Da for compound inputs.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.descriptors.UnscaledJazzyDescriptors.Parameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jazzy_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jazzy_filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledJazzyDescriptors.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.UnscaledJazzyDescriptors.Parameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jazzy_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jazzy_filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledJazzyDescriptors.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.UnscaledJazzyDescriptors.Parameters" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.descriptors.UnscaledJazzyDescriptors.Parameters.jazzy_names">
@@ -1219,7 +1468,7 @@ be found at doi.org/10.1038/s41598-023-30089-x. These descriptors use the “MMF
 NB: Jazzy employs a threshold of &lt;50 Hydrogen acceptors/donors and Mw of &lt;1000Da for input compounds.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.descriptors.JazzyDescriptors.Parameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jazzy_names:</span> <span class="pre">Optional[List[str]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jazzy_filters:</span> <span class="pre">Optional[Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler:</span> <span class="pre">Union[optunaz.descriptors.FittedSklearnScaler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnfittedSklearnScaler]</span> <span class="pre">=</span> <span class="pre">UnfittedSklearnScaler(mol_data=UnfittedSklearnScaler.MolData(file_path=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_column=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='UnfittedSklearnScaler')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor:</span> <span class="pre">Union[optunaz.descriptors.Avalon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP_counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PathFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.AmorProtDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.MACCS_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PrecomputedDescriptorFromFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledMAPC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledPhyschemDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledJazzyDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledZScalesDescriptors]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'optunaz.descriptors.UnscaledJazzyDescriptors'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#JazzyDescriptors.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.JazzyDescriptors.Parameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jazzy_names:</span> <span class="pre">Optional[List[str]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jazzy_filters:</span> <span class="pre">Optional[Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler:</span> <span class="pre">Union[optunaz.descriptors.FittedSklearnScaler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnfittedSklearnScaler]</span> <span class="pre">=</span> <span class="pre">UnfittedSklearnScaler(mol_data=UnfittedSklearnScaler.MolData(file_path=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_column=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='UnfittedSklearnScaler')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor:</span> <span class="pre">Union[optunaz.descriptors.Avalon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP_counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PathFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.AmorProtDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.MACCS_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PrecomputedDescriptorFromFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledMAPC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledPhyschemDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledJazzyDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledZScalesDescriptors]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'optunaz.descriptors.UnscaledJazzyDescriptors'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#JazzyDescriptors.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.JazzyDescriptors.Parameters" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.descriptors.JazzyDescriptors.Parameters.jazzy_names">
@@ -1839,13 +2088,13 @@ instead, NaN is used as predicted values for those invalid SMILES.</p>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="optunaz.predict.set_inference_params">
-<span class="sig-prename descclassname"><span class="pre">optunaz.predict.</span></span><span class="sig-name descname"><span class="pre">set_inference_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/predict.html#set_inference_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.predict.set_inference_params" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="optunaz.predict.check_precomp_args">
+<span class="sig-prename descclassname"><span class="pre">optunaz.predict.</span></span><span class="sig-name descname"><span class="pre">check_precomp_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/predict.html#check_precomp_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.predict.check_precomp_args" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="optunaz.predict.check_precomp_args">
-<span class="sig-prename descclassname"><span class="pre">optunaz.predict.</span></span><span class="sig-name descname"><span class="pre">check_precomp_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/predict.html#check_precomp_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.predict.check_precomp_args" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="optunaz.predict.set_inference_params">
+<span class="sig-prename descclassname"><span class="pre">optunaz.predict.</span></span><span class="sig-name descname"><span class="pre">set_inference_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/predict.html#set_inference_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.predict.set_inference_params" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

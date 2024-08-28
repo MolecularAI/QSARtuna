@@ -3,12 +3,10 @@ import json
 import logging
 import os
 import pathlib
-import sys
 from typing import Union
 
 from apischema import deserialize, serialize
 
-from optunaz import predict
 from optunaz.config.buildconfig import BuildConfig
 from optunaz.config.optconfig import OptimizationConfig
 from optunaz.three_step_opt_build_merge import (
@@ -17,13 +15,14 @@ from optunaz.three_step_opt_build_merge import (
     build_best,
     build_merged,
 )
-from unittest.mock import patch
 
+from optunaz.config import LOG_CONFIG
+
+log_conf = LOG_CONFIG
+logging.config.dictConfig(log_conf)
 logger = logging.getLogger(__name__)
 
-
 def main():
-    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(
         description="optbuild: Optimize hyper-parameters and build (train) the best model."
     )

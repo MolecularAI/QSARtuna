@@ -7,7 +7,7 @@ import logging.config
 import chemprop
 import torch
 import pickle
-from functools import partialmethod, partial
+from functools import partial
 from chemprop.data.utils import get_invalid_smiles_from_list
 from chemprop.data import MoleculeDataLoader
 from chemprop.interpret import interpret
@@ -21,18 +21,11 @@ from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.multiclass import unique_labels
 from joblib import effective_n_jobs
 from optunaz.algorithms.side_info import binarise_side_info, process_side_info
-from tqdm import tqdm
 
-tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
+logging.getLogger("train").setLevel(logging.ERROR)
 logging.getLogger("train").disabled = True
 logging.getLogger("train").propagate = False
-logging.getLogger("train").setLevel(logging.ERROR)
-logging.config.dictConfig(
-    {
-        "version": 1,
-        "disable_existing_loggers": True,
-    }
-)
+
 np.seterr(divide="ignore")
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -916,7 +909,13 @@ class ChemPropRegressorPretrained(RegressorMixin, ChemPropPretrained):
                     else:
                         self.__dict__[pre_param] = pre_value
                 else:
-                    if pre_param not in ["num_workers", "_estimator_type", "epochs"]:
+                    if pre_param not in [
+                        "num_workers",
+                        "_estimator_type",
+                        "epochs",
+                        "frzn",
+                        "pretrained_model",
+                    ]:
                         init_value = self.__dict__[pre_param]
                         if pre_value != init_value:
                             raise ValueError(

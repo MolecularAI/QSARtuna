@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.predict &mdash; QSARtuna 3.1.1 documentation</title>
+  <title>optunaz.predict &mdash; QSARtuna 3.1.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -45,7 +45,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">Intro and Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
@@ -86,6 +87,11 @@
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
+<span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">LOG_CONFIG</span>
+
+<span class="n">log_conf</span> <span class="o">=</span> <span class="n">LOG_CONFIG</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">log_conf</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ArgsError"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.ArgsError">[docs]</a><span class="k">class</span> <span class="nc">ArgsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="s2">&quot;Thrown when there is an issue with basic args at inference time&quot;</span></div>
@@ -125,6 +131,21 @@
             <span class="k">raise</span> <span class="n">UncertaintyError</span><span class="p">(</span><span class="s2">&quot;Uncertainty not availble for this model&quot;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="check_precomp_args"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.check_precomp_args">[docs]</a><span class="k">def</span> <span class="nf">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Must supply precomputed descriptor parameters&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span>
+        <span class="p">),</span> <span class="s2">&quot;Must supply input column for precomputed descriptor&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span>
+        <span class="p">),</span> <span class="s2">&quot;Must supply response column for precomputed descriptor&quot;</span>
+    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">PrecomputedError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="set_inference_params"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.set_inference_params">[docs]</a><span class="k">def</span> <span class="nf">set_inference_params</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">desc</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">&quot;descriptor&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
         <span class="n">desc</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptor</span><span class="p">,</span> <span class="s2">&quot;inference_parameters&quot;</span>
@@ -142,21 +163,6 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="check_precomp_args"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.check_precomp_args">[docs]</a><span class="k">def</span> <span class="nf">check_precomp_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">),</span> <span class="s2">&quot;Must supply precomputed descriptor parameters&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_input_column</span>
-        <span class="p">),</span> <span class="s2">&quot;Must supply input column for precomputed descriptor&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_response_column</span>
-        <span class="p">),</span> <span class="s2">&quot;Must supply response column for precomputed descriptor&quot;</span>
-    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">PrecomputedError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="validate_set_precomputed"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.validate_set_precomputed">[docs]</a><span class="k">def</span> <span class="nf">validate_set_precomputed</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="n">descriptor_str</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">name</span>
     <span class="k">if</span> <span class="n">set_inference_params</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="p">):</span>
@@ -166,9 +172,10 @@
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">descriptors</span><span class="p">:</span>
             <span class="n">n_precomp</span> <span class="o">+=</span> <span class="n">set_inference_params</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n_precomp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">descriptor_str</span><span class="si">}</span><span class="s2"> has no Precomputed descriptors... ignoring precomputed descriptor parameters&quot;</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">input_precomputed_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">descriptor_str</span><span class="si">}</span><span class="s2"> has no Precomputed descriptors... ignoring precomputed descriptor parameters&quot;</span>
+                <span class="p">)</span>
         <span class="k">elif</span> <span class="n">n_precomp</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PrecomputedError</span><span class="p">(</span>
                 <span class="s2">&quot;Inference for &gt; precomputed descriptor not currently available&quot;</span>
@@ -200,7 +207,6 @@
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Predict responses for a given OptunaAZ model&quot;</span>
     <span class="p">)</span>

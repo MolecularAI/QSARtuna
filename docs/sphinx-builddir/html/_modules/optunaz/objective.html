@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.objective &mdash; QSARtuna 3.1.1 documentation</title>
+  <title>optunaz.objective &mdash; QSARtuna 3.1.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -45,7 +45,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">Intro and Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../splitters.html">List of available evaluation splits</a></li>
@@ -209,7 +210,7 @@
         <span class="n">build_alg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_estimator</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">estimator</span> <span class="o">=</span> <span class="n">build_alg</span><span class="o">.</span><span class="n">estimator</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TrialPruned</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimator initiation failed for algorithm: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">descriptor</span><span class="p">,</span> <span class="n">valid_descriptors</span><span class="p">,</span> <span class="n">aux_weight_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_descriptor</span><span class="p">(</span>
