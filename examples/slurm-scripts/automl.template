@@ -1,0 +1,102 @@
+#!/bin/bash -l
+#SBATCH -J NAME
+#SBATCH -N 1
+#SBATCH -c CORES
+#SBATCH --mem=MEMG
+#SBATCH --time=10-0:0
+#SBATCH -p PARTITION
+#SBATCH --gres=gpu:1
+#SBATCH -o TASK_FILE.out
+#SBATCH -e TASK_FILE.out
+#SBATCH --mail-user EMAIL
+#SBATCH --mail-type FAIL,REQUEUE
+#SBATCH --requeue
+
+set -e
+set -o pipefail
+
+metafile=METAFILE
+smiles_col=SMILES
+task_file_pkl=TASK_FILE.pkl
+task_file_json=TASK_FILE.json
+task_file_eval=TASK_FILE_eval.pkl
+task_file_al_input=AL_POOL
+task_file_al_output=AL_FILE
+task_file_al_smiles=AL_SMILES
+temporal_file=TEMPORALFILE
+temporal_preds=TEMPORALPREDS
+lock=LOCK
+retry=RETRY
+latest=LATEST
+
+if [ -f $temporal_file ] ; then
+
+  echo "Temporal predictions generating"
+
+  singularity exec --nv \
+    /projects/cc/mai/containers/Qptuna_latest.sif \
+    /opt/qptuna/.venv/bin/qptuna-predict \
+    --input-smiles-csv-file $temporal_file \
+    --input-smiles-csv-column $smiles_col \
+    --model-file $task_file_pkl \
+    --output-prediction-csv-file $temporal_preds \
+
+  echo "Finished temporal predictions"
+
+  rm $lock
+  rm $temporal_file
+  rm $task_file_pkl
+
+  if [ -f $retry ] ; then
+      rm $retry
+  fi
+
+else
+
+  if [ ! -f $metafile ]; then
+
+    if [ ! -f $task_file_pkl ]; then
+
+      echo "Build Qptuna with temporal evaluation"
+
+      singularity exec --nv \
+        /projects/cc/mai/containers/Qptuna_latest.sif \
+        /opt/qptuna/.venv/bin/qptuna-optimize \
+        --config $task_file_json \
+        --merged-model-outpath $task_file_pkl \
+        --best-model-outpath $task_file_eval
+      cp $task_file_pkl $latest
+    fi
+
+    echo "Writing evaluation results to $metafile"
+
+    singularity exec --nv \
+    /projects/cc/mai/containers/Qptuna_automl.sif \
+    /opt/qptuna/.venv/bin/qptuna-metadata \
+    --pkl $task_file_eval \
+    --meta $metafile
+
+  fi
+
+  if [ ! -f $task_file_al_output ]; then
+
+    echo "Active learning predictions generating"
+
+    singularity exec --nv \
+    /projects/cc/mai/containers/Qptuna_latest.sif \
+    /opt/qptuna/.venv/bin/qptuna-predict \
+    --input-smiles-csv-file $task_file_al_input \
+    --input-smiles-csv-column $task_file_al_smiles \
+    --model-file $task_file_pkl \
+    --output-prediction-csv-file $task_file_al_output \
+    --uncertainty_quantile 0.995 \
+    --predict-uncertainty
+
+    echo "Finished active learning"
+
+    rm $lock
+
+
+  fi
+
+fi

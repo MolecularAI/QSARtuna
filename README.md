@@ -375,10 +375,88 @@ You can get more details by clicking individual runs.
 There you can access run/trial build (training) configuration.
 
 
+## AutoML (Automatic Machine Learning)
+
+QSARtuna has an AutoML daemon designed to automate the process of preparing and dispatching tasks for model training using a SLURM job scheduler. It's particularly useful for data scientists and researchers who work with large datasets and need to train models using distributed computing resources. The code helps in streamlining the process of data preparation, model training, and managing the SLURM job submission, all while ensuring that the training process is efficient and scalable.
+
+AutoML should be run from the QSARtuna environment as in the following, and accepts the following parameters:
+
+```shell
+module load Miniconda3
+conda activate my_env_with_qsartuna
+qsartuna-automl -h
+
+usage: qsartuna-automl [-h] --output-path OUTPUT_PATH --email EMAIL --user_name USER_NAME --input-data INPUT_DATA --input-smiles-csv-column INPUT_SMILES_CSV_COLUMN --input-activity-csv-column
+                     INPUT_ACTIVITY_CSV_COLUMN --input-task-csv-column INPUT_TASK_CSV_COLUMN --input-initial-template INPUT_INITIAL_TEMPLATE --input-retrain-template INPUT_RETRAIN_TEMPLATE
+                     --input-slurm-template INPUT_SLURM_TEMPLATE [--quorum QUORUM] [--n-cores N_CORES] [--dry-run] [-v] [--slurm-req-cores SLURM_REQ_CORES] [--slurm-req-mem SLURM_REQ_MEM]
+                     [--slurm-req-partition SLURM_REQ_PARTITION] --slurm-al-pool SLURM_AL_POOL --slurm-al-smiles-csv-column SLURM_AL_SMILES_CSV_COLUMN --slurm-job-prefix SLURM_JOB_PREFIX
+                     [--slurm-failure-cores-increment SLURM_FAILURE_CORES_INCREMENT] [--slurm-failure-mem-increment SLURM_FAILURE_MEM_INCREMENT]
+                     [--slurm-failure-mins-increment SLURM_FAILURE_MINS_INCREMENT] [--slurm-failure-max-retries SLURM_FAILURE_MAX_RETRIES] [--slurm-failure-max-mem SLURM_FAILURE_MAX_MEM]
+                     [--slurm-failure-max-cpu SLURM_FAILURE_MAX_CPU] [--save-previous-models]
+
+AutoML scheduling for temporal automatic retraining of models
+
+options:
+  -h, --help            show this help message and exit
+  --quorum QUORUM
+  --n-cores N_CORES
+  --dry-run
+  -v, --verbose
+  --slurm-req-cores SLURM_REQ_CORES
+  --slurm-req-mem SLURM_REQ_MEM
+  --slurm-req-partition SLURM_REQ_PARTITION
+  --slurm-failure-cores-increment SLURM_FAILURE_CORES_INCREMENT
+  --slurm-failure-mem-increment SLURM_FAILURE_MEM_INCREMENT
+  --slurm-failure-mins-increment SLURM_FAILURE_MINS_INCREMENT
+  --slurm-failure-max-retries SLURM_FAILURE_MAX_RETRIES
+  --slurm-failure-max-mem SLURM_FAILURE_MAX_MEM
+  --slurm-failure-max-cpu SLURM_FAILURE_MAX_CPU
+  --save-previous-models
+
+required named arguments:
+  --output-path OUTPUT_PATH
+                        Path to the output AutoML directory
+  --email EMAIL         Email for SLURM job notifications
+  --user_name USER_NAME
+                        PRID for the AutoML user
+  --input-data INPUT_DATA
+                        Name of the input file[s]. For multiple files use '*' in wildcard expression
+  --input-smiles-csv-column INPUT_SMILES_CSV_COLUMN
+                        Column name of SMILES column in csv file
+  --input-activity-csv-column INPUT_ACTIVITY_CSV_COLUMN
+                        Column name of activity column in data file
+  --input-task-csv-column INPUT_TASK_CSV_COLUMN
+                        Column name of task column in data file
+  --input-initial-template INPUT_INITIAL_TEMPLATE
+  --input-retrain-template INPUT_RETRAIN_TEMPLATE
+  --input-slurm-template INPUT_SLURM_TEMPLATE
+  --slurm-al-pool SLURM_AL_POOL
+  --slurm-al-smiles-csv-column SLURM_AL_SMILES_CSV_COLUMN
+  --slurm-job-prefix SLURM_JOB_PREFIX
+
+```
+
+An example of how to run this in SCP would be:
+
+```shell
+qsartuna-automl  --input-data "tests/data/automl/*"  --email <email>.com  --user_name <user_name> \
+ --input-smiles-csv-column canonical  --input-activity-csv-column molwt --input-task-csv-column one_taskid  \
+ --input-initial-template examples/auto^C/config.initial.template  \
+ --input-retrain-template examples/automl/config.retrain.template  \
+ --input-slurm-template examples/slurm-scripts/automl.template  \
+ --n-cores 1 -vvv --slurm-al-pool tests/data/DRD2/subset-50/train.csv  \
+ --slurm-al-smiles-csv-column canonical  --output-path ./test_auto1 --slurm-failure-max-cpu 220 \
+ --slurm-job-prefix testaml --slurm-req-partition testpartition \
+ --save-previous-models
+```
+
+More information regarding the AutoML process is available in the QSARtuna notebook.
+
+
 ## Adding descriptors to QSARtuna
 
 
-Add the descriptor code to the optunaz.descriptor.py file like so:
+1.) Add the descriptor code to the `optunaz.descriptor.py` file like so:
 
 ```python
 @dataclass
@@ -409,7 +487,7 @@ class YourNewDescriptor(RdkitDescriptor):
         return fp
 ```
 
-Then add the descriptor to the list here:
+Add the descriptor to the list within the same file here:
 
 ```python
 AnyUnscaledDescriptor = Union[
@@ -442,7 +520,7 @@ CompositeCompatibleDescriptor = Union[
 ]
 ```
 
-Then you can use YourNewDescriptor inside your Notebook:
+3.) You can now use YourNewDescriptor inside your Notebook:
 ```python
 from qsartuna.descriptors import YourNewDescriptor
 
@@ -502,3 +580,208 @@ or in a new config:
   ]
 }
 ```
+
+## Adding machine learning algorithms to QSARtuna
+
+1.) (Optional) consider adding .py algorithm code to the `optunaz/algorithms/` directory, so this can be imported later
+
+2.) Add the algorithm to `optunaz.config.optconfig.py`. For example, create a class among the existing algorithms like so:
+
+```python
+@dataclass
+class YourAglrotihm(Algorithm):
+    """Your description goes here
+    """
+
+    @type_name("YourAlgorithmParams")
+    @dataclass
+    class Parameters:
+        @dataclass
+        class YourAlgorithmParameterInt:
+            low: int = field(default=1, metadata=schema(title="low", min=1))
+            high: int = field(default=100, metadata=schema(title="high", min=1))
+        @dataclass
+        class YourAlgorithmParameterFloat:
+            low: float = field(default=1.0, metadata=schema(title="low", min=0.0001))
+            high: float = field(default=2.0, metadata=schema(title="high", min=0.001))
+
+        parameter_int: Annotated[
+            YourAlgorithmParameterInt,
+            schema(
+                title="example int",
+                description="Example int description",
+            ),
+        ] = YourAlgorithmParameterInt()
+
+        parameter_float: Annotated[
+            YourAlgorithmParameterFloat,
+            schema(
+                title="example float",
+                description="Example float description",
+            ),
+        ] = YourAlgorithmParameterFloat()
+        
+        fixed_int: Annotated[
+            int,
+            schema(
+                min=10,
+                max=100,
+                title="Example of a priori fixed int",
+                description="Example set at runtime (not optimised)",
+            ),
+        ] = field(default=10)
+        
+    name: Literal["YourAlgorithm"]
+    parameters: Parameters
+```
+
+N.B: Ensure defaults for `low`/`high` and `min`/`max` make sense for your algorithm. Refer to Optuna documentation for details.
+
+In the same file, add the algorithm here:
+
+```python
+AnyRegressionAlgorithm = Union[
+    YourAlgorithm, #If your algorithm is a regressor
+    Lasso,
+    PLSRegression,
+    RandomForestRegressor,
+    Ridge,
+    KNeighborsRegressor,
+    SVR,
+    XGBRegressor,
+    PRFClassifier,
+    ChemPropRegressor,
+    ChemPropRegressorPretrained,
+    ChemPropHyperoptRegressor,
+]
+```
+
+or here:
+
+```python
+AnyClassificationAlgorithm = Union[
+    YourAlgorithm, #If your algorithm is a regressor
+    AdaBoostClassifier,
+    KNeighborsClassifier,
+    LogisticRegression,
+    RandomForestClassifier,
+    SVC,
+    ChemPropClassifier,
+    ChemPropHyperoptClassifier,
+]
+```
+
+depending on if it is a classifier or regressor.
+
+
+3.) Add the algorithm to `optunaz.config.buildconfig.py`, creating a new class among the existing, like so:
+
+```python
+@dataclass
+class YourAlgorithm(Algorithm):
+    @dataclass
+    class YourAlgorithmParameters:
+        parameter_int: int = field(metadata=schema(min=1))  #ensure metadata is consistent with your optconfig.py
+        parameter_float: float = field(metadata=schema(min=0.0001))
+        fixed_int: int = field(metadata=schema(min=10))
+
+    name: Literal["YourAlgorithm"]
+    parameters: YourAlgorithmParameters
+
+    def estimator(self):
+        return youralgorihtm.ExampleAlgorithm(
+            parameter_int=self.parameters.parameter_int,
+            parameter_float=self.parameters.parameter_float,
+            fixed_int=self.parameters.fixed_int,
+        )
+```
+
+N.B: Ensure parameters are as expected from your `optconfig.py` class from Step 2.
+N.N.B: If required, import your .py script (`ExampleAlgorithm` from `youralgorihtm.py` in this example)
+
+
+4.) Add the algorithm to `optunaz.config.build_from_opt.py`, within the list of `elif` statements, like so:
+
+```python
+    elif isinstance(alg, opt.YourAlgorithm):
+        parameter_int = trial.suggest_int(
+            name=_encode_name("parameter_int"), # Ensure your parameter name is encoded within the string here
+            low=para.parameter_int.low,
+            high=para.parameter_int.high,
+        )
+        parameter_float = trial.suggest_float(
+            name=_encode_name("parameter_float"), # Ensure your parameter name is encoded within the string here
+            low=para.parameter_float.low,
+            high=para.parameter_float.high,
+        )
+        fixed_int = trial.suggest_int( # It is useful to suggest fixed parameters for tracking/reporting even if not optimised
+            name=_encode_name("fixed_int"),
+            low=para.fixed_int,
+            high=para.fixed_int, # low & high should be set to the same for fixed at runtime parameters
+        )
+        return build.YourAlgorithm.new(
+            parameter_int=parameter_int,
+            parameter_float=parameter_float,
+            fixed_int=fixed_int
+        )
+```
+
+5.) You can use YourAlgorithm inside your Notebook:
+```python
+from optunaz.config.optconfig import YourAlgorithm
+
+config = OptimizationConfig(
+    data=Dataset(
+        input_column="canonical",
+        response_column="molwt",
+        training_dataset_file="tests/data/DRD2/subset-50/train.csv",
+    ),
+    descriptors=[YourNewDescriptor.new()],
+    algorithms=[
+        YourAlgorithm.new(fixed_int=100), # You can pass fixed parameters at instantiation
+    ],
+    settings=OptimizationConfig.Settings(
+        mode=ModelMode.REGRESSION,
+        cross_validation=3,
+        n_trials=100,
+        direction=OptimizationDirection.MAXIMIZATION,
+    ),
+)
+```
+
+or in a new config:
+
+```json
+{
+  "task": "optimization",
+  "data": {
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "input_column": "canonical",
+    "response_column": "molwt"
+  },
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 5,
+    "direction": "maximize",
+    "n_trials": 100,
+    "n_startup_trials": 30
+  },
+  "descriptors": [
+    {
+      "name": "YourNewDescriptor",
+      "parameters": {
+        "exampleOfAParameter": 3
+      }
+    }
+  ],
+  "algorithms": [
+    {
+      "name": "YourAlgorithm",
+      "parameters": {
+        "parameter_int": {"low": 10, "high": 50},
+        "parameter_float": {"low": 1.2, "high": 1.8},
+        "fixed_int": 100
+      }
+    }
+  ]
+}

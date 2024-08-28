@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA) &mdash; QSARtuna 3.1.1 documentation</title>
+  <title>QSARtuna 𓆛: QSAR using Optimization for Hyperparameter Tuning (formerly Optuna AZ and QPTUNA) &mdash; QSARtuna 3.1.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -62,11 +62,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#optional-inspect">Optional: inspect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automl-automatic-machine-learning">AutoML (Automatic Machine Learning)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-descriptors-to-qsartuna">Adding descriptors to QSARtuna</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-machine-learning-algorithms-to-qsartuna">Adding machine learning algorithms to QSARtuna</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
@@ -474,9 +477,80 @@ For Y-axis, start with “optimization_objective_cvmean_r2”.</p>
 <p>You can get more details by clicking individual runs.
 There you can access run/trial build (training) configuration.</p>
 </section>
+<section id="automl-automatic-machine-learning">
+<h2>AutoML (Automatic Machine Learning)<a class="headerlink" href="#automl-automatic-machine-learning" title="Permalink to this heading"></a></h2>
+<p>QSARtuna has an AutoML daemon designed to automate the process of preparing and dispatching tasks for model training using a SLURM job scheduler. It’s particularly useful for data scientists and researchers who work with large datasets and need to train models using distributed computing resources. The code helps in streamlining the process of data preparation, model training, and managing the SLURM job submission, all while ensuring that the training process is efficient and scalable.</p>
+<p>AutoML should be run from the QSARtuna environment as in the following, and accepts the following parameters:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>Miniconda3
+conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qsartuna
+qsartuna-automl<span class="w"> </span>-h
+
+usage:<span class="w"> </span>qsartuna-automl<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span>--output-path<span class="w"> </span>OUTPUT_PATH<span class="w"> </span>--email<span class="w"> </span>EMAIL<span class="w"> </span>--user_name<span class="w"> </span>USER_NAME<span class="w"> </span>--input-data<span class="w"> </span>INPUT_DATA<span class="w"> </span>--input-smiles-csv-column<span class="w"> </span>INPUT_SMILES_CSV_COLUMN<span class="w"> </span>--input-activity-csv-column
+<span class="w">                     </span>INPUT_ACTIVITY_CSV_COLUMN<span class="w"> </span>--input-task-csv-column<span class="w"> </span>INPUT_TASK_CSV_COLUMN<span class="w"> </span>--input-initial-template<span class="w"> </span>INPUT_INITIAL_TEMPLATE<span class="w"> </span>--input-retrain-template<span class="w"> </span>INPUT_RETRAIN_TEMPLATE
+<span class="w">                     </span>--input-slurm-template<span class="w"> </span>INPUT_SLURM_TEMPLATE<span class="w"> </span><span class="o">[</span>--quorum<span class="w"> </span>QUORUM<span class="o">]</span><span class="w"> </span><span class="o">[</span>--n-cores<span class="w"> </span>N_CORES<span class="o">]</span><span class="w"> </span><span class="o">[</span>--dry-run<span class="o">]</span><span class="w"> </span><span class="o">[</span>-v<span class="o">]</span><span class="w"> </span><span class="o">[</span>--slurm-req-cores<span class="w"> </span>SLURM_REQ_CORES<span class="o">]</span><span class="w"> </span><span class="o">[</span>--slurm-req-mem<span class="w"> </span>SLURM_REQ_MEM<span class="o">]</span>
+<span class="w">                     </span><span class="o">[</span>--slurm-req-partition<span class="w"> </span>SLURM_REQ_PARTITION<span class="o">]</span><span class="w"> </span>--slurm-al-pool<span class="w"> </span>SLURM_AL_POOL<span class="w"> </span>--slurm-al-smiles-csv-column<span class="w"> </span>SLURM_AL_SMILES_CSV_COLUMN<span class="w"> </span>--slurm-job-prefix<span class="w"> </span>SLURM_JOB_PREFIX
+<span class="w">                     </span><span class="o">[</span>--slurm-failure-cores-increment<span class="w"> </span>SLURM_FAILURE_CORES_INCREMENT<span class="o">]</span><span class="w"> </span><span class="o">[</span>--slurm-failure-mem-increment<span class="w"> </span>SLURM_FAILURE_MEM_INCREMENT<span class="o">]</span>
+<span class="w">                     </span><span class="o">[</span>--slurm-failure-mins-increment<span class="w"> </span>SLURM_FAILURE_MINS_INCREMENT<span class="o">]</span><span class="w"> </span><span class="o">[</span>--slurm-failure-max-retries<span class="w"> </span>SLURM_FAILURE_MAX_RETRIES<span class="o">]</span><span class="w"> </span><span class="o">[</span>--slurm-failure-max-mem<span class="w"> </span>SLURM_FAILURE_MAX_MEM<span class="o">]</span>
+<span class="w">                     </span><span class="o">[</span>--slurm-failure-max-cpu<span class="w"> </span>SLURM_FAILURE_MAX_CPU<span class="o">]</span><span class="w"> </span><span class="o">[</span>--save-previous-models<span class="o">]</span>
+
+AutoML<span class="w"> </span>scheduling<span class="w"> </span><span class="k">for</span><span class="w"> </span>temporal<span class="w"> </span>automatic<span class="w"> </span>retraining<span class="w"> </span>of<span class="w"> </span>models
+
+options:
+<span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">            </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
+<span class="w">  </span>--quorum<span class="w"> </span>QUORUM
+<span class="w">  </span>--n-cores<span class="w"> </span>N_CORES
+<span class="w">  </span>--dry-run
+<span class="w">  </span>-v,<span class="w"> </span>--verbose
+<span class="w">  </span>--slurm-req-cores<span class="w"> </span>SLURM_REQ_CORES
+<span class="w">  </span>--slurm-req-mem<span class="w"> </span>SLURM_REQ_MEM
+<span class="w">  </span>--slurm-req-partition<span class="w"> </span>SLURM_REQ_PARTITION
+<span class="w">  </span>--slurm-failure-cores-increment<span class="w"> </span>SLURM_FAILURE_CORES_INCREMENT
+<span class="w">  </span>--slurm-failure-mem-increment<span class="w"> </span>SLURM_FAILURE_MEM_INCREMENT
+<span class="w">  </span>--slurm-failure-mins-increment<span class="w"> </span>SLURM_FAILURE_MINS_INCREMENT
+<span class="w">  </span>--slurm-failure-max-retries<span class="w"> </span>SLURM_FAILURE_MAX_RETRIES
+<span class="w">  </span>--slurm-failure-max-mem<span class="w"> </span>SLURM_FAILURE_MAX_MEM
+<span class="w">  </span>--slurm-failure-max-cpu<span class="w"> </span>SLURM_FAILURE_MAX_CPU
+<span class="w">  </span>--save-previous-models
+
+required<span class="w"> </span>named<span class="w"> </span>arguments:
+<span class="w">  </span>--output-path<span class="w"> </span>OUTPUT_PATH
+<span class="w">                        </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>output<span class="w"> </span>AutoML<span class="w"> </span>directory
+<span class="w">  </span>--email<span class="w"> </span>EMAIL<span class="w">         </span>Email<span class="w"> </span><span class="k">for</span><span class="w"> </span>SLURM<span class="w"> </span>job<span class="w"> </span>notifications
+<span class="w">  </span>--user_name<span class="w"> </span>USER_NAME
+<span class="w">                        </span>PRID<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>AutoML<span class="w"> </span>user
+<span class="w">  </span>--input-data<span class="w"> </span>INPUT_DATA
+<span class="w">                        </span>Name<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>file<span class="o">[</span>s<span class="o">]</span>.<span class="w"> </span>For<span class="w"> </span>multiple<span class="w"> </span>files<span class="w"> </span>use<span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>wildcard<span class="w"> </span>expression
+<span class="w">  </span>--input-smiles-csv-column<span class="w"> </span>INPUT_SMILES_CSV_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>SMILES<span class="w"> </span>column<span class="w"> </span><span class="k">in</span><span class="w"> </span>csv<span class="w"> </span>file
+<span class="w">  </span>--input-activity-csv-column<span class="w"> </span>INPUT_ACTIVITY_CSV_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>activity<span class="w"> </span>column<span class="w"> </span><span class="k">in</span><span class="w"> </span>data<span class="w"> </span>file
+<span class="w">  </span>--input-task-csv-column<span class="w"> </span>INPUT_TASK_CSV_COLUMN
+<span class="w">                        </span>Column<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>task<span class="w"> </span>column<span class="w"> </span><span class="k">in</span><span class="w"> </span>data<span class="w"> </span>file
+<span class="w">  </span>--input-initial-template<span class="w"> </span>INPUT_INITIAL_TEMPLATE
+<span class="w">  </span>--input-retrain-template<span class="w"> </span>INPUT_RETRAIN_TEMPLATE
+<span class="w">  </span>--input-slurm-template<span class="w"> </span>INPUT_SLURM_TEMPLATE
+<span class="w">  </span>--slurm-al-pool<span class="w"> </span>SLURM_AL_POOL
+<span class="w">  </span>--slurm-al-smiles-csv-column<span class="w"> </span>SLURM_AL_SMILES_CSV_COLUMN
+<span class="w">  </span>--slurm-job-prefix<span class="w"> </span>SLURM_JOB_PREFIX
+</pre></div>
+</div>
+<p>An example of how to run this in SCP would be:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qsartuna-automl<span class="w">  </span>--input-data<span class="w"> </span><span class="s2">&quot;tests/data/automl/*&quot;</span><span class="w">  </span>--email<span class="w"> </span>&lt;email&gt;.com<span class="w">  </span>--user_name<span class="w"> </span>&lt;user_name&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--input-smiles-csv-column<span class="w"> </span>canonical<span class="w">  </span>--input-activity-csv-column<span class="w"> </span>molwt<span class="w"> </span>--input-task-csv-column<span class="w"> </span>one_taskid<span class="w">  </span><span class="se">\</span>
+<span class="w"> </span>--input-initial-template<span class="w"> </span>examples/auto^C/config.initial.template<span class="w">  </span><span class="se">\</span>
+<span class="w"> </span>--input-retrain-template<span class="w"> </span>examples/automl/config.retrain.template<span class="w">  </span><span class="se">\</span>
+<span class="w"> </span>--input-slurm-template<span class="w"> </span>examples/slurm-scripts/automl.template<span class="w">  </span><span class="se">\</span>
+<span class="w"> </span>--n-cores<span class="w"> </span><span class="m">1</span><span class="w"> </span>-vvv<span class="w"> </span>--slurm-al-pool<span class="w"> </span>tests/data/DRD2/subset-50/train.csv<span class="w">  </span><span class="se">\</span>
+<span class="w"> </span>--slurm-al-smiles-csv-column<span class="w"> </span>canonical<span class="w">  </span>--output-path<span class="w"> </span>./test_auto1<span class="w"> </span>--slurm-failure-max-cpu<span class="w"> </span><span class="m">220</span><span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--slurm-job-prefix<span class="w"> </span>testaml<span class="w"> </span>--slurm-req-partition<span class="w"> </span>testpartition<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--save-previous-models
+</pre></div>
+</div>
+<p>More information regarding the AutoML process is available in the QSARtuna notebook.</p>
+</section>
 <section id="adding-descriptors-to-qsartuna">
 <h2>Adding descriptors to QSARtuna<a class="headerlink" href="#adding-descriptors-to-qsartuna" title="Permalink to this heading"></a></h2>
-<p>Add the descriptor code to the optunaz.descriptor.py file like so:</p>
+<p>1.) Add the descriptor code to the <code class="docutils literal notranslate"><span class="pre">optunaz.descriptor.py</span></code> file like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">YourNewDescriptor</span><span class="p">(</span><span class="n">RdkitDescriptor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;YOUR DESCRIPTION GOES HERE&quot;&quot;&quot;</span>
@@ -505,7 +579,7 @@ There you can access run/trial build (training) configuration.</p>
         <span class="k">return</span> <span class="n">fp</span>
 </pre></div>
 </div>
-<p>Then add the descriptor to the list here:</p>
+<p>Add the descriptor to the list within the same file here:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AnyUnscaledDescriptor</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Avalon</span><span class="p">,</span>
     <span class="n">ECFP</span><span class="p">,</span>
@@ -534,7 +608,7 @@ There you can access run/trial build (training) configuration.</p>
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>Then you can use YourNewDescriptor inside your Notebook:</p>
+<p>3.) You can now use YourNewDescriptor inside your Notebook:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qsartuna.descriptors</span> <span class="kn">import</span> <span class="n">YourNewDescriptor</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">OptimizationConfig</span><span class="p">(</span>
@@ -586,6 +660,194 @@ There you can access run/trial build (training) configuration.</p>
 <span class="w">        </span><span class="nt">&quot;max_depth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">},</span>
 <span class="w">        </span><span class="nt">&quot;n_estimators&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">250</span><span class="p">},</span>
 <span class="w">        </span><span class="nt">&quot;max_features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-machine-learning-algorithms-to-qsartuna">
+<h2>Adding machine learning algorithms to QSARtuna<a class="headerlink" href="#adding-machine-learning-algorithms-to-qsartuna" title="Permalink to this heading"></a></h2>
+<p>1.) (Optional) consider adding .py algorithm code to the <code class="docutils literal notranslate"><span class="pre">optunaz/algorithms/</span></code> directory, so this can be imported later</p>
+<p>2.) Add the algorithm to <code class="docutils literal notranslate"><span class="pre">optunaz.config.optconfig.py</span></code>. For example, create a class among the existing algorithms like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">YourAglrotihm</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Your description goes here</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@type_name</span><span class="p">(</span><span class="s2">&quot;YourAlgorithmParams&quot;</span><span class="p">)</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Parameters</span><span class="p">:</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">YourAlgorithmParameterInt</span><span class="p">:</span>
+            <span class="n">low</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">high</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="nd">@dataclass</span>
+        <span class="k">class</span> <span class="nc">YourAlgorithmParameterFloat</span><span class="p">:</span>
+            <span class="n">low</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">))</span>
+            <span class="n">high</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.001</span><span class="p">))</span>
+
+        <span class="n">parameter_int</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">YourAlgorithmParameterInt</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;example int&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example int description&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">YourAlgorithmParameterInt</span><span class="p">()</span>
+
+        <span class="n">parameter_float</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">YourAlgorithmParameterFloat</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;example float&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example float description&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">YourAlgorithmParameterFloat</span><span class="p">()</span>
+        
+        <span class="n">fixed_int</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="nb">int</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">(</span>
+                <span class="nb">min</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example of a priori fixed int&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example set at runtime (not optimised)&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;YourAlgorithm&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
+</pre></div>
+</div>
+<p>N.B: Ensure defaults for <code class="docutils literal notranslate"><span class="pre">low</span></code>/<code class="docutils literal notranslate"><span class="pre">high</span></code> and <code class="docutils literal notranslate"><span class="pre">min</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code> make sense for your algorithm. Refer to Optuna documentation for details.</p>
+<p>In the same file, add the algorithm here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AnyRegressionAlgorithm</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">YourAlgorithm</span><span class="p">,</span> <span class="c1">#If your algorithm is a regressor</span>
+    <span class="n">Lasso</span><span class="p">,</span>
+    <span class="n">PLSRegression</span><span class="p">,</span>
+    <span class="n">RandomForestRegressor</span><span class="p">,</span>
+    <span class="n">Ridge</span><span class="p">,</span>
+    <span class="n">KNeighborsRegressor</span><span class="p">,</span>
+    <span class="n">SVR</span><span class="p">,</span>
+    <span class="n">XGBRegressor</span><span class="p">,</span>
+    <span class="n">PRFClassifier</span><span class="p">,</span>
+    <span class="n">ChemPropRegressor</span><span class="p">,</span>
+    <span class="n">ChemPropRegressorPretrained</span><span class="p">,</span>
+    <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>or here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AnyClassificationAlgorithm</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="n">YourAlgorithm</span><span class="p">,</span> <span class="c1">#If your algorithm is a regressor</span>
+    <span class="n">AdaBoostClassifier</span><span class="p">,</span>
+    <span class="n">KNeighborsClassifier</span><span class="p">,</span>
+    <span class="n">LogisticRegression</span><span class="p">,</span>
+    <span class="n">RandomForestClassifier</span><span class="p">,</span>
+    <span class="n">SVC</span><span class="p">,</span>
+    <span class="n">ChemPropClassifier</span><span class="p">,</span>
+    <span class="n">ChemPropHyperoptClassifier</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>depending on if it is a classifier or regressor.</p>
+<p>3.) Add the algorithm to <code class="docutils literal notranslate"><span class="pre">optunaz.config.buildconfig.py</span></code>, creating a new class among the existing, like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">YourAlgorithm</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">YourAlgorithmParameters</span><span class="p">:</span>
+        <span class="n">parameter_int</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>  <span class="c1">#ensure metadata is consistent with your optconfig.py</span>
+        <span class="n">parameter_float</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">))</span>
+        <span class="n">fixed_int</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;YourAlgorithm&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">YourAlgorithmParameters</span>
+
+    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">youralgorihtm</span><span class="o">.</span><span class="n">ExampleAlgorithm</span><span class="p">(</span>
+            <span class="n">parameter_int</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">parameter_int</span><span class="p">,</span>
+            <span class="n">parameter_float</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">parameter_float</span><span class="p">,</span>
+            <span class="n">fixed_int</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">fixed_int</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>N.B: Ensure parameters are as expected from your <code class="docutils literal notranslate"><span class="pre">optconfig.py</span></code> class from Step 2.
+N.N.B: If required, import your .py script (<code class="docutils literal notranslate"><span class="pre">ExampleAlgorithm</span></code> from <code class="docutils literal notranslate"><span class="pre">youralgorihtm.py</span></code> in this example)</p>
+<p>4.) Add the algorithm to <code class="docutils literal notranslate"><span class="pre">optunaz.config.build_from_opt.py</span></code>, within the list of <code class="docutils literal notranslate"><span class="pre">elif</span></code> statements, like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">YourAlgorithm</span><span class="p">):</span>
+        <span class="n">parameter_int</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="s2">&quot;parameter_int&quot;</span><span class="p">),</span> <span class="c1"># Ensure your parameter name is encoded within the string here</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">parameter_int</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">parameter_int</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">parameter_float</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_float</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="s2">&quot;parameter_float&quot;</span><span class="p">),</span> <span class="c1"># Ensure your parameter name is encoded within the string here</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">parameter_float</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">parameter_float</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">fixed_int</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span> <span class="c1"># It is useful to suggest fixed parameters for tracking/reporting even if not optimised</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="s2">&quot;fixed_int&quot;</span><span class="p">),</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">fixed_int</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">fixed_int</span><span class="p">,</span> <span class="c1"># low &amp; high should be set to the same for fixed at runtime parameters</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">YourAlgorithm</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="n">parameter_int</span><span class="o">=</span><span class="n">parameter_int</span><span class="p">,</span>
+            <span class="n">parameter_float</span><span class="o">=</span><span class="n">parameter_float</span><span class="p">,</span>
+            <span class="n">fixed_int</span><span class="o">=</span><span class="n">fixed_int</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>5.) You can use YourAlgorithm inside your Notebook:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">optunaz.config.optconfig</span> <span class="kn">import</span> <span class="n">YourAlgorithm</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">OptimizationConfig</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="n">input_column</span><span class="o">=</span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
+        <span class="n">response_column</span><span class="o">=</span><span class="s2">&quot;molwt&quot;</span><span class="p">,</span>
+        <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;tests/data/DRD2/subset-50/train.csv&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">descriptors</span><span class="o">=</span><span class="p">[</span><span class="n">YourNewDescriptor</span><span class="o">.</span><span class="n">new</span><span class="p">()],</span>
+    <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">YourAlgorithm</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">fixed_int</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="c1"># You can pass fixed parameters at instantiation</span>
+    <span class="p">],</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">OptimizationConfig</span><span class="o">.</span><span class="n">Settings</span><span class="p">(</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">ModelMode</span><span class="o">.</span><span class="n">REGRESSION</span><span class="p">,</span>
+        <span class="n">cross_validation</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">n_trials</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">direction</span><span class="o">=</span><span class="n">OptimizationDirection</span><span class="o">.</span><span class="n">MAXIMIZATION</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>or in a new config:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optimization&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;training_dataset_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tests/data/DRD2/subset-50/train.csv&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;input_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;response_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;molwt&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cross_validation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;maximize&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;n_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;n_startup_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;descriptors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YourNewDescriptor&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;exampleOfAParameter&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;algorithms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YourAlgorithm&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;parameter_int&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;parameter_float&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.8</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;fixed_int&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils package &mdash; QSARtuna 3.1.1 documentation</title>
+  <title>optunaz.utils package &mdash; QSARtuna 3.1.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -46,7 +46,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="README.html">Intro and Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/preprocess_data.html">Jupyter Notebook: Preprocessing Data for QSARtuna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">Jupyter Notebook: QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html">QSARtuna CLI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/QSARtuna_Tutorial.html#AutoML-(Automated-model-retraining)">AutoML (Automated model retraining)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">List of available ML algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="descriptors.html">List of available molecular descriptors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
@@ -209,6 +210,114 @@ for more details.</p>
 <dd><p>Creates a temporary file with build configuration, and returns a path to it.</p>
 </dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="module-optunaz.utils.retraining">
+<span id="optunaz-utils-retraining-module"></span><h2>optunaz.utils.retraining module<a class="headerlink" href="#module-optunaz.utils.retraining" title="Permalink to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.NoRetrainingDataConvention">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">NoRetrainingDataConvention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'input-directory</span> <span class="pre">file</span> <span class="pre">[{0}]</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">contain</span> <span class="pre">a</span> <span class="pre">date</span> <span class="pre">format</span> <span class="pre">%Y-%m-%d'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#NoRetrainingDataConvention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.NoRetrainingDataConvention" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised if a file in input-directory does not follow the %Y-%m-%d convention</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.NoNewRetrainingData">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">NoNewRetrainingData</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#NoNewRetrainingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.NoNewRetrainingData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised if no new retraining data is available</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.NoDifferingRetrainingData">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">NoDifferingRetrainingData</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#NoDifferingRetrainingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.NoDifferingRetrainingData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised if no different retraining data is available between previous &amp; current time bins</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.RetrainingHeadersIssue">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">RetrainingHeadersIssue</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#RetrainingHeadersIssue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.RetrainingHeadersIssue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when issue with retraining headers in a file (columns unknown)</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.RetrainingIsAlreadyProcessed">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">RetrainingIsAlreadyProcessed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Retraining[{0}]</span> <span class="pre">already</span> <span class="pre">processed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#RetrainingIsAlreadyProcessed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.RetrainingIsAlreadyProcessed" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when retraining is processed</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.RetrainingIsLocked">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">RetrainingIsLocked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Retraining[{0}]</span> <span class="pre">is</span> <span class="pre">locked'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#RetrainingIsLocked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.RetrainingIsLocked" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when retraining is locked</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.TemporalPredsPredicted">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">TemporalPredsPredicted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Retraining[{0}]</span> <span class="pre">code</span> <span class="pre">is</span> <span class="pre">predicted'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#TemporalPredsPredicted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.TemporalPredsPredicted" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a temporal prediction is already predicted.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.NoPreviousModel">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">NoPreviousModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">previous</span> <span class="pre">model</span> <span class="pre">found</span> <span class="pre">for</span> <span class="pre">[{0}]'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#NoPreviousModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.NoPreviousModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when no previous model exists for an retraining</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.SamePreviousModel">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">SamePreviousModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Retraining[{0}]</span> <span class="pre">already</span> <span class="pre">processed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#SamePreviousModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.SamePreviousModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a temporal prediction would be for the same (identical) model training</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.TimepointSkipped">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">TimepointSkipped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Retraining[{0}]</span> <span class="pre">set</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">skipped'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#TimepointSkipped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.TimepointSkipped" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a timepoint should be skipped</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.SlurmNoLog">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">SlurmNoLog</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#SlurmNoLog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.SlurmNoLog" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a SLURM job file is not present for submitted itcode jobs</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.SlurmTimeLimitExceeded">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">SlurmTimeLimitExceeded</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#SlurmTimeLimitExceeded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.SlurmTimeLimitExceeded" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a past SLURM job time was exceeded</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.SlurmMemoryExceeded">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">SlurmMemoryExceeded</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#SlurmMemoryExceeded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.SlurmMemoryExceeded" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a past SLURM memory was exceeded</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.SlurmJobSkip">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">SlurmJobSkip</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#SlurmJobSkip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.SlurmJobSkip" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when an itcode is no longer trialed with Qptuna (i.e. due to incompatibility)</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="optunaz.utils.retraining.SlurmParseError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.retraining.</span></span><span class="sig-name descname"><span class="pre">SlurmParseError</span></span><a class="reference internal" href="_modules/optunaz/utils/retraining.html#SlurmParseError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.retraining.SlurmParseError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a .sh SLURM job modification (for resubmission) is not possible</p>
 </dd></dl>
 
 </section>

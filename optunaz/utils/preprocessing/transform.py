@@ -1,8 +1,8 @@
 import abc
 import inspect
+import logging
 from dataclasses import field, dataclass
 import apischema
-import scipy
 from scipy.stats import norm
 from apischema import schema, deserializer, serializer, identity
 from apischema.conversions import Conversion
@@ -283,7 +283,12 @@ class ZScales(AuxTransformer):
     parameters: Parameters = Parameters()
 
     def transform(self, auxiliary_data: np.ndarray) -> np.ndarray:
-        from peptides import Peptide
+        try:
+            from peptides import Peptide
+        except ImportError:
+            logging.critical(
+                "peptides package must be installed to use Z-Scales transform"
+            )
 
         return np.array([list(Peptide(val).z_scales()) for val in auxiliary_data])
 
@@ -303,7 +308,10 @@ class AmorProt(AuxTransformer):
     parameters: Parameters = Parameters()
 
     def __post_init__(self):
-        from amorprot import AmorProt
+        try:
+            from amorprot import AmorProt
+        except ImportError:
+            logging.critical("AmorProt must be installed to use AmorProt transform")
 
         self.ap = AmorProt()
 

@@ -3,6 +3,7 @@ import inspect
 import logging
 import os
 import pathlib
+import sys
 from dataclasses import dataclass, field
 from typing import List, Union, Type, Optional, Any, Tuple, Dict, Literal, Annotated
 from functools import partial
@@ -198,64 +199,76 @@ class AmorProtDescriptors(MolDescriptor):
     These descriptors are intended to be used with Peptide SMILES
     """
 
-    from amorprot import AmorProt
+    try:
+        from amorprot import AmorProt
 
-    class _AmorProt(AmorProt):
-        def __init__(
-            self,
-            maccs=True,
-            ecfp4=True,
-            ecfp6=True,
-            rdkit=True,
-            W=10,
-            A=10,
-            R=0.85,
-            smi=None,
-        ):
-            self.AA_dict = {smi: smi}
-            self.maccs = maccs
-            self.ecfp4 = ecfp4
-            self.ecfp6 = ecfp6
-            self.rdkit = rdkit
-            self.W = W
-            self.A = A
-            self.R = R
+        class _AmorProt(AmorProt):
+            def __init__(
+                self,
+                maccs=True,
+                ecfp4=True,
+                ecfp6=True,
+                rdkit=True,
+                W=10,
+                A=10,
+                R=0.85,
+                smi=None,
+            ):
+                self.AA_dict = {smi: smi}
+                self.maccs = maccs
+                self.ecfp4 = ecfp4
+                self.ecfp6 = ecfp6
+                self.rdkit = rdkit
+                self.W = W
+                self.A = A
+                self.R = R
 
-            if smi is None:
-                return
+                if smi is None:
+                    return
 
-            if self.maccs:
-                self.maccs_dict = {}
-                for aa in self.AA_dict.keys():
-                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
-                    self.maccs_dict[aa] = np.array(MACCSkeys.GenMACCSKeys(mol)).tolist()
+                if self.maccs:
+                    self.maccs_dict = {}
+                    for aa in self.AA_dict.keys():
+                        mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                        self.maccs_dict[aa] = np.array(
+                            MACCSkeys.GenMACCSKeys(mol)
+                        ).tolist()
 
-            if self.ecfp4:
-                self.ecfp4_dict = {}
-                for aa in self.AA_dict.keys():
-                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
-                    self.ecfp4_dict[aa] = np.array(
-                        AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, nBits=1024)
-                    ).tolist()
+                if self.ecfp4:
+                    self.ecfp4_dict = {}
+                    for aa in self.AA_dict.keys():
+                        mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                        self.ecfp4_dict[aa] = np.array(
+                            AllChem.GetMorganFingerprintAsBitVect(
+                                mol, radius=2, nBits=1024
+                            )
+                        ).tolist()
 
-            if self.ecfp6:
-                self.ecfp6_dict = {}
-                for aa in self.AA_dict.keys():
-                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
-                    self.ecfp6_dict[aa] = np.array(
-                        AllChem.GetMorganFingerprintAsBitVect(mol, radius=3, nBits=1024)
-                    ).tolist()
+                if self.ecfp6:
+                    self.ecfp6_dict = {}
+                    for aa in self.AA_dict.keys():
+                        mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                        self.ecfp6_dict[aa] = np.array(
+                            AllChem.GetMorganFingerprintAsBitVect(
+                                mol, radius=3, nBits=1024
+                            )
+                        ).tolist()
 
-            if self.rdkit:
-                self.rdkit_dict = {}
-                for aa in self.AA_dict.keys():
-                    mol = Chem.MolFromSmiles(self.AA_dict[aa])
-                    self.rdkit_dict[aa] = np.array(AllChem.RDKFingerprint(mol)).tolist()
+                if self.rdkit:
+                    self.rdkit_dict = {}
+                    for aa in self.AA_dict.keys():
+                        mol = Chem.MolFromSmiles(self.AA_dict[aa])
+                        self.rdkit_dict[aa] = np.array(
+                            AllChem.RDKFingerprint(mol)
+                        ).tolist()
 
-        @abc.abstractmethod
-        def calculate_from_smi(self, smi: str) -> np.ndarray:
-            self.__init__(smi=smi)
-            return self.fingerprint([smi])
+            @abc.abstractmethod
+            def calculate_from_smi(self, smi: str) -> np.ndarray:
+                self.__init__(smi=smi)
+                return self.fingerprint([smi])
+
+    except ImportError:
+        pass
 
     @apischema.type_name("AmorProtDescParams")
     @dataclass
@@ -266,7 +279,13 @@ class AmorProtDescriptors(MolDescriptor):
     parameters: Parameters
 
     def calculate_from_smi(self, smi: str):
-        return self._AmorProt().calculate_from_smi(smi)
+        try:
+            return self._AmorProt().calculate_from_smi(smi)
+        except AttributeError:
+            logging.critical(
+                "The amorprot package must be installed to use AmorProtDescriptors"
+            )
+            sys.exit(1)
 
 
 @dataclass
@@ -578,7 +597,11 @@ class UnscaledMAPC(RdkitDescriptor):
     parameters: Parameters
 
     def calculate_from_mol(self, mol: Chem.Mol):
-        from mapchiral.mapchiral import get_fingerprint
+        try:
+            from mapchiral.mapchiral import get_fingerprint
+        except ImportError:
+            logging.critical("mapchiral must be installed to use MAPC fingerprints")
+            sys.exit(1)
 
         fp = get_fingerprint(
             mol,
@@ -641,7 +664,7 @@ class UnscaledJazzyDescriptors(MolDescriptor):
     @dataclass
     class Parameters:
         jazzy_names: Optional[List[str]] = None
-        jazzy_filters: Optional[Dict] = None
+        jazzy_filters: Optional[Dict[str, Any]] = None
 
     name: Literal["UnscaledJazzyDescriptors"] = "UnscaledJazzyDescriptors"
     parameters: Parameters = Parameters()
@@ -657,13 +680,16 @@ class UnscaledJazzyDescriptors(MolDescriptor):
 
     def _jazzy_descriptors(self, smi):
         """Returns a Jazzy MMFF94 vector (fingerprint) for a given SMILES string."""
+        from jazzy.exception import JazzyError
 
         if self._exceeds_descriptor_threshold(smi):
             """Raise JazzyError if descriptor input is expected to be slow"""
             raise JazzyError
         else:
             """Return the MMFF94 vector"""
-            return molecular_vector_from_smiles(smi, minimisation_method="MMFF94")
+            return molecular_vector_from_smiles(
+                smi, minimisation_method="MMFF94",
+                embedding_max_iterations=int(os.environ.get("QPTUNA_JAZZY_MAX_ITERATIONS", 0)))
 
     def __post_init__(self):
         # Get Jazzy descriptor names.
@@ -679,6 +705,7 @@ class UnscaledJazzyDescriptors(MolDescriptor):
             }
 
     def calculate_from_smi(self, smi: str) -> np.ndarray | None:
+        from jazzy.exception import JazzyError
         try:
             d = self._jazzy_descriptors(smi)
             d = [d[jazzy_name] for jazzy_name in self.parameters.jazzy_names]
@@ -706,8 +733,13 @@ class UnscaledZScalesDescriptors(MolDescriptor):
     parameters: Parameters = Parameters()
 
     def calculate_from_smi(self, smi: str) -> list[str | list[None]] | None:
-        from chemistry_adapters import AminoAcidAdapter
-        from peptides import Peptide
+        try:
+            from chemistry_adapters import AminoAcidAdapter
+            from peptides import Peptide
+        except ImportError:
+            logging.critical(
+                "chemistry_adapters and peptides packages must be installed for Z-Scales descriptors"
+            )
 
         try:
             sequence = AminoAcidAdapter().convert_smiles_to_amino_acid_sequence(smi)
@@ -756,8 +788,7 @@ class PrecomputedDescriptorFromFile(MolDescriptor):
     parameters: Parameters
 
     def __post_init__(self):
-        file = self.parameters.file
-        df = pd.read_csv(file, skipinitialspace=True)
+        df = pd.read_csv(self.parameters.file, skipinitialspace=True)
         out_cols = [self.parameters.input_column, self.parameters.response_column]
 
         # Add canonicalised SMILES to end of file dataframe
@@ -892,21 +923,42 @@ class SmilesAndSideInfoFromFile(MolDescriptor):
     name: Literal["SmilesAndSideInfoFromFile"]
     parameters: Parameters
 
+    def __post_init__(self):
+        df = pd.read_csv(self.parameters.file, skipinitialspace=True)
+
+        # Add canonicalised SMILES to end of file dataframe
+        can_smiles = descriptor_from_config(
+            df[self.parameters.input_column],
+            CanonicalSmiles.new(),
+            return_failed_idx=False,
+        )
+        can_df = df.copy()
+        can_df[self.parameters.input_column] = can_smiles
+        df = pd.concat((df, can_df)).reset_index(drop=True)
+        df.dropna(subset=self.parameters.input_column, inplace=True)
+        df.drop_duplicates(inplace=True)
+
+        # Allow reaction SMILES compatability
+        df.loc[:, self.parameters.input_column] = df[
+            self.parameters.input_column
+        ].str.replace(">>", ".")
+
+        self.df = df
+
     def calculate_from_smi(self, smi: str) -> list[str, Any] | None:
         # Handle RDkit errors here to avoid poor handling by ChemProp
         mol = mol_from_smi(smi)
         if mol is None:
             return None
-        file = self.parameters.file
-        df = pd.read_csv(file, skipinitialspace=True)
-        rows = df[df[self.parameters.input_column] == smi]
+        rows = self.df[self.df[self.parameters.input_column] == smi]
         if len(rows) < 1:
-            raise ValueError(
+            logger.warning(
                 f"Could not find descriptor for {smi} in file {self.parameters.file}."
             )
+            return None
         if len(rows) > 1:
             logger.warning(
-                f"Multiple descriptors found for {smi}, taking the first one."
+                f"Multiple (conflicting) descriptors found for {smi}, taking the first one."
             )
         descriptor = rows.drop(self.parameters.input_column, axis=1).values[:1]
         return [smi, descriptor]
@@ -1081,7 +1133,7 @@ class JazzyDescriptors(ScaledDescriptor):
     @dataclass
     class Parameters:
         jazzy_names: Optional[List[str]] = None
-        jazzy_filters: Optional[Dict] = None
+        jazzy_filters: Optional[Dict[str, Any]] = None
         scaler: Union[
             FittedSklearnScaler,
             UnfittedSklearnScaler,

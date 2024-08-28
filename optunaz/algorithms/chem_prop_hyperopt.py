@@ -7,7 +7,7 @@ import os
 import logging.config
 import chemprop
 import torch
-from functools import partialmethod, partial
+from functools import partial
 from chemprop.data.utils import get_invalid_smiles_from_list
 from chemprop.data import MoleculeDataLoader
 from chemprop.interpret import interpret
@@ -19,18 +19,12 @@ from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.multiclass import unique_labels
 from joblib import effective_n_jobs
 from optunaz.algorithms.side_info import binarise_side_info, process_side_info
-from tqdm import tqdm
 
-tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
+logging.getLogger("train").setLevel(logging.ERROR)
 logging.getLogger("train").disabled = True
 logging.getLogger("train").propagate = False
-logging.getLogger("train").setLevel(logging.ERROR)
-logging.config.dictConfig(
-    {
-        "version": 1,
-        "disable_existing_loggers": True,
-    }
-)
+os.environ["TQDM_DISABLE"] = "1"
+
 np.seterr(divide="ignore")
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)

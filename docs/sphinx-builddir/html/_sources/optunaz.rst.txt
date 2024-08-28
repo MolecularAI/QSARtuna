@@ -13,6 +13,14 @@ Subpackages
 Submodules
 ----------
 
+optunaz.automl module
+---------------------
+
+.. automodule:: optunaz.automl
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 optunaz.builder module
 ----------------------
 
