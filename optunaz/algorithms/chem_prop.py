@@ -97,6 +97,21 @@ class CaptureStdOut(list):
         del self._stringio
         sys.stdout = self._stdout
 
+class CaptureStdOutErr(list):
+    def __enter__(self):
+        self._stdout = sys.stdout
+        self._stderr = sys.stderr
+        sys.stdout = self._stringio = StringIO()
+        sys.stderr = self._stringioerr = StringIO()
+        return self
+
+    def __exit__(self, *args):
+        self.extend(self._stringio.getvalue().splitlines())
+        self.extend(self._stringioerr.getvalue().splitlines())
+        del self._stringio
+        del self._stringioerr
+        sys.stdout = self._stdout
+        sys.stderr = self._stderr
 
 def save_model_memory(model_dir):
     tarblob = io.BytesIO()
@@ -316,7 +331,7 @@ class BaseChemProp(BaseEstimator):
                     ).to_csv(x_aux_path.name, index=False)
                     # arguments += ["--features_path", f"{x_aux_path.name}"] TODO: allow features once ChemProp is updated
 
-                with CaptureStdOut() as _:
+                with CaptureStdOutErr() as _:
                     args = QSARtunaTrainArgs().parse_args(arguments)
                     chemprop.train.cross_validate(
                         args=args, train_func=chemprop.train.run_training
@@ -365,7 +380,7 @@ class BaseChemProp(BaseEstimator):
             else:
                 X = np.array(X).reshape(len(X), 1)
 
-            with CaptureStdOut() as _:
+            with CaptureStdOutErr() as _:
                 args = QSARtunaPredictArgs().parse_args(arguments)
                 model_objects = chemprop.train.load_model(args=args)
                 preds = np.array(
@@ -444,7 +459,7 @@ class BaseChemProp(BaseEstimator):
             else:
                 X = np.array(X[:, 0].reshape(len(X), 1))
 
-            with CaptureStdOut() as _:
+            with CaptureStdOutErr() as _:
                 args = QSARtunaPredictArgs().parse_args(arguments)
                 if uncertainty_method == "dropout":
                     model_objects = list(chemprop.train.load_model(args=args))
@@ -505,7 +520,7 @@ class BaseChemProp(BaseEstimator):
                     X = np.array(X[:, 0].reshape(len(X), 1))
                 X = pd.DataFrame(X, columns=["smiles"])
                 X.to_csv(data_path.name, index=False)
-                with CaptureStdOut() as _:
+                with CaptureStdOutErr() as _:
                     args = chemprop.args.InterpretArgs().parse_args(intrprt_args)
                 with CaptureStdOut() as intrprt:
                     interpret(args=args)
@@ -565,7 +580,7 @@ class BaseChemProp(BaseEstimator):
             ]
             # if self.x_aux_ is not None:
             # fprnt_args += ["--features_path", f"{x_aux_path.name}"] TODO: allow features once ChemProp is updated
-            with CaptureStdOut() as _:
+            with CaptureStdOutErr() as _:
                 args = chemprop.args.FingerprintArgs().parse_args(fprnt_args)
                 try:
                     fps = chemprop.train.molecule_fingerprint.molecule_fingerprint(
@@ -861,7 +876,7 @@ class ChemPropPretrained(BaseChemProp):
                         arguments += ["--frzn_ffn_layers", "1"]
                     if self.frzn == "mpnn_last_ffn":
                         arguments += ["--frzn_ffn_layers", f"{self.ffn_num_layers - 1}"]
-                    with CaptureStdOut() as _:
+                    with CaptureStdOutErr() as _:
                         args = QSARtunaTrainArgs().parse_args(arguments)
                         chemprop.train.cross_validate(
                             args=args, train_func=chemprop.train.run_training

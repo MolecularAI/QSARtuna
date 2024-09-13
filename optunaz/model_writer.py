@@ -266,3 +266,5 @@ def save_model(
 
     with open(filename, "wb") as f:
         pickle.dump(model, f)
+
+    return model

@@ -37,16 +37,21 @@ MoleculeDataLoader = partial(_MoleculeDataLoader, num_workers=0)
 chemprop.interpret.MoleculeDataLoader = MoleculeDataLoader
 
 
-class CaptureStdOut(list):
+class CaptureStdOutErr(list):
     def __enter__(self):
         self._stdout = sys.stdout
+        self._stderr = sys.stderr
         sys.stdout = self._stringio = StringIO()
+        sys.stderr = self._stringioerr = StringIO()
         return self
 
     def __exit__(self, *args):
         self.extend(self._stringio.getvalue().splitlines())
+        self.extend(self._stringioerr.getvalue().splitlines())
         del self._stringio
+        del self._stringioerr
         sys.stdout = self._stdout
+        sys.stderr = self._stderr
 
 
 def save_model_memory(model_dir):
@@ -294,7 +299,7 @@ class BaseChemPropHyperopt(BaseEstimator):
                     ).to_csv(x_aux_path.name, index=False)
                     # arguments += ["--features_path", f"{x_aux_path.name}"] TODO: allow features once ChemProp is updated
 
-                with CaptureStdOut() as _:
+                with CaptureStdOutErr() as _:
                     if self.num_iters > 1:
                         with tempfile.NamedTemporaryFile(
                             delete=True, mode="w+"
@@ -375,7 +380,7 @@ class BaseChemPropHyperopt(BaseEstimator):
             else:
                 X = np.array(X[:, 0].reshape(len(X), 1))
 
-            with CaptureStdOut() as _:
+            with CaptureStdOutErr() as _:
                 args = chemprop.args.PredictArgs().parse_args(arguments)
                 model_objects = chemprop.train.load_model(args=args)
                 preds = np.array(
@@ -450,7 +455,7 @@ class BaseChemPropHyperopt(BaseEstimator):
             else:
                 X = np.array(X[:, 0].reshape(len(X), 1))
 
-            with CaptureStdOut() as _:
+            with CaptureStdOutErr() as _:
                 args = chemprop.args.PredictArgs().parse_args(arguments)
                 if uncertainty_method == "dropout":
                     model_objects = list(chemprop.train.load_model(args=args))
@@ -512,7 +517,7 @@ class BaseChemPropHyperopt(BaseEstimator):
                 X = pd.DataFrame(X, columns=["smiles"])
                 X.to_csv(data_path.name, index=False)
                 args = chemprop.args.InterpretArgs().parse_args(intrprt_args)
-                with CaptureStdOut() as intrprt:
+                with CaptureStdOutErr() as intrprt:
                     interpret(args=args)
         intrprt = [
             line.split(",")
@@ -560,7 +565,7 @@ class BaseChemPropHyperopt(BaseEstimator):
             # if self.x_aux_ is not None:
             # fprnt_args += ["--features_path", f"{x_aux_path.name}"] TODO: allow features once ChemProp is updated
             # load_model returns pred&train arguments, object models & tasks info - but we only need TrainArgs here
-            with CaptureStdOut() as _:
+            with CaptureStdOutErr() as _:
                 args = chemprop.args.FingerprintArgs().parse_args(fprnt_args)
                 _, trainargs, _, _, _, _ = chemprop.train.load_model(args=args)
                 if fingerprint_type == "MPN":
