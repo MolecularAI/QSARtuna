@@ -33,7 +33,6 @@ from rdkit.DataStructs.cDataStructs import (
 
 from rdkit.ML.Descriptors.MoleculeDescriptors import MolecularDescriptorCalculator
 from jazzy.api import molecular_vector_from_smiles
-from jazzy.exception import JazzyError
 from sklearn import preprocessing
 from joblib import Parallel, delayed, effective_n_jobs
 from optunaz.config import NameParameterDataclass

@@ -271,7 +271,7 @@ def log_scores(scores, main_score, label: str):
     if main_score_val is not None:
         logger.info(f"{label.capitalize()} score {main_score}: {main_score_val}")
     logger.info(
-        f"All {label} cores: { {k: round(number=v, ndigits=3) for k, v in scores.items()} }"
+        f"All {label} scores: { {k: round(number=v, ndigits=3) for k, v in scores.items()} }"
     )
 
 
@@ -283,7 +283,7 @@ def build_best(
     """Step 2. Build. Train a model with the best hyperparameters."""
 
     model, train_scores, test_scores = build(buildconfig, cache=cache)
-    save_model(
+    qsartuna_model = save_model(
         model,
         buildconfig,
         outfname,
@@ -298,7 +298,7 @@ def build_best(
         log_scores(test_scores, buildconfig.settings.scoring, "test")
 
     if buildconfig.settings.tracking_rest_endpoint is not None:
-        track_build(model, buildconfig)
+        track_build(qsartuna_model, buildconfig, test_scores)
 
     return buildconfig
 

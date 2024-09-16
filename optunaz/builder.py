@@ -17,8 +17,27 @@ def build(
     estimator = buildconfig.algorithm.estimator()
     if merge_train_and_test_data:
         train_smiles, train_y, train_aux = buildconfig.data.get_merged_sets()
+        test_smiles, test_y, test_aux, test_X = None, None, None, None
     else:
-        train_smiles, train_y, train_aux, _, _, _ = buildconfig.data.get_sets()
+        (
+            train_smiles,
+            train_y,
+            train_aux,
+            test_smiles,
+            test_y,
+            test_aux,
+        ) = buildconfig.data.get_sets()
+        if test_smiles is not None and len(test_smiles) > 0:
+            test_X, failed_idx = descriptor_from_config(
+                test_smiles, buildconfig.descriptor, cache=cache
+            )
+            test_y, test_smiles, test_aux = remove_failed_idx(
+                failed_idx, test_y, test_smiles, test_aux
+            )
+            if test_aux is not None:
+                test_X = np.hstack((test_X, test_aux))
+        else:
+            test_X = None
 
     train_X, failed_idx = descriptor_from_config(
         train_smiles, buildconfig.descriptor, cache=cache
@@ -35,13 +54,20 @@ def build(
     estimator.X_ = train_X
     estimator.y_ = train_y
     estimator.aux_ = train_aux
+    estimator.test_smiles_ = test_smiles
+    estimator.test_X_ = test_X
+    estimator.test_y_ = test_y
+    estimator.test_aux_ = test_aux
 
-    if merge_train_and_test_data:
-        train_scores = get_merged_train_score(estimator, buildconfig, cache=cache)
-        test_scores = None
-    else:
+    if (
+        not merge_train_and_test_data
+        and test_smiles is not None
+        and len(test_smiles) > 0
+    ):
         train_scores, test_scores = get_train_test_scores(
-            estimator, buildconfig, cache=cache
+            estimator, buildconfig, train_X, train_y, test_X, test_y
         )
-
+    else:
+        train_scores = get_merged_train_score(estimator, buildconfig, train_X, train_y)
+        test_scores = None
     return estimator, train_scores, test_scores

@@ -1,7 +1,7 @@
 import inspect
 import json
 from textwrap import dedent
-from typing import Any, Tuple, Optional
+from typing import Any, Optional
 
 import apischema
 from apischema import schema

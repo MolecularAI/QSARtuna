@@ -42,8 +42,8 @@ class Algorithm(GenericAlg):
 class AdaBoostClassifier(Algorithm):
     @dataclass
     class AdaBoostClassifierParameters:
-        n_estimators: int = field(metadata=schema(min=1))
-        learning_rate: float = field(metadata=schema(min=0.0001))
+        n_estimators: int = field(default=1, metadata=schema(min=1))
+        learning_rate: float = field(default=0.1, metadata=schema(min=0.0001))
 
     name: Literal["AdaBoostClassifier"]
     parameters: AdaBoostClassifierParameters
@@ -116,7 +116,7 @@ class LogisticRegression(Algorithm):
     @dataclass
     class LogisticRegressionParameters:
         solver: str
-        C: float = field(metadata=schema(min=0.001, max=1000))
+        C: float = field(default=1.0, metadata=schema(min=0.001, max=1000))
 
     name: Literal["LogisticRegression"]
     parameters: LogisticRegressionParameters
@@ -137,7 +137,7 @@ class LogisticRegression(Algorithm):
 class PLSRegression(Algorithm):
     @dataclass
     class PLSParameters:
-        n_components: int = field(metadata=schema(min=1))
+        n_components: int = field(default=2, metadata=schema(min=1))
 
     name: Literal["PLSRegression"]
     parameters: PLSParameters
@@ -152,9 +152,9 @@ class PLSRegression(Algorithm):
 class RandomForestClassifier(Algorithm):
     @dataclass
     class RandomForestParameters:
-        max_depth: int = field(metadata=schema(min=1))
-        n_estimators: int = field(metadata=schema(min=1))
         max_features: str
+        max_depth: int = field(default=None, metadata=schema(min=1))
+        n_estimators: int = field(default=100, metadata=schema(min=1))
 
     name: Literal["RandomForestClassifier"]
     parameters: RandomForestParameters

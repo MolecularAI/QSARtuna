@@ -19,7 +19,7 @@ ECFP_counts
 
 
 PathFP
-###########
+######
 ..  autoclass:: optunaz.descriptors.PathFP
     :members:
 
@@ -37,13 +37,13 @@ UnscaledPhyschemDescriptors
 
 
 UnscaledJazzyDescriptors
-###########################
+########################
 ..  autoclass:: optunaz.descriptors.UnscaledJazzyDescriptors
     :members:
 
 
 UnscaledZScalesDescriptors
-###########
+##########################
 ..  autoclass:: optunaz.descriptors.UnscaledZScalesDescriptors
     :members:
 
@@ -67,7 +67,7 @@ PrecomputedDescriptorFromFile
 
 
 ZScales
-###########
+#######
 ..  autoclass:: optunaz.descriptors.ZScalesDescriptors
     :members:
 
@@ -93,4 +93,40 @@ ScaledDescriptor
 CompositeDescriptor
 ###################
 ..  autoclass:: optunaz.descriptors.CompositeDescriptor
+    :members:
+
+
+AmorProtDescriptors
+###################
+..  autoclass:: optunaz.descriptors.AmorProtDescriptors
+    :members:
+
+
+PathFP
+######
+..  autoclass:: optunaz.descriptors.PathFP
+    :members:
+
+
+UnscaledMAPC
+############
+..  autoclass:: optunaz.descriptors.UnscaledMAPC
+    :members:
+
+
+UnscaledZScalesDescriptors
+##########################
+..  autoclass:: optunaz.descriptors.UnscaledZScalesDescriptors
+    :members:
+
+
+MAPC
+####
+..  autoclass:: optunaz.descriptors.MAPC
+    :members:
+
+
+ZScalesDescriptors
+##################
+..  autoclass:: optunaz.descriptors.ZScalesDescriptors
     :members:
