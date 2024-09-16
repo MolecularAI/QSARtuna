@@ -24,3 +24,10 @@ ZScales
 #######
 ..  autoclass:: optunaz.utils.preprocessing.transform.ZScales
     :members:
+
+
+AmorProt
+########
+..  autoclass:: optunaz.utils.preprocessing.transform.AmorProt
+    :members:
+
