@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.builder &mdash; QSARtuna 3.1.2 documentation</title>
+  <title>optunaz.builder &mdash; QSARtuna 3.1.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -98,8 +98,27 @@
     <span class="n">estimator</span> <span class="o">=</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">estimator</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">merge_train_and_test_data</span><span class="p">:</span>
         <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_aux</span> <span class="o">=</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_merged_sets</span><span class="p">()</span>
+        <span class="n">test_smiles</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="n">test_aux</span><span class="p">,</span> <span class="n">test_X</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_aux</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()</span>
+        <span class="p">(</span>
+            <span class="n">train_smiles</span><span class="p">,</span>
+            <span class="n">train_y</span><span class="p">,</span>
+            <span class="n">train_aux</span><span class="p">,</span>
+            <span class="n">test_smiles</span><span class="p">,</span>
+            <span class="n">test_y</span><span class="p">,</span>
+            <span class="n">test_aux</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">test_smiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_smiles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">test_X</span><span class="p">,</span> <span class="n">failed_idx</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span>
+                <span class="n">test_smiles</span><span class="p">,</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span>
+            <span class="p">)</span>
+            <span class="n">test_y</span><span class="p">,</span> <span class="n">test_smiles</span><span class="p">,</span> <span class="n">test_aux</span> <span class="o">=</span> <span class="n">remove_failed_idx</span><span class="p">(</span>
+                <span class="n">failed_idx</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="n">test_smiles</span><span class="p">,</span> <span class="n">test_aux</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">test_aux</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">test_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">test_X</span><span class="p">,</span> <span class="n">test_aux</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">test_X</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">train_X</span><span class="p">,</span> <span class="n">failed_idx</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span>
         <span class="n">train_smiles</span><span class="p">,</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span>
@@ -116,15 +135,22 @@
     <span class="n">estimator</span><span class="o">.</span><span class="n">X_</span> <span class="o">=</span> <span class="n">train_X</span>
     <span class="n">estimator</span><span class="o">.</span><span class="n">y_</span> <span class="o">=</span> <span class="n">train_y</span>
     <span class="n">estimator</span><span class="o">.</span><span class="n">aux_</span> <span class="o">=</span> <span class="n">train_aux</span>
+    <span class="n">estimator</span><span class="o">.</span><span class="n">test_smiles_</span> <span class="o">=</span> <span class="n">test_smiles</span>
+    <span class="n">estimator</span><span class="o">.</span><span class="n">test_X_</span> <span class="o">=</span> <span class="n">test_X</span>
+    <span class="n">estimator</span><span class="o">.</span><span class="n">test_y_</span> <span class="o">=</span> <span class="n">test_y</span>
+    <span class="n">estimator</span><span class="o">.</span><span class="n">test_aux_</span> <span class="o">=</span> <span class="n">test_aux</span>
 
-    <span class="k">if</span> <span class="n">merge_train_and_test_data</span><span class="p">:</span>
-        <span class="n">train_scores</span> <span class="o">=</span> <span class="n">get_merged_train_score</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
-        <span class="n">test_scores</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">merge_train_and_test_data</span>
+        <span class="ow">and</span> <span class="n">test_smiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_smiles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="p">):</span>
         <span class="n">train_scores</span><span class="p">,</span> <span class="n">test_scores</span> <span class="o">=</span> <span class="n">get_train_test_scores</span><span class="p">(</span>
-            <span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span>
+            <span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">,</span> <span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_X</span><span class="p">,</span> <span class="n">test_y</span>
         <span class="p">)</span>
-
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">train_scores</span> <span class="o">=</span> <span class="n">get_merged_train_score</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">,</span> <span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+        <span class="n">test_scores</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">train_scores</span><span class="p">,</span> <span class="n">test_scores</span></div>
 </pre></div>
 

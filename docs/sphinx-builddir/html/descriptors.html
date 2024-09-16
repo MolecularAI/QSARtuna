@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Available descriptors &mdash; QSARtuna 3.1.2 documentation</title>
+  <title>Available descriptors &mdash; QSARtuna 3.1.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -68,6 +68,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#smilesandsideinfofromfile">SmilesAndSideInfoFromFile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scaleddescriptor">ScaledDescriptor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compositedescriptor">CompositeDescriptor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#amorprotdescriptors">AmorProtDescriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">PathFP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unscaledmapc">UnscaledMAPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">UnscaledZScalesDescriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mapc">MAPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zscalesdescriptors">ZScalesDescriptors</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="splitters.html">List of available evaluation splits</a></li>
@@ -573,6 +579,170 @@ ChemProp SMILES descriptors are not compatible with this function.</p>
 <span class="sig-name descname"><span class="pre">calculate_from_smi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#CompositeDescriptor.calculate_from_smi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.CompositeDescriptor.calculate_from_smi" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a descriptor (e.g. a fingerprint) for a given SMILES string.</p>
 <p>The descriptor is returned as a 1-d Numpy ndarray.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="amorprotdescriptors">
+<h2>AmorProtDescriptors<a class="headerlink" href="#amorprotdescriptors" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.descriptors.AmorProtDescriptors">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.descriptors.</span></span><span class="sig-name descname"><span class="pre">AmorProtDescriptors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#AmorProtDescriptors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.AmorProtDescriptors" title="Permalink to this definition"></a></dt>
+<dd><p>These descriptors are intended to be used with Peptide SMILES</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.descriptors.AmorProtDescriptors.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><a class="reference internal" href="_modules/optunaz/descriptors.html#AmorProtDescriptors.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.AmorProtDescriptors.Parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.descriptors.AmorProtDescriptors.calculate_from_smi">
+<span class="sig-name descname"><span class="pre">calculate_from_smi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#AmorProtDescriptors.calculate_from_smi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.AmorProtDescriptors.calculate_from_smi" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a descriptor (e.g. a fingerprint) for a given SMILES string.</p>
+<p>The descriptor is returned as a 1-d Numpy ndarray.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="id1">
+<h2>PathFP<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.descriptors.</span></span><span class="sig-name descname"><span class="pre">PathFP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#PathFP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>Path fingerprint based on RDKit FP Generator.</p>
+<p>This is a Path fingerprint.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxPath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fpSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#PathFP.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxPath</strong> (<em>int</em>) – Maximum path for the fingerprint - minimum: 1, title: maxPath</p></li>
+<li><p><strong>fpSize</strong> (<em>int</em>) – Number size of the fingerprint, sometimes also called bit size. - minimum: 1, title: fpSize</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">calculate_from_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#PathFP.calculate_from_mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a descriptor (fingerprint) for a given RDKit Mol as a 1-d Numpy array.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="unscaledmapc">
+<h2>UnscaledMAPC<a class="headerlink" href="#unscaledmapc" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.descriptors.UnscaledMAPC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.descriptors.</span></span><span class="sig-name descname"><span class="pre">UnscaledMAPC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledMAPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.UnscaledMAPC" title="Permalink to this definition"></a></dt>
+<dd><p>Unscaled MAPC descriptors</p>
+<p>These MAPC descriptors are unscaled and should be used with caution. MinHashed Atom-Pair Fingerprint Chiral (see
+Orsi et al. One chiral fingerprint to find them all) is the original version of the MinHashed Atom-Pair
+fingerprint of radius 2 (MAP4) which combined circular substructure fingerprints and atom-pair fingerprints into
+a unified framework. This combination allowed for improved substructure perception and performance in small
+molecule benchmarks while retaining information about bond distances for molecular size and shape perception.</p>
+<p>These fingerprints expand the functionality of MAP4 to include encoding of stereochemistry into the fingerprint.
+CIP descriptors of chiral atoms are encoded into the fingerprint at the highest radius. This allows MAPC
+to modulate the impact of stereochemistry on fingerprints, making it scale with increasing molecular size
+without disproportionally affecting structural fingerprints/similarity.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.descriptors.UnscaledMAPC.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxRadius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nPermutations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledMAPC.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.UnscaledMAPC.Parameters" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxRadius</strong> (<em>int</em>) – Maximum radius of the fingerprint. - minimum: 1, title: maxRadius</p></li>
+<li><p><strong>nPermutations</strong> (<em>int</em>) – Number of permutations to perform. - minimum: 1, title: nPermutations</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.descriptors.UnscaledMAPC.calculate_from_mol">
+<span class="sig-name descname"><span class="pre">calculate_from_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledMAPC.calculate_from_mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.UnscaledMAPC.calculate_from_mol" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a descriptor (fingerprint) for a given RDKit Mol as a 1-d Numpy array.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="id4">
+<h2>UnscaledZScalesDescriptors<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id5">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.descriptors.</span></span><span class="sig-name descname"><span class="pre">UnscaledZScalesDescriptors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UnscaledZScalesDescriptors'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">UnscaledZScalesDescriptors.Parameters()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledZScalesDescriptors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd><p>Unscaled Z-Scales.</p>
+<p>Compute the Z-scales of a peptide SMILES. These Z-Scales descriptors are unscaled and should be used with caution.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledZScalesDescriptors.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">calculate_from_smi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#UnscaledZScalesDescriptors.calculate_from_smi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a descriptor (e.g. a fingerprint) for a given SMILES string.</p>
+<p>The descriptor is returned as a 1-d Numpy ndarray.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="mapc">
+<h2>MAPC<a class="headerlink" href="#mapc" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.descriptors.MAPC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.descriptors.</span></span><span class="sig-name descname"><span class="pre">MAPC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters=MAPC.Parameters(maxRadius=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nPermutations=2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler=UnfittedSklearnScaler(mol_data=UnfittedSklearnScaler.MolData(file_path=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_column=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='UnfittedSklearnScaler')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor=&lt;class</span> <span class="pre">'optunaz.descriptors.UnscaledMAPC'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='MAPC'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#MAPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.MAPC" title="Permalink to this definition"></a></dt>
+<dd><p>Scaled MAPC descriptors</p>
+<p>MAPC (MinHashed Atom-Pair Fingerprint Chiral) (see Orsi et al. One chiral fingerprint to find them all) is the
+original version of the MinHashed Atom-Pair fingerprint of radius 2 (MAP4) which combined circular substructure
+fingerprints and atom-pair fingerprints into a unified framework. This combination allowed for improved
+substructure perception and performance in small molecule benchmarks while retaining information about bond
+distances for molecular size and shape perception.</p>
+<p>These fingerprints expand the functionality of MAP4 to include encoding of stereochemistry into the fingerprint.
+CIP descriptors of chiral atoms are encoded into the fingerprint at the highest radius. This allows MAPC
+to modulate the impact of stereochemistry on fingerprints, making it scale with increasing molecular size
+without disproportionally affecting structural fingerprints/similarity.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.descriptors.MAPC.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxRadius:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nPermutations:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler:</span> <span class="pre">Union[optunaz.descriptors.FittedSklearnScaler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnfittedSklearnScaler]</span> <span class="pre">=</span> <span class="pre">UnfittedSklearnScaler(mol_data=UnfittedSklearnScaler.MolData(file_path=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_column=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='UnfittedSklearnScaler')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor:</span> <span class="pre">Union[optunaz.descriptors.Avalon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP_counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PathFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.AmorProtDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.MACCS_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PrecomputedDescriptorFromFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledMAPC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledPhyschemDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledJazzyDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledZScalesDescriptors]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'optunaz.descriptors.UnscaledMAPC'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#MAPC.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.descriptors.MAPC.Parameters" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.descriptors.MAPC.Parameters.descriptor">
+<span class="sig-name descname"><span class="pre">descriptor</span></span><a class="headerlink" href="#optunaz.descriptors.MAPC.Parameters.descriptor" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="optunaz.html#optunaz.descriptors.UnscaledMAPC" title="optunaz.descriptors.UnscaledMAPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnscaledMAPC</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="zscalesdescriptors">
+<h2>ZScalesDescriptors<a class="headerlink" href="#zscalesdescriptors" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.descriptors.</span></span><span class="sig-name descname"><span class="pre">ZScalesDescriptors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters=ZScalesDescriptors.Parameters(scaler=UnfittedSklearnScaler(mol_data=UnfittedSklearnScaler.MolData(file_path=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_column=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='UnfittedSklearnScaler')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor=&lt;class</span> <span class="pre">'optunaz.descriptors.UnscaledZScalesDescriptors'&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='ZScalesDescriptors'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#ZScalesDescriptors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Permalink to this definition"></a></dt>
+<dd><p>Scaled Z-Scales descriptors.</p>
+<p>Z-scales were proposed in Sandberg et al (1998) based on physicochemical properties of proteogenic and
+non-proteogenic amino acids, including NMR data and thin-layer chromatography (TLC) data. Refer to
+doi:10.1021/jm9700575 for the original publication. These descriptors capture 1. lipophilicity, 2. steric
+properties (steric bulk and polarizability), 3. electronic properties (polarity and charge),
+4. electronegativity (heat of formation, electrophilicity and hardness) and 5. another electronegativity.
+This fingerprint is the computed average of Z-scales of all the amino acids in the peptide.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="id9">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaler:</span> <span class="pre">Union[optunaz.descriptors.FittedSklearnScaler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnfittedSklearnScaler]</span> <span class="pre">=</span> <span class="pre">UnfittedSklearnScaler(mol_data=UnfittedSklearnScaler.MolData(file_path=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles_column=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name='UnfittedSklearnScaler')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor:</span> <span class="pre">Union[optunaz.descriptors.Avalon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.ECFP_counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PathFP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.AmorProtDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.MACCS_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.PrecomputedDescriptorFromFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledMAPC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledPhyschemDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledJazzyDescriptors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optunaz.descriptors.UnscaledZScalesDescriptors]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'optunaz.descriptors.UnscaledZScalesDescriptors'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/descriptors.html#ZScalesDescriptors.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">descriptor</span></span><a class="headerlink" href="#id10" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="optunaz.html#optunaz.descriptors.UnscaledZScalesDescriptors" title="optunaz.descriptors.UnscaledZScalesDescriptors"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnscaledZScalesDescriptors</span></code></a></p>
+</dd></dl>
+
 </dd></dl>
 
 </dd></dl>

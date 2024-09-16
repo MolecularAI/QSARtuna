@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.utils package &mdash; QSARtuna 3.1.2 documentation</title>
+  <title>optunaz.utils package &mdash; QSARtuna 3.1.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -391,7 +391,7 @@ for more details.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">TrackingData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_cv_test_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildconfig</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#TrackingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.TrackingData" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">TrackingData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_cv_test_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildconfig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorith_hash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#TrackingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.TrackingData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Dataclass defining internal tracking format</p>
 <dl class="py attribute">
@@ -424,6 +424,11 @@ for more details.</p>
 <span class="sig-name descname"><span class="pre">buildconfig</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.buildconfig" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.TrackingData.algorith_hash">
+<span class="sig-name descname"><span class="pre">algorith_hash</span></span><a class="headerlink" href="#optunaz.utils.tracking.TrackingData.algorith_hash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -440,7 +445,7 @@ for more details.</p>
 <dt class="sig sig-object py" id="optunaz.utils.tracking.InternalTrackingCallback">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">InternalTrackingCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optconfig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_number_offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#InternalTrackingCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.InternalTrackingCallback" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Callback to track (log) progress using internal tracking format</p>
+<p>Callback to track (log) Optimization progress using internal tracking format</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.tracking.InternalTrackingCallback.optconfig">
 <span class="sig-name descname"><span class="pre">optconfig</span></span><a class="headerlink" href="#optunaz.utils.tracking.InternalTrackingCallback.optconfig" title="Permalink to this definition"></a></dt>
@@ -475,10 +480,31 @@ for more details.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">BuildTrackingData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response_column_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#BuildTrackingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Calpoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">Calpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac_true</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#Calpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.Calpoint" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Dataclass defining internal tracking format</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Calpoint.bin_edges">
+<span class="sig-name descname"><span class="pre">bin_edges</span></span><a class="headerlink" href="#optunaz.utils.tracking.Calpoint.bin_edges" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Calpoint.frac_true">
+<span class="sig-name descname"><span class="pre">frac_true</span></span><a class="headerlink" href="#optunaz.utils.tracking.Calpoint.frac_true" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.Calpoint.frac_pred">
+<span class="sig-name descname"><span class="pre">frac_pred</span></span><a class="headerlink" href="#optunaz.utils.tracking.Calpoint.frac_pred" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">BuildTrackingData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response_column_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cal_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#BuildTrackingData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass defining internal Build tracking format</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData.response_column_name">
 <span class="sig-name descname"><span class="pre">response_column_name</span></span><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData.response_column_name" title="Permalink to this definition"></a></dt>
@@ -494,11 +520,16 @@ for more details.</p>
 <span class="sig-name descname"><span class="pre">test_points</span></span><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData.test_points" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.utils.tracking.BuildTrackingData.cal_points">
+<span class="sig-name descname"><span class="pre">cal_points</span></span><a class="headerlink" href="#optunaz.utils.tracking.BuildTrackingData.cal_points" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="optunaz.utils.tracking.track_build">
-<span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">track_build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildconfig</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#track_build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.track_build" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">optunaz.utils.tracking.</span></span><span class="sig-name descname"><span class="pre">track_build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qptuna_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildconfig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/tracking.html#track_build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.tracking.track_build" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

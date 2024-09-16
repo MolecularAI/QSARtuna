@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Preprocessing data for QSARtuna &mdash; QSARtuna 3.1.2 documentation</title>
+  <title>Preprocessing data for QSARtuna &mdash; QSARtuna 3.1.3 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/autodoc_pydantic.css" type="text/css" />
@@ -1144,10 +1144,10 @@ and/or output variables to have a Gaussian or Gaussian-like distribution.</p>
     <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
     <span class="n">training_dataset_file</span><span class="o">=</span><span class="s2">&quot;../tests/data/sdf/example.sdf&quot;</span><span class="p">,</span>
     <span class="n">deduplication_strategy</span><span class="o">=</span><span class="n">KeepAllNoDeduplication</span><span class="p">(),</span>
-    <span class="n">log_transform</span><span class="o">=</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="c1"># flags to use a transform</span>
+    <span class="n">log_transform</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># flags to use a transform</span>
     <span class="n">log_transform_base</span><span class="o">=</span><span class="n">LogBase</span><span class="o">.</span><span class="n">LOG10</span><span class="p">,</span> <span class="c1"># Log10 base will be used</span>
-    <span class="n">log_transform_negative</span><span class="o">=</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="c1"># The negated log transform will be applied</span>
-    <span class="n">log_transform_unit_conversion</span><span class="o">=</span><span class="mi">6</span> <span class="c1"># THe unit conversion for pXC50 values is 6</span>
+    <span class="n">log_transform_negative</span><span class="o">=</span><span class="n">LogNegative</span><span class="o">.</span><span class="n">TRUE</span><span class="p">,</span> <span class="c1"># The negated log transform will be applied</span>
+    <span class="n">log_transform_unit_conversion</span><span class="o">=</span><span class="mi">6</span> <span class="c1"># The unit conversion for pXC50 values is 6</span>
 <span class="p">)</span>
 
 <span class="n">pxc50_data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>

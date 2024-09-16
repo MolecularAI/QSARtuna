@@ -28,4 +28,4 @@ Development
 -----------
 * `Test report <_static/pytest/pytest/index.html>`_
 * `Test coverage <_static/pytest/coverage/index.html>`_
-* `Public release (3.1.2)  <https://github.com/MolecularAI/QSARtuna/>`_
+* `Public release (3.1.3)  <https://github.com/MolecularAI/QSARtuna/>`_

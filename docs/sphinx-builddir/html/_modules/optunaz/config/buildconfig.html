@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.config.buildconfig &mdash; QSARtuna 3.1.2 documentation</title>
+  <title>optunaz.config.buildconfig &mdash; QSARtuna 3.1.3 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/autodoc_pydantic.css" type="text/css" />
@@ -124,8 +124,8 @@
 <span class="k">class</span> <span class="nc">AdaBoostClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
 <div class="viewcode-block" id="AdaBoostClassifier.AdaBoostClassifierParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.AdaBoostClassifier.AdaBoostClassifierParameters">[docs]</a>    <span class="nd">@dataclass</span>
     <span class="k">class</span> <span class="nc">AdaBoostClassifierParameters</span><span class="p">:</span>
-        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">))</span></div>
+        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">))</span></div>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;AdaBoostClassifier&quot;</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">AdaBoostClassifierParameters</span>
@@ -198,7 +198,7 @@
 <div class="viewcode-block" id="LogisticRegression.LogisticRegressionParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.LogisticRegression.LogisticRegressionParameters">[docs]</a>    <span class="nd">@dataclass</span>
     <span class="k">class</span> <span class="nc">LogisticRegressionParameters</span><span class="p">:</span>
         <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">C</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span></div>
+        <span class="n">C</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span></div>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;LogisticRegression&quot;</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">LogisticRegressionParameters</span>
@@ -219,7 +219,7 @@
 <span class="k">class</span> <span class="nc">PLSRegression</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
 <div class="viewcode-block" id="PLSRegression.PLSParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.PLSRegression.PLSParameters">[docs]</a>    <span class="nd">@dataclass</span>
     <span class="k">class</span> <span class="nc">PLSParameters</span><span class="p">:</span>
-        <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+        <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;PLSRegression&quot;</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">PLSParameters</span>
@@ -234,9 +234,9 @@
 <span class="k">class</span> <span class="nc">RandomForestClassifier</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
 <div class="viewcode-block" id="RandomForestClassifier.RandomForestParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.RandomForestClassifier.RandomForestParameters">[docs]</a>    <span class="nd">@dataclass</span>
     <span class="k">class</span> <span class="nc">RandomForestParameters</span><span class="p">:</span>
-        <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">max_features</span><span class="p">:</span> <span class="nb">str</span></div>
+        <span class="n">max_features</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;RandomForestClassifier&quot;</span><span class="p">]</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">RandomForestParameters</span>

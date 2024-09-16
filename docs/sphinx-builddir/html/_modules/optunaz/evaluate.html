@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>optunaz.evaluate &mdash; QSARtuna 3.1.2 documentation</title>
+  <title>optunaz.evaluate &mdash; QSARtuna 3.1.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -79,21 +79,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for optunaz.evaluate</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">get_scorer</span>
-
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">check_scoring</span>
+<span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
 <span class="kn">from</span> <span class="nn">optunaz</span> <span class="kn">import</span> <span class="n">objective</span>
 <span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">ModelMode</span>
 <span class="kn">from</span> <span class="nn">optunaz.config.buildconfig</span> <span class="kn">import</span> <span class="n">BuildConfig</span>
-<span class="kn">from</span> <span class="nn">optunaz.utils</span> <span class="kn">import</span> <span class="n">remove_failed_idx</span>
-<span class="kn">from</span> <span class="nn">optunaz.descriptors</span> <span class="kn">import</span> <span class="n">descriptor_from_config</span>
-
-
-<div class="viewcode-block" id="score_all"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.score_all">[docs]</a><span class="k">def</span> <span class="nf">score_all</span><span class="p">(</span><span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">get_scorer</span><span class="p">(</span><span class="n">s</span><span class="p">)(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="get_scores"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.get_scores">[docs]</a><span class="k">def</span> <span class="nf">get_scores</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n">ModelMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -103,71 +95,39 @@
         <span class="n">scores</span> <span class="o">=</span> <span class="n">objective</span><span class="o">.</span><span class="n">classification_scores</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
     <span class="k">return</span> <span class="n">scores</span></div>
 
 
-<div class="viewcode-block" id="score_all_smiles"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.score_all_smiles">[docs]</a><span class="k">def</span> <span class="nf">score_all_smiles</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">aux</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">failed_idx</span> <span class="o">=</span> <span class="n">descriptor_from_config</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
-    <span class="n">y</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">aux</span> <span class="o">=</span> <span class="n">remove_failed_idx</span><span class="p">(</span><span class="n">failed_idx</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">aux</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">aux</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">aux</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">score_all</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="get_train_test_scores"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.get_train_test_scores">[docs]</a><span class="k">def</span> <span class="nf">get_train_test_scores</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">:</span> <span class="n">BuildConfig</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_train_test_scores"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.get_train_test_scores">[docs]</a><span class="k">def</span> <span class="nf">get_train_test_scores</span><span class="p">(</span>
+    <span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">:</span> <span class="n">BuildConfig</span><span class="p">,</span> <span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_X</span><span class="p">,</span> <span class="n">test_y</span>
+<span class="p">):</span>
     <span class="n">scores</span> <span class="o">=</span> <span class="n">get_scores</span><span class="p">(</span><span class="n">buildconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
-
-    <span class="p">(</span>
-        <span class="n">train_smiles</span><span class="p">,</span>
-        <span class="n">train_y</span><span class="p">,</span>
-        <span class="n">train_aux</span><span class="p">,</span>
-        <span class="n">test_smiles</span><span class="p">,</span>
-        <span class="n">test_y</span><span class="p">,</span>
-        <span class="n">test_aux</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">=</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_sets</span><span class="p">()</span>
-
-    <span class="n">train_scores</span> <span class="o">=</span> <span class="n">score_all_smiles</span><span class="p">(</span>
-        <span class="n">scores</span><span class="p">,</span>
-        <span class="n">estimator</span><span class="p">,</span>
-        <span class="n">train_smiles</span><span class="p">,</span>
-        <span class="n">buildconfig</span><span class="o">.</span><span class="n">descriptor</span><span class="p">,</span>
-        <span class="n">train_aux</span><span class="p">,</span>
-        <span class="n">train_y</span><span class="p">,</span>
-        <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">test_smiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_smiles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">test_scores</span> <span class="o">=</span> <span class="n">score_all_smiles</span><span class="p">(</span>
-            <span class="n">scores</span><span class="p">,</span>
-            <span class="n">estimator</span><span class="p">,</span>
-            <span class="n">test_smiles</span><span class="p">,</span>
-            <span class="n">buildconfig</span><span class="o">.</span><span class="n">descriptor</span><span class="p">,</span>
-            <span class="n">test_aux</span><span class="p">,</span>
-            <span class="n">test_y</span><span class="p">,</span>
-            <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">test_scores</span> <span class="o">=</span> <span class="kc">None</span>
-
+    <span class="n">train_scores</span> <span class="o">=</span> <span class="n">check_scoring</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scores</span><span class="p">)(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+    <span class="n">test_scores</span> <span class="o">=</span> <span class="n">check_scoring</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scores</span><span class="p">)(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">test_X</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">train_scores</span><span class="p">,</span> <span class="n">test_scores</span></div>
 
 
-<div class="viewcode-block" id="get_merged_train_score"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.get_merged_train_score">[docs]</a><span class="k">def</span> <span class="nf">get_merged_train_score</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">:</span> <span class="n">BuildConfig</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_merged_train_score"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.get_merged_train_score">[docs]</a><span class="k">def</span> <span class="nf">get_merged_train_score</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">buildconfig</span><span class="p">:</span> <span class="n">BuildConfig</span><span class="p">,</span> <span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">):</span>
     <span class="n">scores</span> <span class="o">=</span> <span class="n">get_scores</span><span class="p">(</span><span class="n">buildconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
-
-    <span class="n">train_smiles</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">train_aux</span> <span class="o">=</span> <span class="n">buildconfig</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_merged_sets</span><span class="p">()</span>
-
-    <span class="n">train_scores</span> <span class="o">=</span> <span class="n">score_all_smiles</span><span class="p">(</span>
-        <span class="n">scores</span><span class="p">,</span>
-        <span class="n">estimator</span><span class="p">,</span>
-        <span class="n">train_smiles</span><span class="p">,</span>
-        <span class="n">buildconfig</span><span class="o">.</span><span class="n">descriptor</span><span class="p">,</span>
-        <span class="n">train_aux</span><span class="p">,</span>
-        <span class="n">train_y</span><span class="p">,</span>
-        <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
-    <span class="p">)</span>
-
+    <span class="n">train_scores</span> <span class="o">=</span> <span class="n">check_scoring</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scores</span><span class="p">)(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">train_scores</span></div>
+
+
+<div class="viewcode-block" id="calibration_analysis"><a class="viewcode-back" href="../../optunaz.html#optunaz.evaluate.calibration_analysis">[docs]</a><span class="k">def</span> <span class="nf">calibration_analysis</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">frac_true</span><span class="p">,</span> <span class="n">frac_pred</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">frac_pred</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># weight each bin by the total number of values so that the sum of all bars equal unity</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span>
+        <span class="c1"># calculate fraction of true points across uniform bins</span>
+        <span class="n">frac_true</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+        <span class="c1"># calculate fraction of pred points across uniform true bins</span>
+        <span class="n">frac_pred</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bin_edges</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+        <span class="c1"># convert to cumulative sum for plotting</span>
+        <span class="n">frac_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">frac_true</span><span class="p">)</span>
+        <span class="n">frac_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">frac_pred</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">,</span> <span class="n">frac_true</span><span class="p">,</span> <span class="n">frac_pred</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
