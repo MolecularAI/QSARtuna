@@ -83,7 +83,9 @@ def test_init_automl(
         "--slurm-al-smiles-csv-column",
         "canonical",
         "--slurm-job-prefix",
-        "testaml"
+        "testaml",
+        "--slurm-req-partition",
+        "example_partition"
     ]
     with patch.object(sys, "argv", automl_args):
         automl.main()
@@ -128,9 +130,9 @@ def test_automl_fullflow(
         "--slurm-al-smiles-csv-column",
         "canonical",
         "--slurm-job-prefix",
-        "testaml"
+        "testaml",
         "--slurm-req-partition",
-        "testpartition"
+        "example_partition"
     ]
 
     # Initiate a first run
