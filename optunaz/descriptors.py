@@ -33,6 +33,7 @@ from rdkit.DataStructs.cDataStructs import (
 
 from rdkit.ML.Descriptors.MoleculeDescriptors import MolecularDescriptorCalculator
 from jazzy.api import molecular_vector_from_smiles
+from jazzy.exception import JazzyError
 from sklearn import preprocessing
 from joblib import Parallel, delayed, effective_n_jobs
 from optunaz.config import NameParameterDataclass
@@ -687,8 +688,12 @@ class UnscaledJazzyDescriptors(MolDescriptor):
         else:
             """Return the MMFF94 vector"""
             return molecular_vector_from_smiles(
-                smi, minimisation_method="MMFF94",
-                embedding_max_iterations=int(os.environ.get("QPTUNA_JAZZY_MAX_ITERATIONS", 0)))
+                smi,
+                minimisation_method="MMFF94",
+                embedding_max_iterations=int(
+                    os.environ.get("QPTUNA_JAZZY_MAX_ITERATIONS", 0)
+                ),
+            )
 
     def __post_init__(self):
         # Get Jazzy descriptor names.
@@ -705,6 +710,7 @@ class UnscaledJazzyDescriptors(MolDescriptor):
 
     def calculate_from_smi(self, smi: str) -> np.ndarray | None:
         from jazzy.exception import JazzyError
+
         try:
             d = self._jazzy_descriptors(smi)
             d = [d[jazzy_name] for jazzy_name in self.parameters.jazzy_names]
@@ -787,6 +793,11 @@ class PrecomputedDescriptorFromFile(MolDescriptor):
     parameters: Parameters
 
     def __post_init__(self):
+        if self.parameters.file == None:
+            logger.info(
+                "'file' parameter not set. 'inference_parameters' can be used for inference"
+            )
+            return
         df = pd.read_csv(self.parameters.file, skipinitialspace=True)
         out_cols = [self.parameters.input_column, self.parameters.response_column]
 
@@ -954,7 +965,9 @@ class SmilesAndSideInfoFromFile(MolDescriptor):
             logger.warning(
                 f"Could not find descriptor for {smi} in file {self.parameters.file}."
             )
-            return None
+            empty = np.zeros(len(rows.columns) - 1)
+            empty[:] = np.nan
+            return [smi, empty.reshape(1, len(empty))]
         if len(rows) > 1:
             logger.warning(
                 f"Multiple (conflicting) descriptors found for {smi}, taking the first one."

@@ -1,16 +1,16 @@
 import logging
+import logging.config
 import argparse
 import pathlib
 import pickle
 import sys
-
 import pandas as pd
-
 from optunaz.config import LOG_CONFIG
 
 log_conf = LOG_CONFIG
 logging.config.dictConfig(log_conf)
 logger = logging.getLogger(__name__)
+
 
 class ArgsError(Exception):
     "Thrown when there is an issue with basic args at inference time"

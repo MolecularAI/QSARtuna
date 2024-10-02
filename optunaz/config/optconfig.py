@@ -1508,6 +1508,62 @@ class ChemPropHyperoptRegressor(Algorithm):
     parameters: Parameters
 
 
+@dataclass
+class CustomClassificationModel(Algorithm):
+    """Classifier  from a preexisting pkl model"""
+
+    @type_name("CustomClassificationModelParams")
+    @dataclass
+    class Parameters:
+        preexisting_model: Annotated[
+            str,
+            schema(
+                title="Preexisting Model",
+                description="Path to a preexisting pkl model",
+            ),
+        ] = field(default=None)
+        refit_model: Annotated[
+            int,
+            schema(
+                min=0,
+                max=1,
+                title="Refit Model",
+                description="Whether fit should be called during the trial of the custom model",
+            ),
+        ] = field(default=0)
+
+    name: Literal["CustomClassificationModel"]
+    parameters: Parameters
+
+
+@dataclass
+class CustomRegressionModel(Algorithm):
+    """Classifier  from a preexisting pkl model"""
+
+    @type_name("CustomRegressionModelParams")
+    @dataclass
+    class Parameters:
+        preexisting_model: Annotated[
+            str,
+            schema(
+                title="Preexisting Model",
+                description="Path to a preexisting pkl model",
+            ),
+        ] = field(default=None)
+        refit_model: Annotated[
+            int,
+            schema(
+                min=0,
+                max=1,
+                title="Refit Model",
+                description="Whether fit should be called during the trial of the custom model",
+            ),
+        ] = field(default=0)
+
+    name: Literal["CustomRegressionModel"]
+    parameters: Parameters
+
+
 AnyRegressionAlgorithm = Union[
     Lasso,
     PLSRegression,
@@ -1520,6 +1576,7 @@ AnyRegressionAlgorithm = Union[
     ChemPropRegressor,
     ChemPropRegressorPretrained,
     ChemPropHyperoptRegressor,
+    CustomRegressionModel,
 ]
 
 AnyClassificationAlgorithm = Union[
@@ -1530,6 +1587,7 @@ AnyClassificationAlgorithm = Union[
     SVC,
     ChemPropClassifier,
     ChemPropHyperoptClassifier,
+    CustomClassificationModel,
 ]
 
 
@@ -1681,6 +1739,8 @@ def detect_mode_from_algs(algs: List[AnyAlgorithm]) -> ModelMode:
         ChemPropHyperoptRegressor,
         PRFClassifier,
         Mapie,
+        CustomRegressionModel,
+        KNeighborsRegressor
     ]
     classification_algs = [
         AdaBoostClassifier,
@@ -1690,6 +1750,8 @@ def detect_mode_from_algs(algs: List[AnyAlgorithm]) -> ModelMode:
         ChemPropClassifier,
         ChemPropHyperoptClassifier,
         CalibratedClassifierCVWithVA,
+        CustomClassificationModel,
+        KNeighborsClassifier
     ]
     if all(isanyof(alg, regression_algs) for alg in algs):
         mode = ModelMode.REGRESSION

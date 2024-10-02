@@ -68,20 +68,20 @@ def buildconfig_from_trial(study: Study, trial: FrozenTrial) -> BuildConfig:
         _CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS, {}
     )
     if base_estimator:
-        base_estimator["parameters"][
+        base_estimator[_CE.GENERAL_PARAMETERS][
             _CE.DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC
         ] = aux_weight_pc
 
     algorithm_dict = {
-        "name": trial.params.get("algorithm_name"),
-        "parameters": mkdict(
+        _CE.GENERAL_NAME: trial.params.get(_CE.GENERAL_ALGORITHM_NAME),
+        _CE.GENERAL_PARAMETERS: mkdict(
             {
                 **trial.params,
                 **calibrated_params,
                 **{
-                    "estimator": base_estimator,
-                    "aux_weight_pc": aux_weight_pc,
-                    "pretrained_model": pretrained_model,
+                    _CE.ALGORITHMS_ESTIMATOR: base_estimator,
+                    _CE.DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC: aux_weight_pc,
+                    _CE.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL: pretrained_model,
                 },
             }
         ),
@@ -118,6 +118,7 @@ def buildconfig_from_trial(study: Study, trial: FrozenTrial) -> BuildConfig:
 
 
 def encode_name(CEname, hash=hash):
+    """Encode the parameter names with a hash to enable multi-parameter optimisation"""
     return f"{CEname}__{hash}"
 
 
@@ -609,7 +610,9 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
             low=para.epochs.low,
             high=para.epochs.high,
         )
-        trial.set_user_attr(key="pretrained_model", value=para.pretrained_model)
+        trial.set_user_attr(
+            key=_CE.ALGORITHMS_CHEMPROP_PRETRAINED_MODEL, value=para.pretrained_model
+        )
 
         return build.ChemPropRegressorPretrained.new(
             epochs=epochs,
@@ -623,7 +626,10 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
             high=para.n_folds,
         )
         estimator = suggest_alg_params(trial, para.estimator)
-        trial.set_user_attr(key="estimator", value=serialize(estimator))
+        trial.set_user_attr(
+            key=_CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR,
+            value=serialize(estimator),
+        )
         calibrated_params = {
             _CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_ENSEMBLE: para.ensemble,
             _CE.ALGORITHMS_CALIBRATEDCLASSIFIERCV_METHOD: para.method,
@@ -645,11 +651,39 @@ def suggest_alg_params(trial: FrozenTrial, alg: opt.AnyAlgorithm) -> build.AnyAl
             high=para.mapie_alpha,
         )
         estimator = suggest_alg_params(trial, para.estimator)
-        trial.set_user_attr(key="estimator", value=serialize(estimator))
+        trial.set_user_attr(
+            key=_CE.ALGORITHMS_MAPIE_ESTIMATOR, value=serialize(estimator)
+        )
 
         return build.Mapie.new(
             estimator=estimator,
             mapie_alpha=mapie_alpha,
+        )
+    elif isinstance(alg, opt.CustomRegressionModel):
+        trial.suggest_categorical(
+            name=_encode_name(_CE.ALGORITHMS_CUSTOM_FILE),
+            choices=[para.preexisting_model],
+        )
+        trial.suggest_int(
+            name=_encode_name(_CE.ALGORITHMS_CUSTOM_REFIT_MODEL),
+            low=para.refit_model,
+            high=para.refit_model,
+        )
+        return build.CustomRegressionModel.new(
+            preexisting_model=para.preexisting_model, refit_model=para.refit_model
+        )
+    elif isinstance(alg, opt.CustomClassificationModel):
+        trial.suggest_categorical(
+            name=_encode_name(_CE.ALGORITHMS_CUSTOM_FILE),
+            choices=[para.preexisting_model],
+        )
+        trial.suggest_int(
+            name=_encode_name(_CE.ALGORITHMS_CUSTOM_REFIT_MODEL),
+            low=para.refit_model,
+            high=para.refit_model,
+        )
+        return build.CustomClassificationModel.new(
+            preexisting_model=para.preexisting_model, refit_model=para.refit_model
         )
     else:
         raise ValueError(f"Unrecognized algorithm: {alg.__class__}")

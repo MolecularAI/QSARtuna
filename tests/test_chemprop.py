@@ -30,11 +30,73 @@ def test_optbuild_cli(shared_datadir):
     assert buildconfig is not None
 
 
+def test_optbuild_cli_si(shared_datadir):
+    testargs = [
+        "prog",
+        "--config",
+        str(attach_root_path("examples/optimization/ChemProp_drd2_50_sideinfo.json")),
+        "--best-buildconfig-outpath",
+        str(shared_datadir / "buildconfig.json"),
+        "--best-model-outpath",
+        str(shared_datadir / "best.pkl"),
+        "--merged-model-outpath",
+        str(shared_datadir / "merged.pkl"),
+    ]
+    with patch.object(sys, "argv", testargs):
+        optbuild.main()
+
+    with open(shared_datadir / "buildconfig.json", "rt") as fp:
+        buildconfig = deserialize(BuildConfig, json.load(fp))
+    assert buildconfig is not None
+
+
 def test_optbuild_pretrained(shared_datadir):
     testargs = [
         "prog",
         "--config",
         str(attach_root_path("examples/optimization/ChemProp_drd2_50_retrain.json")),
+        "--best-buildconfig-outpath",
+        str(shared_datadir / "buildconfig.json"),
+        "--best-model-outpath",
+        str(shared_datadir / "best.pkl"),
+        "--merged-model-outpath",
+        str(shared_datadir / "merged.pkl"),
+    ]
+    with patch.object(sys, "argv", testargs):
+        optbuild.main()
+
+    with open(shared_datadir / "buildconfig.json", "rt") as fp:
+        buildconfig = deserialize(BuildConfig, json.load(fp))
+    assert buildconfig is not None
+
+
+def test_optbuild_cli_si(shared_datadir):
+    testargs = [
+        "prog",
+        "--config",
+        str(attach_root_path("examples/optimization/ChemProp_drd2_50_sideinfo.json")),
+        "--best-buildconfig-outpath",
+        str(shared_datadir / "buildconfig.json"),
+        "--best-model-outpath",
+        str(shared_datadir / "best.pkl"),
+        "--merged-model-outpath",
+        str(shared_datadir / "merged.pkl"),
+    ]
+    with patch.object(sys, "argv", testargs):
+        optbuild.main()
+
+    with open(shared_datadir / "buildconfig.json", "rt") as fp:
+        buildconfig = deserialize(BuildConfig, json.load(fp))
+    assert buildconfig is not None
+
+
+def test_optbuild_pretrained_si_cls(shared_datadir):
+    testargs = [
+        "prog",
+        "--config",
+        str(
+            attach_root_path("examples/optimization/ChemProp_drd2_50_sideinfo_cls.json")
+        ),
         "--best-buildconfig-outpath",
         str(shared_datadir / "buildconfig.json"),
         "--best-model-outpath",

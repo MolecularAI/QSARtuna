@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
-import scipy
 from scipy.stats import norm
 from optunaz.utils.preprocessing.transform import (
     LogBase,
     LogNegative,
     ModelDataTransform,
     PTRTransform,
-    ZScales
+    ZScales,
+    AmorProt,
 )
 from optunaz.datareader import Dataset
 from optunaz.utils.preprocessing.deduplicator import KeepFirst
@@ -18,6 +18,7 @@ import numpy.testing as npt
 @pytest.fixture
 def drd2_50(shared_datadir):
     return str(shared_datadir / "DRD2" / "subset-50" / "train.csv")
+
 
 @pytest.fixture
 def peptide_toxinpred3(shared_datadir):
@@ -95,7 +96,19 @@ def test_zscales(peptide_toxinpred3):
         response_column="Class",
         training_dataset_file=peptide_toxinpred3,
         aux_column="Peptide",
-        aux_transform=ZScales.new()
+        aux_transform=ZScales.new(),
     )
     train_smiles, train_y, train_aux, test_smiles, test_y, test_aux = data.get_sets()
     assert train_aux.shape == (8825, 5)
+
+
+def test_amorprot(peptide_toxinpred3):
+    data = Dataset(
+        input_column="Smiles",
+        response_column="Class",
+        training_dataset_file=peptide_toxinpred3,
+        aux_column="Peptide",
+        aux_transform=AmorProt.new(),
+    )
+    train_smiles, train_y, train_aux, test_smiles, test_y, test_aux = data.get_sets()
+    assert train_aux.shape == (8825, 4263)

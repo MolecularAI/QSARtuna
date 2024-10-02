@@ -1,7 +1,9 @@
 import abc
 from dataclasses import dataclass, field
 from typing import Optional, Union, Literal
+import pickle
 
+import numpy as np
 import sklearn
 import sklearn.cross_decomposition
 import sklearn.ensemble
@@ -10,7 +12,7 @@ import sklearn.neighbors
 import sklearn.svm
 import xgboost
 from apischema import schema
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 import optunaz
 from optunaz import algorithms
@@ -489,6 +491,95 @@ class ChemPropHyperoptRegressor(Algorithm):
         )
 
 
+@dataclass
+class CustomClassificationModel(Algorithm):
+    @dataclass
+    class CustomClassificationModelParameters:
+        preexisting_model: str
+        refit_model: int = field(metadata=schema(default=0, min=0, max=1))
+
+    class CustomClassificationEstimator(ClassifierMixin, BaseEstimator):
+        def __init__(self, preexisting_model, refit_model):
+            self.preexisting_model = preexisting_model
+            self.refit_model = refit_model
+            self.classes_ = np.unique([0, 1])
+
+        def fit(self, X, y):
+            if self.refit_model:
+                self.preexisting_model.fit(X, y)
+            else:
+                pass
+
+        def predict(self, y):
+            return self.preexisting_model.predict(y)
+
+        def predict_proba(self, y):
+            return self.preexisting_model.predict_proba(y)
+
+    name: Literal["CustomClassificationModel"]
+    parameters: CustomClassificationModelParameters
+
+    def estimator(self):
+        with open(self.parameters.preexisting_model, "rb") as fid:
+            preexisting_model = pickle.load(fid)
+        from optunaz.model_writer import QptunaModel
+
+        if isinstance(preexisting_model, QptunaModel):
+            preexisting_model = preexisting_model.predictor
+        if isinstance(preexisting_model, self.CustomClassificationEstimator):
+            preexisting_model = preexisting_model.preexisting_model
+        for p in ["predict_proba", "predict"]:
+            assert hasattr(
+                preexisting_model, p
+            ), f"an estimator with '{p}' method must be supplied to CustomClassificationModel"
+        estimator = self.CustomClassificationEstimator(
+            preexisting_model=preexisting_model, refit_model=self.parameters.refit_model
+        )
+        return estimator
+
+
+@dataclass
+class CustomRegressionModel(Algorithm):
+    @dataclass
+    class CustomRegressionModelParameters:
+        preexisting_model: str
+        refit_model: int = field(metadata=schema(default=0, min=0, max=1))
+
+    class CustomRegressionEstimator(RegressorMixin, BaseEstimator):
+        def __init__(self, preexisting_model, refit_model):
+            self.preexisting_model = preexisting_model
+            self.refit_model = refit_model
+
+        def fit(self, X, y):
+            if self.refit_model:
+                self.preexisting_model.fit(X, y)
+            else:
+                pass
+
+        def predict(self, y):
+            return self.preexisting_model.predict(y)
+
+    name: Literal["CustomRegressionModel"]
+    parameters: CustomRegressionModelParameters
+
+    def estimator(self):
+        with open(self.parameters.preexisting_model, "rb") as fid:
+            preexisting_model = pickle.load(fid)
+        from optunaz.model_writer import QptunaModel
+
+        if isinstance(preexisting_model, QptunaModel):
+            preexisting_model = preexisting_model.predictor
+        if isinstance(preexisting_model, self.CustomRegressionEstimator):
+            preexisting_model = preexisting_model.preexisting_model
+        assert hasattr(
+            preexisting_model, "predict"
+        ), f"an estimator with 'predict' method must be supplied to CustomRegressionModel"
+        estimator = self.CustomRegressionEstimator(
+            preexisting_model=preexisting_model, refit_model=self.parameters.refit_model
+        )
+        return estimator
+
+
 AnyUncalibratedClassifier = Union[
     AdaBoostClassifier,
     KNeighborsClassifier,
@@ -500,6 +591,7 @@ AnyUncalibratedClassifier = Union[
     ChemPropRegressorPretrained,
     ChemPropHyperoptClassifier,
     ChemPropHyperoptRegressor,
+    CustomClassificationModel,
 ]
 
 
@@ -542,6 +634,7 @@ AnyRegression = Union[
     ChemPropRegressor,
     ChemPropHyperoptRegressor,
     ChemPropRegressorPretrained,
+    CustomRegressionModel,
 ]
 
 MapieCompatible = Union[
@@ -553,6 +646,7 @@ MapieCompatible = Union[
     SVR,
     XGBRegressor,
     PRFClassifier,
+    CustomRegressionModel,
 ]
 
 

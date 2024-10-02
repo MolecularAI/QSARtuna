@@ -1,7 +1,6 @@
 from optunaz.datareader import Dataset
 from optunaz.utils.preprocessing.deduplicator import KeepAllNoDeduplication
 from optunaz.algorithms.chem_prop import ChemPropRegressor
-from optunaz.descriptors import SmilesFromFile
 import numpy as np
 
 
