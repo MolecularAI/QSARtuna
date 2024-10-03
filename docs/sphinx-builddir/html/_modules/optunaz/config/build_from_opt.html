@@ -150,20 +150,20 @@
         <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS</span><span class="p">,</span> <span class="p">{}</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">base_estimator</span><span class="p">:</span>
-        <span class="n">base_estimator</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span>
+        <span class="n">base_estimator</span><span class="p">[</span><span class="n">_CE</span><span class="o">.</span><span class="n">GENERAL_PARAMETERS</span><span class="p">][</span>
             <span class="n">_CE</span><span class="o">.</span><span class="n">DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">aux_weight_pc</span>
 
     <span class="n">algorithm_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algorithm_name&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">mkdict</span><span class="p">(</span>
+        <span class="n">_CE</span><span class="o">.</span><span class="n">GENERAL_NAME</span><span class="p">:</span> <span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">GENERAL_ALGORITHM_NAME</span><span class="p">),</span>
+        <span class="n">_CE</span><span class="o">.</span><span class="n">GENERAL_PARAMETERS</span><span class="p">:</span> <span class="n">mkdict</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="o">**</span><span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">calibrated_params</span><span class="p">,</span>
                 <span class="o">**</span><span class="p">{</span>
-                    <span class="s2">&quot;estimator&quot;</span><span class="p">:</span> <span class="n">base_estimator</span><span class="p">,</span>
-                    <span class="s2">&quot;aux_weight_pc&quot;</span><span class="p">:</span> <span class="n">aux_weight_pc</span><span class="p">,</span>
-                    <span class="s2">&quot;pretrained_model&quot;</span><span class="p">:</span> <span class="n">pretrained_model</span><span class="p">,</span>
+                    <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_ESTIMATOR</span><span class="p">:</span> <span class="n">base_estimator</span><span class="p">,</span>
+                    <span class="n">_CE</span><span class="o">.</span><span class="n">DESCRIPTORS_SMILES_AND_SI_AUX_WEIGHT_PC</span><span class="p">:</span> <span class="n">aux_weight_pc</span><span class="p">,</span>
+                    <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL</span><span class="p">:</span> <span class="n">pretrained_model</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">}</span>
         <span class="p">),</span>
@@ -200,6 +200,7 @@
 
 
 <div class="viewcode-block" id="encode_name"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.build_from_opt.encode_name">[docs]</a><span class="k">def</span> <span class="nf">encode_name</span><span class="p">(</span><span class="n">CEname</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="nb">hash</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode the parameter names with a hash to enable multi-parameter optimisation&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CEname</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="nb">hash</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
@@ -691,7 +692,9 @@
             <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">epochs</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;pretrained_model&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">pretrained_model</span><span class="p">)</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CHEMPROP_PRETRAINED_MODEL</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">pretrained_model</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">ChemPropRegressorPretrained</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
             <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
@@ -705,7 +708,10 @@
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">n_folds</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">estimator</span> <span class="o">=</span> <span class="n">suggest_alg_params</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">para</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span>
-        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">serialize</span><span class="p">(</span><span class="n">estimator</span><span class="p">))</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_ESTIMATOR</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">serialize</span><span class="p">(</span><span class="n">estimator</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="n">calibrated_params</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_ENSEMBLE</span><span class="p">:</span> <span class="n">para</span><span class="o">.</span><span class="n">ensemble</span><span class="p">,</span>
             <span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_METHOD</span><span class="p">:</span> <span class="n">para</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
@@ -727,11 +733,39 @@
             <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">mapie_alpha</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">estimator</span> <span class="o">=</span> <span class="n">suggest_alg_params</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">para</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span>
-        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">serialize</span><span class="p">(</span><span class="n">estimator</span><span class="p">))</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_MAPIE_ESTIMATOR</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">serialize</span><span class="p">(</span><span class="n">estimator</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">Mapie</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
             <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span>
             <span class="n">mapie_alpha</span><span class="o">=</span><span class="n">mapie_alpha</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">CustomRegressionModel</span><span class="p">):</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CUSTOM_FILE</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="n">para</span><span class="o">.</span><span class="n">preexisting_model</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CUSTOM_REFIT_MODEL</span><span class="p">),</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">refit_model</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">refit_model</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">CustomRegressionModel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="n">preexisting_model</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="n">refit_model</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">refit_model</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">CustomClassificationModel</span><span class="p">):</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CUSTOM_FILE</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="n">para</span><span class="o">.</span><span class="n">preexisting_model</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">_CE</span><span class="o">.</span><span class="n">ALGORITHMS_CUSTOM_REFIT_MODEL</span><span class="p">),</span>
+            <span class="n">low</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">refit_model</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">refit_model</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">build</span><span class="o">.</span><span class="n">CustomClassificationModel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="n">preexisting_model</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="n">refit_model</span><span class="o">=</span><span class="n">para</span><span class="o">.</span><span class="n">refit_model</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized algorithm: </span><span class="si">{</span><span class="n">alg</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>

@@ -114,6 +114,7 @@
 
 <span class="kn">from</span> <span class="nn">rdkit.ML.Descriptors.MoleculeDescriptors</span> <span class="kn">import</span> <span class="n">MolecularDescriptorCalculator</span>
 <span class="kn">from</span> <span class="nn">jazzy.api</span> <span class="kn">import</span> <span class="n">molecular_vector_from_smiles</span>
+<span class="kn">from</span> <span class="nn">jazzy.exception</span> <span class="kn">import</span> <span class="n">JazzyError</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">effective_n_jobs</span>
 <span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">NameParameterDataclass</span>
@@ -768,8 +769,12 @@
         <span class="k">else</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Return the MMFF94 vector&quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="n">molecular_vector_from_smiles</span><span class="p">(</span>
-                <span class="n">smi</span><span class="p">,</span> <span class="n">minimisation_method</span><span class="o">=</span><span class="s2">&quot;MMFF94&quot;</span><span class="p">,</span>
-                <span class="n">embedding_max_iterations</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;QPTUNA_JAZZY_MAX_ITERATIONS&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+                <span class="n">smi</span><span class="p">,</span>
+                <span class="n">minimisation_method</span><span class="o">=</span><span class="s2">&quot;MMFF94&quot;</span><span class="p">,</span>
+                <span class="n">embedding_max_iterations</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;QPTUNA_JAZZY_MAX_ITERATIONS&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Get Jazzy descriptor names.</span>
@@ -786,6 +791,7 @@
 
 <div class="viewcode-block" id="UnscaledJazzyDescriptors.calculate_from_smi"><a class="viewcode-back" href="../../optunaz.html#optunaz.descriptors.UnscaledJazzyDescriptors.calculate_from_smi">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_from_smi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smi</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">jazzy.exception</span> <span class="kn">import</span> <span class="n">JazzyError</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jazzy_descriptors</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">jazzy_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">jazzy_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">jazzy_names</span><span class="p">]</span>
@@ -868,6 +874,11 @@
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Parameters</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;file&#39; parameter not set. &#39;inference_parameters&#39; can be used for inference&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">out_cols</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">input_column</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">response_column</span><span class="p">]</span>
 
@@ -1035,7 +1046,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Could not find descriptor for </span><span class="si">{</span><span class="n">smi</span><span class="si">}</span><span class="s2"> in file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">file</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">empty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">empty</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">smi</span><span class="p">,</span> <span class="n">empty</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">empty</span><span class="p">))]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Multiple (conflicting) descriptors found for </span><span class="si">{</span><span class="n">smi</span><span class="si">}</span><span class="s2">, taking the first one.&quot;</span>

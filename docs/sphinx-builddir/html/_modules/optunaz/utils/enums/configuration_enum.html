@@ -88,6 +88,8 @@
     <span class="c1"># all that are general keywords</span>
     <span class="n">GENERAL_DISABLED</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span>
     <span class="n">GENERAL_PARAMETERS</span> <span class="o">=</span> <span class="s2">&quot;parameters&quot;</span>
+    <span class="n">GENERAL_NAME</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+    <span class="n">GENERAL_ALGORITHM_NAME</span> <span class="o">=</span> <span class="s2">&quot;algorithm_name&quot;</span>
 
     <span class="c1"># all that has to do with the actual task</span>
     <span class="c1"># ---------</span>
@@ -188,6 +190,7 @@
     <span class="c1"># all that has to do with algorithms, general keywords</span>
     <span class="c1"># ---------</span>
     <span class="n">ALGORITHMS</span> <span class="o">=</span> <span class="s2">&quot;algorithms&quot;</span>
+    <span class="n">ALGORITHMS_ESTIMATOR</span> <span class="o">=</span> <span class="s2">&quot;estimator&quot;</span>
     <span class="n">ALGORITHMS_LOW</span> <span class="o">=</span> <span class="s2">&quot;low&quot;</span>
     <span class="n">ALGORITHMS_HIGH</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span>
     <span class="n">ALGORITHMS_Q</span> <span class="o">=</span> <span class="s2">&quot;q&quot;</span>
@@ -293,9 +296,16 @@
     <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS</span> <span class="o">=</span> <span class="s2">&quot;n_folds&quot;</span>
     <span class="n">ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS</span> <span class="o">=</span> <span class="s2">&quot;calibrated_params&quot;</span>
 
+    <span class="c1"># algorithm: CustomModels</span>
+    <span class="n">ALGORITHMS_CUSTOMREGRESSIONMODEL</span> <span class="o">=</span> <span class="s2">&quot;CustomRegressionModel&quot;</span>
+    <span class="n">ALGORITHMS_CUSTOMCLASSIFIERMODEL</span> <span class="o">=</span> <span class="s2">&quot;CustomClassifierModel&quot;</span>
+    <span class="n">ALGORITHMS_CUSTOM_FILE</span> <span class="o">=</span> <span class="s2">&quot;preexisting_model&quot;</span>
+    <span class="n">ALGORITHMS_CUSTOM_REFIT_MODEL</span> <span class="o">=</span> <span class="s2">&quot;refit_model&quot;</span>
+
     <span class="c1"># algorithm: Mapie specific</span>
     <span class="n">ALGORITHMS_MAPIE</span> <span class="o">=</span> <span class="s2">&quot;Mapie&quot;</span>
     <span class="n">ALGORITHMS_MAPIE_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;mapie_alpha&quot;</span>
+    <span class="n">ALGORITHMS_MAPIE_ESTIMATOR</span> <span class="o">=</span> <span class="s2">&quot;estimator&quot;</span>
 
     <span class="c1"># try to find the internal value and return</span>
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>

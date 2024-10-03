@@ -661,10 +661,11 @@ required<span class="w"> </span>named<span class="w"> </span>arguments:
 </section>
 <section id="adding-machine-learning-algorithms-to-qsartuna">
 <h2>Adding machine learning algorithms to QSARtuna<a class="headerlink" href="#adding-machine-learning-algorithms-to-qsartuna" title="Permalink to this heading"></a></h2>
+<p>NB: CustomClassificationModel and CustomRegressionModel types are now available to allow for custom machine learning algorithms within QSARtuna (see tutorial for details)</p>
 <p>1.) (Optional) consider adding .py algorithm code to the <code class="docutils literal notranslate"><span class="pre">optunaz/algorithms/</span></code> directory, so this can be imported later</p>
 <p>2.) Add the algorithm to <code class="docutils literal notranslate"><span class="pre">optunaz.config.optconfig.py</span></code>. For example, create a class among the existing algorithms like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">YourAglrotihm</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">YourAlgorithm</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Your description goes here</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

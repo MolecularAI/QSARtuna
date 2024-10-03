@@ -34,7 +34,7 @@ if [ -f $temporal_file ] ; then
   echo "Temporal predictions generating"
 
   singularity exec --nv \
-    /projects/cc/mai/containers/Qptuna_latest.sif \
+    /projects/cc/mai/containers/QSARtuna_latest.sif \
     /opt/qptuna/.venv/bin/qptuna-predict \
     --input-smiles-csv-file $temporal_file \
     --input-smiles-csv-column $smiles_col \
@@ -57,10 +57,10 @@ else
 
     if [ ! -f $task_file_pkl ]; then
 
-      echo "Build Qptuna with temporal evaluation"
+      echo "Build QSARtuna with temporal evaluation"
 
       singularity exec --nv \
-        /projects/cc/mai/containers/Qptuna_latest.sif \
+        /projects/cc/mai/containers/QSARtuna_latest.sif \
         /opt/qptuna/.venv/bin/qptuna-optimize \
         --config $task_file_json \
         --merged-model-outpath $task_file_pkl \
@@ -71,7 +71,7 @@ else
     echo "Writing evaluation results to $metafile"
 
     singularity exec --nv \
-    /projects/cc/mai/containers/Qptuna_automl.sif \
+    /projects/cc/mai/containers/QSARtuna_automl.sif \
     /opt/qptuna/.venv/bin/qptuna-metadata \
     --pkl $task_file_eval \
     --meta $metafile
@@ -83,7 +83,7 @@ else
     echo "Active learning predictions generating"
 
     singularity exec --nv \
-    /projects/cc/mai/containers/Qptuna_latest.sif \
+    /projects/cc/mai/containers/QSARtuna_latest.sif \
     /opt/qptuna/.venv/bin/qptuna-predict \
     --input-smiles-csv-file $task_file_al_input \
     --input-smiles-csv-column $task_file_al_smiles \

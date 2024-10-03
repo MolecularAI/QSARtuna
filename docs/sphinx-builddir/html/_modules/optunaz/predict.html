@@ -80,18 +80,18 @@
              
   <h1>Source code for optunaz.predict</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-
 <span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">LOG_CONFIG</span>
 
 <span class="n">log_conf</span> <span class="o">=</span> <span class="n">LOG_CONFIG</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">log_conf</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="ArgsError"><a class="viewcode-back" href="../../optunaz.html#optunaz.predict.ArgsError">[docs]</a><span class="k">class</span> <span class="nc">ArgsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="s2">&quot;Thrown when there is an issue with basic args at inference time&quot;</span></div>

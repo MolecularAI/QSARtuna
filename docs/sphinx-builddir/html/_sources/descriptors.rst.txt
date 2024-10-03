@@ -102,12 +102,6 @@ AmorProtDescriptors
     :members:
 
 
-PathFP
-######
-..  autoclass:: optunaz.descriptors.PathFP
-    :members:
-
-
 UnscaledMAPC
 ############
 ..  autoclass:: optunaz.descriptors.UnscaledMAPC

@@ -120,3 +120,14 @@ Mapie
 ..  autoclass:: optunaz.config.optconfig.Mapie
     :members:
 
+
+CustomRegressionModel
+#####################
+..  autoclass:: optunaz.config.optconfig.CustomRegressionModel
+    :members:
+
+
+CustomClassificationModel
+#####################
+..  autoclass:: optunaz.config.optconfig.CustomClassificationModel
+    :members:

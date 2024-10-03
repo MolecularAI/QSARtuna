@@ -37,6 +37,35 @@ MoleculeDataLoader = partial(_MoleculeDataLoader, num_workers=0)
 chemprop.interpret.MoleculeDataLoader = MoleculeDataLoader
 
 
+class CaptureStdOut(list):
+    def __enter__(self):
+        self._stdout = sys.stdout
+        sys.stdout = self._stringio = StringIO()
+        return self
+
+    def __exit__(self, *args):
+        self.extend(self._stringio.getvalue().splitlines())
+        del self._stringio
+        sys.stdout = self._stdout
+
+
+class CaptureStdOutErr(list):
+    def __enter__(self):
+        self._stdout = sys.stdout
+        self._stderr = sys.stderr
+        sys.stdout = self._stringio = StringIO()
+        sys.stderr = self._stringioerr = StringIO()
+        return self
+
+    def __exit__(self, *args):
+        self.extend(self._stringio.getvalue().splitlines())
+        self.extend(self._stringioerr.getvalue().splitlines())
+        del self._stringio
+        del self._stringioerr
+        sys.stdout = self._stdout
+        sys.stderr = self._stderr
+
+
 class CaptureStdOutErr(list):
     def __enter__(self):
         self._stdout = sys.stdout
@@ -189,7 +218,6 @@ class BaseChemPropHyperopt(BaseEstimator):
                 X_aux = X[:, 2:]
             X = np.array(X[:, 0].reshape(len(X), 1))
         self.x_aux_ = X_aux
-        self.side_info_ = side_info
         self.X_ = X
 
         y = np.array(y)
@@ -199,21 +227,24 @@ class BaseChemPropHyperopt(BaseEstimator):
         if self.dataset_type == "classification":
             self.classes_ = unique_labels(y).astype(np.uint8)
             self._estimator_type = "classifier"
-            if self.side_info_ is not None:
+            if side_info is not None:
                 try:
-                    _ = unique_labels(self.side_info_)
-                except ValueError:
-                    self.side_info_ = binarise_side_info(self.side_info_)
+                    _ = unique_labels(side_info)
+                except (ValueError, TypeError):
+                    side_info = binarise_side_info(side_info, cls=True)
+                    side_info = process_side_info(
+                        side_info, y=y, rfe=self.side_info_rfe
+                    )
             y = y.astype(np.uint8)
         elif self.dataset_type == "regression":
+            if side_info is not None:
+                side_info = binarise_side_info(side_info)
+                side_info = process_side_info(side_info, y=y, rfe=self.side_info_rfe)
             self._estimator_type = "regressor"
 
-        if self.side_info_ is not None:
-            if self.side_info_rfe:
-                si = process_side_info(self.side_info_, y=y)
-            else:
-                si = process_side_info(self.side_info_)
-            y = np.hstack((y, si))
+        self.side_info_ = side_info
+        if side_info is not None:
+            y = np.hstack((y, side_info))
         self.y_ = y
 
         if self.search_parameter_level == "auto":
@@ -308,7 +339,10 @@ class BaseChemPropHyperopt(BaseEstimator):
                                 "--config_save_path",
                                 f"{config_save_path.name}",
                             ]
-                            train_arguments += ["--config_path", f"{config_save_path.name}"]
+                            train_arguments += [
+                                "--config_path",
+                                f"{config_save_path.name}",
+                            ]
                             hyp_args = chemprop.args.HyperoptArgs().parse_args(
                                 hyp_arguments
                             )
@@ -320,7 +354,9 @@ class BaseChemPropHyperopt(BaseEstimator):
                                 args=train_args, train_func=chemprop.train.run_training
                             )
                     else:
-                        train_args = chemprop.args.TrainArgs().parse_args(train_arguments)
+                        train_args = chemprop.args.TrainArgs().parse_args(
+                            train_arguments
+                        )
                         chemprop.train.cross_validate(
                             args=train_args, train_func=chemprop.train.run_training
                         )
@@ -517,7 +553,7 @@ class BaseChemPropHyperopt(BaseEstimator):
                 X = pd.DataFrame(X, columns=["smiles"])
                 X.to_csv(data_path.name, index=False)
                 args = chemprop.args.InterpretArgs().parse_args(intrprt_args)
-                with CaptureStdOutErr() as intrprt:
+                with CaptureStdOut() as intrprt:
                     interpret(args=args)
         intrprt = [
             line.split(",")
@@ -573,7 +609,9 @@ class BaseChemPropHyperopt(BaseEstimator):
                 elif fingerprint_type == "last_FFN":
                     numpy_fp = np.zeros((len(X), trainargs.ffn_hidden_size))
                 else:
-                    raise ValueError("fingerprint_type should be one of ['MPN','last_FFN']")
+                    raise ValueError(
+                        "fingerprint_type should be one of ['MPN','last_FFN']"
+                    )
                 numpy_fp[:] = np.nan
                 try:
                     fps = chemprop.train.molecule_fingerprint.molecule_fingerprint(

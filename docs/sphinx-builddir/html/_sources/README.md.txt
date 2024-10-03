@@ -583,13 +583,15 @@ or in a new config:
 
 ## Adding machine learning algorithms to QSARtuna
 
+NB: CustomClassificationModel and CustomRegressionModel types are now available to allow for custom machine learning algorithms within QSARtuna (see tutorial for details)
+
 1.) (Optional) consider adding .py algorithm code to the `optunaz/algorithms/` directory, so this can be imported later
 
 2.) Add the algorithm to `optunaz.config.optconfig.py`. For example, create a class among the existing algorithms like so:
 
 ```python
 @dataclass
-class YourAglrotihm(Algorithm):
+class YourAlgorithm(Algorithm):
     """Your description goes here
     """
 

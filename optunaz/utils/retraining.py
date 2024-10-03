@@ -130,7 +130,7 @@ class SlurmMemoryExceeded(Exception):
 
 class SlurmJobSkip(Exception):
 	"""
-	Raised when an itcode is no longer trialed with Qptuna (i.e. due to incompatibility)
+	Raised when an itcode is no longer trialed with QSARtuna (i.e. due to incompatibility)
 	"""
 
 	pass

@@ -142,11 +142,11 @@ Create conda environment with Jupyter and Install QSARtuna there:
 ```shell
 module purge
 module load Miniconda3
-conda create --name my_env_with_qsartuna python=3.10.10 jupyter pip
+conda create --name my_env_with_qsartuna python=3.11 jupyter pip # any python ^3.10
 conda activate my_env_with_qsartuna
 module purge  # Just in case.
 which python  # Check. Should output path that contains "my_env_with_qsartuna".
-python -m pip install https://github.com/MolecularAI/QSARtuna/releases/download/3.1.1/qsartuna-3.1.1.tar.gz
+python -m pip install https://github.com/MolecularAI/QSARtuna/releases/download/3.1.4/qsartuna-3.1.4.tar.gz
 ```
 
 Then you can use QSARtuna inside your Notebook:
@@ -213,7 +213,7 @@ QSARtuna can be deployed directly from the CLI
 
 To run commands QSARtuna uses the following syntax:
 ```shell
-qsartuna-<optimize|build|predict|schemagen> <command>
+qsartuna-<optimize|build|predict|schemagen|automl|metadata|convert> <command>
 ```
 
 We can run three-step-process from command line with the following command:
@@ -436,12 +436,12 @@ required named arguments:
 
 ```
 
-An example of how to run this in SCP would be:
+An example of how to run this would be:
 
 ```shell
 qsartuna-automl  --input-data "tests/data/automl/*"  --email <email>.com  --user_name <user_name> \
  --input-smiles-csv-column canonical  --input-activity-csv-column molwt --input-task-csv-column one_taskid  \
- --input-initial-template examples/auto^C/config.initial.template  \
+ --input-initial-template examples/automl/config.initial.template  \
  --input-retrain-template examples/automl/config.retrain.template  \
  --input-slurm-template examples/slurm-scripts/automl.template  \
  --n-cores 1 -vvv --slurm-al-pool tests/data/DRD2/subset-50/train.csv  \
@@ -583,13 +583,15 @@ or in a new config:
 
 ## Adding machine learning algorithms to QSARtuna
 
+NB: CustomClassificationModel and CustomRegressionModel algorithm options are now available to allow customised algorithms within QSARtuna (see tutorial for details). This new feature is experimental and should be used with caution
+
 1.) (Optional) consider adding .py algorithm code to the `optunaz/algorithms/` directory, so this can be imported later
 
 2.) Add the algorithm to `optunaz.config.optconfig.py`. For example, create a class among the existing algorithms like so:
 
 ```python
 @dataclass
-class YourAglrotihm(Algorithm):
+class YourAlgorithm(Algorithm):
     """Your description goes here
     """
 
@@ -785,3 +787,44 @@ or in a new config:
     }
   ]
 }
+
+
+## Converting models to QSARtuna models
+
+QSARtuna has a CLI helper to convert models to QSARtuna models
+        
+We can perform this with the following command:
+
+```shell
+  qsartuna-convert \
+  --input-model-file {project_folder}/sklearn_model.pkl\
+  --input-model-mode regression \
+  --output-model-path {project_folder}/qsartuna.pkl \
+```
+
+The convert CLI tool accepts the following command line arguments:
+
+```
+shell
+qsartuna-convert -h
+usage: qsartuna-convert [-h] --input-model-file INPUT_MODEL_FILE --input-model-mode INPUT_MODEL_MODE --output-model-path OUTPUT_MODEL_PATH [--input-json-descriptor-file INPUT_JSON_DESCRIPTOR_FILE] [--wrap-for-uncertainty]
+
+Convert an existing sklearn(-like) model into a QSARtuna model
+
+options:
+  -h, --help            show this help message and exit
+  --input-json-descriptor-file INPUT_JSON_DESCRIPTOR_FILE
+                        Name of input JSON file with descriptor configuration. Defaults to PrecomputedDescriptorFromFile
+  --wrap-for-uncertainty
+                        Whether to wrap regression in MAPIE or classification in VennAbers Calibrated Classifiers for uncertainty support
+
+required named arguments:
+  --input-model-file INPUT_MODEL_FILE
+                        Model file name.
+  --input-model-mode INPUT_MODEL_MODE
+                        Classification or regression mode for the existing model.
+  --output-model-path OUTPUT_MODEL_PATH
+                        Path where to write the converted model.
+```
+
+Advanced options for the QSARtuna convert CLI tool are covered in the QSARtuna Notebook tutorial

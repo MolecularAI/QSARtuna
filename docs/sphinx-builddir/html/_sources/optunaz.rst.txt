@@ -29,6 +29,14 @@ optunaz.builder module
    :undoc-members:
    :show-inheritance:
 
+optunaz.convert module
+----------------------
+
+.. automodule:: optunaz.convert
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 optunaz.datareader module
 -------------------------
 

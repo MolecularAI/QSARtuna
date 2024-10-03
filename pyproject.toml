@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qsartuna"
-version = "3.1.3"
+version = "3.1.4"
 description = "QSARtuna: QSAR using Optimization for Hyperparameter Tuning"
 authors = ["Molecular AI, AstraZeneca"]
 license = "Apache-2.0"
@@ -68,8 +68,9 @@ qsartuna-optimize = "qsartuna.optbuild:main"
 qsartuna-build = "qsartuna.optbuild:main"
 qsartuna-predict = "qsartuna.predict:main"
 qsartuna-schemagen = "qsartuna.schemagen:main"
-qptuna-automl = "qsartuna.automl:main"
-qptuna-metadata = "qsartuna.automl:meta"
+qsartuna-automl = "qsartuna.automl:main"
+qsartuna-metadata = "qsartuna.automl:meta"
+qsartuna-convert = "qsartuna.convert:main"
 
 [build-system]
 requires = ["poetry-core>=1.5.2"]

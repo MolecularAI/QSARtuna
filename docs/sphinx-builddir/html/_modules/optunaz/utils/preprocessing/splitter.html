@@ -159,22 +159,47 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Random split.&quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Random&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Random&quot;</span>
-    <span class="n">fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Fraction of samples to use for test set&quot;</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span>
+    <span class="n">fraction</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">float</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Fraction samples&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Fraction of samples to use for test set.&quot;</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">schema</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Seed for random number generator&quot;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Seed for random number generator, for repeatable splits.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">leave_out</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Leave out fraction&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Fraction of samples that will not be used in train or test set, to reduce compute time.&quot;</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
 <div class="viewcode-block" id="Random.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Random.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShuffleSplit</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leave_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">train_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">leave_out</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">train_size</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;not possible to leave out </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">leave_out</span><span class="si">}</span><span class="s2">, since no train remains given </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="si">}</span><span class="s2"> test fraction&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_size</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">ShuffleSplit</span><span class="p">(</span>
             <span class="n">n_splits</span><span class="o">=</span><span class="n">n_splits</span><span class="p">,</span>
             <span class="n">test_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">,</span>
-            <span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
@@ -215,23 +240,34 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Stratified&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Stratified&quot;</span>
-
     <span class="n">fraction</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="nb">float</span><span class="p">,</span>
         <span class="n">schema</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test fraction&quot;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Fraction samples&quot;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Fraction of samples to use for test set.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+            <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
     <span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span>
-
     <span class="n">seed</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
-        <span class="nb">int</span><span class="p">,</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">schema</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Random seed&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Random seed, for repeatable splits.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Seed for random number generator&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Seed for random number generator, for repeatable splits.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
     <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-
+    <span class="n">leave_out</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">schema</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Leave out fraction&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Fraction of samples that will not be used in train or test set, to reduce compute time.&quot;</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">|</span> <span class="n">none_as_undefined</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">bins</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">schema</span><span class="p">(</span>
@@ -239,14 +275,22 @@
             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Algorithm to use for determining histogram bin edges,&quot;</span>
             <span class="s2">&quot; see numpy.histogram for possible options, or use default &#39;fd&#39;&quot;</span><span class="p">,</span>
         <span class="p">),</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fd&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fd_merge&quot;</span>
 
 <div class="viewcode-block" id="Stratified.get_sklearn_splitter"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.Stratified.get_sklearn_splitter">[docs]</a>    <span class="k">def</span> <span class="nf">get_sklearn_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SklearnSplitter</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leave_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">train_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">leave_out</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">train_size</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;not possible to leave out </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">leave_out</span><span class="si">}</span><span class="s2">, since no train remains given </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="si">}</span><span class="s2"> test fraction&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_size</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">HistogramStratifiedShuffleSplit</span><span class="p">(</span>
             <span class="n">n_splits</span><span class="o">=</span><span class="n">n_splits</span><span class="p">,</span>
             <span class="n">test_fraction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">,</span>
             <span class="n">bins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 
@@ -374,6 +418,7 @@
     <span class="n">n_splits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
     <span class="n">bins</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fd_merge&quot;</span>
     <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+    <span class="n">train_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
 
 <div class="viewcode-block" id="HistogramStratifiedShuffleSplit.get_n_splits"><a class="viewcode-back" href="../../../../optunaz.utils.preprocessing.html#optunaz.utils.preprocessing.splitter.HistogramStratifiedShuffleSplit.get_n_splits">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_splits</span></div>
@@ -390,7 +435,7 @@
         <span class="n">sss</span> <span class="o">=</span> <span class="n">StratifiedShuffleSplit</span><span class="p">(</span>
             <span class="n">n_splits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_splits</span><span class="p">,</span>
             <span class="n">test_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_fraction</span><span class="p">,</span>
-            <span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">train_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">sss</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_sss</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span></div></div>
@@ -416,7 +461,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">column_name</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
-        <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="nb">str</span><span class="p">,</span>
         <span class="n">schema</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Column Name&quot;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Name of the column with labels for splits. Use `-1` to denote datapoints for the train set&quot;</span><span class="p">,</span>

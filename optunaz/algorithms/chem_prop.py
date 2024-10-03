@@ -97,6 +97,7 @@ class CaptureStdOut(list):
         del self._stringio
         sys.stdout = self._stdout
 
+
 class CaptureStdOutErr(list):
     def __enter__(self):
         self._stdout = sys.stdout
@@ -112,6 +113,7 @@ class CaptureStdOutErr(list):
         del self._stringioerr
         sys.stdout = self._stdout
         sys.stderr = self._stderr
+
 
 def save_model_memory(model_dir):
     tarblob = io.BytesIO()
@@ -211,7 +213,6 @@ class BaseChemProp(BaseEstimator):
                 X_aux = X[:, 2:]
             X = np.array(X[:, 0].reshape(len(X), 1))
         self.x_aux_ = X_aux
-        self.side_info_ = side_info
         self.X_ = X
 
         y = np.array(y)
@@ -221,21 +222,24 @@ class BaseChemProp(BaseEstimator):
         if self.dataset_type == "classification":
             self.classes_ = unique_labels(y).astype(np.uint8)
             self._estimator_type = "classifier"
-            if self.side_info_ is not None:
+            if side_info is not None:
                 try:
-                    _ = unique_labels(self.side_info_)
-                except ValueError:
-                    self.side_info_ = binarise_side_info(self.side_info_)
+                    _ = unique_labels(side_info)
+                except (ValueError, TypeError):
+                    side_info = binarise_side_info(side_info, cls=True)
+                    side_info = process_side_info(
+                        side_info, y=y, rfe=self.side_info_rfe
+                    )
             y = y.astype(np.uint8)
         elif self.dataset_type == "regression":
+            if side_info is not None:
+                side_info = binarise_side_info(side_info)
+                side_info = process_side_info(side_info, y=y, rfe=self.side_info_rfe)
             self._estimator_type = "regressor"
 
-        if self.side_info_ is not None:
-            if self.side_info_rfe:
-                si = process_side_info(self.side_info_, y=y)
-            else:
-                si = process_side_info(self.side_info_)
-            y = np.hstack((y, si))
+        self.side_info_ = side_info
+        if side_info is not None:
+            y = np.hstack((y, side_info))
         self.y_ = y
         self.target_columns = list(range(y.shape[1]))
 
@@ -771,7 +775,7 @@ class ChemPropPretrained(BaseChemProp):
                     "side_info_rfe not supported for pretrained model"
                 )
             else:
-                si = process_side_info(self.side_info_)
+                si = process_side_info(self.side_info_, y=y)
             y = np.hstack((y, si))
         self.y_ = y
         self.target_columns = list(range(y.shape[1]))

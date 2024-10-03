@@ -118,8 +118,18 @@
 <h2>Random<a class="headerlink" href="#random" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Random">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Random" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Random" title="Permalink to this definition"></a></dt>
 <dd><p>Random split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>Literal</em>) – </p></li>
+<li><p><strong>fraction</strong> (<em>float</em>) – Fraction of samples to use for test set. - minimum: 0.0, maximum: 0.999, title: Fraction samples</p></li>
+<li><p><strong>seed</strong> (<em>Optional</em>) – Seed for random number generator, for repeatable splits. - title: Seed for random number generator</p></li>
+<li><p><strong>leave_out</strong> (<em>Optional</em>) – Fraction of samples that will not be used in train or test set, to reduce compute time. - minimum: 0.0, maximum: 0.999, title: Leave out fraction</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -151,14 +161,15 @@ here we return only one split.</p>
 <h2>Stratified<a class="headerlink" href="#stratified" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.utils.preprocessing.splitter.Stratified">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Stratified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stratified'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fd'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Stratified"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.utils.preprocessing.splitter.</span></span><span class="sig-name descname"><span class="pre">Stratified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stratified'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fd_merge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/utils/preprocessing/splitter.html#Stratified"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.utils.preprocessing.splitter.Stratified" title="Permalink to this definition"></a></dt>
 <dd><p>Real-valued Stratified Shuffle Split.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>Literal</em>) – </p></li>
-<li><p><strong>fraction</strong> (<em>float</em>) – Fraction of samples to use for test set. - title: Test fraction</p></li>
-<li><p><strong>seed</strong> (<em>int</em>) – Random seed, for repeatable splits. - title: Random seed</p></li>
+<li><p><strong>fraction</strong> (<em>float</em>) – Fraction of samples to use for test set. - minimum: 0.0, maximum: 0.999, title: Fraction samples</p></li>
+<li><p><strong>seed</strong> (<em>Optional</em>) – Seed for random number generator, for repeatable splits. - title: Seed for random number generator</p></li>
+<li><p><strong>leave_out</strong> (<em>Optional</em>) – Fraction of samples that will not be used in train or test set, to reduce compute time. - minimum: 0.0, maximum: 0.999, title: Leave out fraction</p></li>
 <li><p><strong>bins</strong> (<em>str</em>) – Algorithm to use for determining histogram bin edges, see numpy.histogram for possible options, or use default ‘fd’ - title: Binning algorithm</p></li>
 </ul>
 </dd>
@@ -179,7 +190,7 @@ this splitter reverts to StratifiedShuffleSplit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>column_name</strong> (<em>Optional</em>) – Name of the column with labels for splits. Use <cite>-1</cite> to denote datapoints for the train set - title: Column Name</p></li>
+<li><p><strong>column_name</strong> (<em>str</em>) – Name of the column with labels for splits. Use <cite>-1</cite> to denote datapoints for the train set - title: Column Name</p></li>
 <li><p><strong>name</strong> (<em>Literal</em>) – </p></li>
 </ul>
 </dd>

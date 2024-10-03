@@ -522,9 +522,9 @@ class CustomClassificationModel(Algorithm):
     def estimator(self):
         with open(self.parameters.preexisting_model, "rb") as fid:
             preexisting_model = pickle.load(fid)
-        from optunaz.model_writer import QptunaModel
+        from optunaz.model_writer import QSARtunaModel
 
-        if isinstance(preexisting_model, QptunaModel):
+        if isinstance(preexisting_model, QSARtunaModel):
             preexisting_model = preexisting_model.predictor
         if isinstance(preexisting_model, self.CustomClassificationEstimator):
             preexisting_model = preexisting_model.preexisting_model
@@ -565,9 +565,9 @@ class CustomRegressionModel(Algorithm):
     def estimator(self):
         with open(self.parameters.preexisting_model, "rb") as fid:
             preexisting_model = pickle.load(fid)
-        from optunaz.model_writer import QptunaModel
+        from optunaz.model_writer import QSARtunaModel
 
-        if isinstance(preexisting_model, QptunaModel):
+        if isinstance(preexisting_model, QSARtunaModel):
             preexisting_model = preexisting_model.predictor
         if isinstance(preexisting_model, self.CustomRegressionEstimator):
             preexisting_model = preexisting_model.preexisting_model

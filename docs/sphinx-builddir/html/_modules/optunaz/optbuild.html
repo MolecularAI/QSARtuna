@@ -82,12 +82,16 @@
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">deserialize</span><span class="p">,</span> <span class="n">serialize</span>
 
+<span class="kn">from</span> <span class="nn">optunaz</span> <span class="kn">import</span> <span class="n">predict</span>
 <span class="kn">from</span> <span class="nn">optunaz.config.buildconfig</span> <span class="kn">import</span> <span class="n">BuildConfig</span>
 <span class="kn">from</span> <span class="nn">optunaz.config.optconfig</span> <span class="kn">import</span> <span class="n">OptimizationConfig</span>
 <span class="kn">from</span> <span class="nn">optunaz.three_step_opt_build_merge</span> <span class="kn">import</span> <span class="p">(</span>
@@ -96,12 +100,123 @@
     <span class="n">build_best</span><span class="p">,</span>
     <span class="n">build_merged</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span>
 
 <span class="kn">from</span> <span class="nn">optunaz.config</span> <span class="kn">import</span> <span class="n">LOG_CONFIG</span>
 
 <span class="n">log_conf</span> <span class="o">=</span> <span class="n">LOG_CONFIG</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">log_conf</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="build_with_al"><a class="viewcode-back" href="../../optunaz.html#optunaz.optbuild.build_with_al">[docs]</a><span class="k">def</span> <span class="nf">build_with_al</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">inference_path</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Active learning inference which can occur with buiding&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inference_path</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inference path is not set so AL predictions not performed&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inference path is </span><span class="si">{</span><span class="n">inference_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">predict_args</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;prog&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--model-file&quot;</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">model_path</span><span class="p">),</span>
+        <span class="s2">&quot;--input-smiles-csv-file&quot;</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">inference_path</span><span class="p">),</span>
+        <span class="s2">&quot;--input-smiles-csv-column&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Structure&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output-prediction-csv-file&quot;</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/al.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--predict-uncertainty&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--uncertainty_quantile&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;0.50&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;argv&quot;</span><span class="p">,</span> <span class="n">predict_args</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Performing active learning predictions&quot;</span><span class="p">)</span>
+            <span class="n">predict</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;File not found during active learning (AL) prediction, AL predictions not performed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">predict</span><span class="o">.</span><span class="n">UncertaintyError</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Uncertainty prediction not supported by algorithm, a temporary uncertainty compatible version will be generated&quot;</span>
+        <span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">optunaz</span> <span class="kn">import</span> <span class="n">convert</span>
+
+        <span class="n">convert_args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;prog&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--input-model-file&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">model_path</span><span class="p">),</span>
+            <span class="s2">&quot;--input-model-mode&quot;</span><span class="p">,</span>
+            <span class="n">mode</span><span class="p">,</span>
+            <span class="s2">&quot;--output-model-path&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/al_model.pkl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--wrap-for-uncertainty&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;argv&quot;</span><span class="p">,</span> <span class="n">convert_args</span><span class="p">):</span>
+            <span class="n">convert</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+
+        <span class="n">build_with_al</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/al_model.pkl&quot;</span><span class="p">,</span> <span class="n">inference_path</span><span class="p">,</span> <span class="n">mode</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">predict</span><span class="o">.</span><span class="n">AuxCovariateMissing</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Active learning (AL) prediction not performed: algorithm requires corvariate auxiliary data for inference&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="basename_from_config"><a class="viewcode-back" href="../../optunaz.html#optunaz.optbuild.basename_from_config">[docs]</a><span class="k">def</span> <span class="nf">basename_from_config</span><span class="p">(</span><span class="n">nm</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Basename for automatic naming purposes&quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">b</span><span class="p">[:]</span>
+    <span class="k">for</span> <span class="n">repl</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;config_&quot;</span><span class="p">,</span> <span class="s2">&quot;conf_&quot;</span><span class="p">]:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">repl</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">repl</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">base</span></div>
+
+
+<div class="viewcode-block" id="set_default_output_names"><a class="viewcode-back" href="../../optunaz.html#optunaz.optbuild.set_default_output_names">[docs]</a><span class="k">def</span> <span class="nf">set_default_output_names</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set default output names based on the conf file name, where not supplied&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!!! Please specify a valid configuration file, </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="si">}</span><span class="s2"> does not exist !!!</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">basepath</span><span class="p">,</span> <span class="n">basename</span> <span class="o">=</span> <span class="n">basename_from_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M%S&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">best_buildconfig_outpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">best_buildconfig_outpath</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">_model_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">_best.json&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;best-buildconfig-outpath: set to </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">best_buildconfig_outpath</span><span class="si">}</span><span class="s2"> based on config file name&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">_model_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">_best.pkl&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;best-model-outpath: set to </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span><span class="si">}</span><span class="s2"> based on config file name&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">_model_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">_final.pkl&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;merged-model-outpath: set to </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="si">}</span><span class="s2"> based on config file name&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">args</span></div>
+
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../optunaz.html#optunaz.optbuild.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
@@ -139,7 +254,14 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Turn off descriptor generation caching &quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--inference_uncert&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path for active learning (AL) predictions to be generated (will activate AL during build).&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">set_default_output_names</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="n">AnyConfig</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">OptimizationConfig</span><span class="p">,</span> <span class="n">BuildConfig</span><span class="p">]</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -147,6 +269,7 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">OptimizationConfig</span><span class="p">):</span>
         <span class="n">study_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
+        <span class="n">build_al</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cache</span><span class="p">:</span>
             <span class="n">config</span><span class="o">.</span><span class="n">set_cache</span><span class="p">()</span>
             <span class="n">cache</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_cache</span>
@@ -158,6 +281,7 @@
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">:</span>
             <span class="n">buildconfig</span> <span class="o">=</span> <span class="n">buildconfig_best</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">BuildConfig</span><span class="p">):</span>
+        <span class="n">build_al</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">buildconfig</span> <span class="o">=</span> <span class="n">config</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">cache_dir</span> <span class="o">=</span> <span class="kc">None</span>
@@ -174,12 +298,24 @@
             <span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span><span class="p">,</span>
             <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span> <span class="ow">and</span> <span class="n">build_al</span><span class="p">:</span>
+            <span class="n">build_with_al</span><span class="p">(</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">best_model_outpath</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">inference_uncert</span><span class="p">,</span>
+                <span class="n">buildconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">:</span>
         <span class="n">build_merged</span><span class="p">(</span>
             <span class="n">buildconfig</span><span class="p">,</span>
             <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">,</span>
             <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">build_al</span><span class="p">:</span>
+            <span class="n">build_with_al</span><span class="p">(</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">merged_model_outpath</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">inference_uncert</span><span class="p">,</span>
+                <span class="n">buildconfig</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cache_dir</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
 </pre></div>

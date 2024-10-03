@@ -6,6 +6,7 @@ import os
 import pathlib
 import sys
 from typing import Union
+import time
 
 from apischema import deserialize, serialize
 
@@ -28,8 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_with_al(model_path, inference_path, mode):
-    """Active learning inference which can occur with buiding
-    """
+    """Active learning inference which can occur with buiding"""
     if not inference_path:
         logger.info(f"Inference path is not set so AL predictions not performed")
         return
@@ -94,7 +94,7 @@ def basename_from_config(nm: str) -> (pathlib.Path, str):
     for repl in ["config_", "conf_"]:
         base = base.replace(repl, "")
         base = base.replace(repl.upper(), "")
-    return pathlib.Path(p), base
+    return pathlib.Path(p).absolute(), base
 
 
 def set_default_output_names(args) -> Union[str, bool]:
@@ -110,27 +110,28 @@ def set_default_output_names(args) -> Union[str, bool]:
         return False
 
     basepath, basename = basename_from_config(args.config)
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     if args.best_buildconfig_outpath is None:
         args.best_buildconfig_outpath = pathlib.Path(
-            os.path.join(basepath, f"model_{basename}_best.json")
+            os.path.join(basepath, f"{timestamp}_model_{basename}_best.json")
         )
         logger.info(
             f"best-buildconfig-outpath: set to {args.best_buildconfig_outpath} based on config file name"
         )
     if args.best_model_outpath is None:
         args.best_model_outpath = pathlib.Path(
-            os.path.join(basepath, f"model_{basename}_best.pkl")
+            os.path.join(basepath, f"{timestamp}_model_{basename}_best.pkl")
         )
         logger.info(
             f"best-model-outpath: set to {args.best_model_outpath} based on config file name"
         )
     if args.merged_model_outpath is None:
         args.merged_model_outpath = pathlib.Path(
-            os.path.join(basepath, f"model_{basename}_final.pkl")
+            os.path.join(basepath, f"{timestamp}_model_{basename}_final.pkl")
         )
         logger.info(
-            "merged-model-outpath: set to {args.merged_model_outpath} based on config file name"
+            f"merged-model-outpath: set to {args.merged_model_outpath} based on config file name"
         )
 
     return args
@@ -176,7 +177,7 @@ def main():
         "--inference_uncert",
         help="Path for active learning (AL) predictions to be generated (will activate AL during build).",
         type=pathlib.Path,
-        default="None",
+        default=None,
     )
     args = parser.parse_args()
     args = set_default_output_names(args)
