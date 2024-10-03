@@ -39,104 +39,10 @@ QSARtuna is structured around three steps:
 3. *"Prod-build:"* 
     Re-train the best-performing model on the merged training and test datasets. 
     This step has a drawback that there is no data left to evaluate the resulting model, 
-    but it has a big benefit that this final model is trained on the all available data.   
+    but it has a big benefit that this final model is trained on the all available data.
+   
 
-
-## JSON-based Command-line interface
-
-Let's look at a trivial example of modelling molecular weight
-using a training set of 50 molecules.
-
-### Configuration file
-
-We start with a configuration file in [JSON format](https://en.wikipedia.org/wiki/JSON).
-It contains four main sections:
-* **data** - location of the data file, columns to use.
-* **settings** - details about the optimization run.
-* **descriptors** - which molecular descriptors to use.
-* **algorithms** - which ML algorithms to use.
-
-Below is the example of such a file 
-
-```json
-{
-  "task": "optimization",
-  "data": {
-    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
-    "input_column": "canonical",
-    "response_column": "molwt"
-  },
-  "settings": {
-    "mode": "regression",
-    "cross_validation": 5,
-    "direction": "maximize",
-    "n_trials": 100,
-    "n_startup_trials": 30
-  },
-  "descriptors": [
-    {
-      "name": "ECFP",
-      "parameters": {
-        "radius": 3,
-        "nBits": 2048
-      }
-    },
-    {
-      "name": "MACCS_keys",
-      "parameters": {}
-    }
-  ],
-  "algorithms": [
-    {
-      "name": "RandomForestRegressor",
-      "parameters": {
-        "max_depth": {"low": 2, "high": 32},
-        "n_estimators": {"low": 10, "high": 250},
-        "max_features": ["auto"]
-      }
-    },
-    {
-      "name": "Ridge",
-      "parameters": {
-        "alpha": {"low": 0, "high": 2}
-      }
-    },
-    {
-      "name": "Lasso",
-      "parameters": {
-        "alpha": {"low": 0, "high": 2}
-      }
-    },
-    {
-      "name": "XGBRegressor",
-      "parameters": {
-        "max_depth": {"low": 2, "high": 32},
-        "n_estimators": {"low": 3, "high": 100},
-        "learning_rate": {"low": 0.1, "high": 0.1}
-      }
-    }
-  ]
-}
-```
-
-Data section specifies location of the dataset file.
-In this example it specifies a relative path to the `tests/data` folder.
-
-
-Settings section specifies that:
-* we are building a regression model,
-* we want to use 5-fold cross-validation,
-* we want to maximize the value of the objective function (maximization is the standard for scikit-learn models),
-* we want to have a total of 100 trials,
-* and the first 30 trials ("startup trials") should be random exploration (to not get stuck early on in one local minimum).
-
-We specify two descriptors and four algorithm,
-and optimization is free to pair any specified descriptor with any of the algorithms.
-
-When we have our data and our configuration, it is time to start the optimization.
-
-
-## Run from Python/Jupyter Notebook
+## Installation instructions
 
 Create conda environment with Jupyter and Install QSARtuna there:
 ```shell
@@ -149,7 +55,9 @@ which python  # Check. Should output path that contains "my_env_with_qsartuna".
 python -m pip install https://github.com/MolecularAI/QSARtuna/releases/download/3.1.4/qsartuna-3.1.4.tar.gz
 ```
 
-Then you can use QSARtuna inside your Notebook:
+## Running from Python/Jupyter Notebook
+
+You can use QSARtuna inside your Notebook, like so:
 ```python
 from qsartuna.three_step_opt_build_merge import (
     optimize,
@@ -249,6 +157,100 @@ required named arguments:
   --config CONFIG       Path to input configuration file (JSON): either Optimization configuration, or Build (training) configuration.
 
 ```
+
+
+## JSON-based Command-line interface
+
+The CLI accepts JSON files as input.
+Let's look at a trivial example of modelling molecular weight
+using a training set of 50 molecules.
+
+### Configuration file
+
+We start with a configuration file in [JSON format](https://en.wikipedia.org/wiki/JSON).
+It contains four main sections:
+* **data** - location of the data file, columns to use.
+* **settings** - details about the optimization run.
+* **descriptors** - which molecular descriptors to use.
+* **algorithms** - which ML algorithms to use.
+
+Below is the example of such a file 
+
+```json
+{
+  "task": "optimization",
+  "data": {
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "input_column": "canonical",
+    "response_column": "molwt"
+  },
+  "settings": {
+    "mode": "regression",
+    "cross_validation": 5,
+    "direction": "maximize",
+    "n_trials": 100,
+    "n_startup_trials": 30
+  },
+  "descriptors": [
+    {
+      "name": "ECFP",
+      "parameters": {
+        "radius": 3,
+        "nBits": 2048
+      }
+    },
+    {
+      "name": "MACCS_keys",
+      "parameters": {}
+    }
+  ],
+  "algorithms": [
+    {
+      "name": "RandomForestRegressor",
+      "parameters": {
+        "max_depth": {"low": 2, "high": 32},
+        "n_estimators": {"low": 10, "high": 250},
+        "max_features": ["auto"]
+      }
+    },
+    {
+      "name": "Ridge",
+      "parameters": {
+        "alpha": {"low": 0, "high": 2}
+      }
+    },
+    {
+      "name": "Lasso",
+      "parameters": {
+        "alpha": {"low": 0, "high": 2}
+      }
+    },
+    {
+      "name": "XGBRegressor",
+      "parameters": {
+        "max_depth": {"low": 2, "high": 32},
+        "n_estimators": {"low": 3, "high": 100},
+        "learning_rate": {"low": 0.1, "high": 0.1}
+      }
+    }
+  ]
+}
+```
+
+Data section specifies location of the dataset file.
+In this example it specifies a relative path to the `tests/data` folder.
+
+
+Settings section specifies that:
+* we are building a regression model,
+* we want to use 5-fold cross-validation,
+* we want to maximize the value of the objective function (maximization is the standard for scikit-learn models),
+* we want to have a total of 100 trials,
+* and the first 30 trials ("startup trials") should be random exploration (to not get stuck early on in one local minimum).
+
+We specify two descriptors and four algorithm,
+and optimization is free to pair any specified descriptor with any of the algorithms.
+
 
 Since optimization can be a long process,
 we should avoid running it on the login node, 
