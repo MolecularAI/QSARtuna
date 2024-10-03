@@ -73,7 +73,7 @@ class TemporalPredsPredicted(Exception):
 
 class NoPreviousModel(Exception):
 	"""
-	Raised when no previous model exists for an retraining
+	Raised when no previous model exists for a retraining point
 	"""
 
 	def __init__(self, prev_model_name, message="No previous model found for [{0}]"):
@@ -130,7 +130,7 @@ class SlurmMemoryExceeded(Exception):
 
 class SlurmJobSkip(Exception):
 	"""
-	Raised when an itcode is no longer trialed with Qptuna (i.e. due to incompatibility)
+	Raised when an itcode is no longer trialed with QSARtuna (i.e. due to incompatibility)
 	"""
 
 	pass

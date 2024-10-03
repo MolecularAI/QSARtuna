@@ -77,22 +77,47 @@ class Random(Splitter):
     """Random split."""
 
     name: Literal["Random"] = "Random"
-    fraction: float = field(
-        default=0.2, metadata=schema(title="Fraction of samples to use for test set")
-    )
-    seed: int = field(
-        default=1,
-        metadata=schema(
+    fraction: Annotated[
+        float,
+        schema(
+            title="Fraction samples",
+            description="Fraction of samples to use for test set.",
+            min=0.0,
+            max=0.999,
+        )
+        | none_as_undefined,
+    ] = 0.2
+    seed: Annotated[
+        Optional[int],
+        schema(
             title="Seed for random number generator",
             description="Seed for random number generator, for repeatable splits.",
-        ),
-    )
+        )
+        | none_as_undefined,
+    ] = 1
+    leave_out: Annotated[
+        Optional[float],
+        schema(
+            title="Leave out fraction",
+            description="Fraction of samples that will not be used in train or test set, to reduce compute time.",
+            min=0.0,
+            max=0.999,
+        )
+        | none_as_undefined,
+    ] = 0.0
 
     def get_sklearn_splitter(self, n_splits: int) -> ShuffleSplit:
+        if self.leave_out is not None:
+            train_size = (1 - self.fraction) - self.leave_out
+            assert (
+                train_size > 0.0
+            ), f"not possible to leave out {self.leave_out}, since no train remains given {self.fraction} test fraction"
+        else:
+            train_size = None
         return ShuffleSplit(
             n_splits=n_splits,
             test_size=self.fraction,
-            train_size=None,
+            train_size=train_size,
             random_state=self.seed,
         )
 
@@ -133,23 +158,34 @@ class Stratified(Splitter):
     """
 
     name: Literal["Stratified"] = "Stratified"
-
     fraction: Annotated[
         float,
         schema(
-            title="Test fraction",
+            title="Fraction samples",
             description="Fraction of samples to use for test set.",
-        ),
+            min=0.0,
+            max=0.999,
+        )
+        | none_as_undefined,
     ] = 0.2
-
     seed: Annotated[
-        int,
+        Optional[int],
         schema(
-            title="Random seed",
-            description="Random seed, for repeatable splits.",
-        ),
+            title="Seed for random number generator",
+            description="Seed for random number generator, for repeatable splits.",
+        )
+        | none_as_undefined,
     ] = 1
-
+    leave_out: Annotated[
+        Optional[float],
+        schema(
+            title="Leave out fraction",
+            description="Fraction of samples that will not be used in train or test set, to reduce compute time.",
+            min=0.0,
+            max=0.999,
+        )
+        | none_as_undefined,
+    ] = 0.0
     bins: Annotated[
         str,
         schema(
@@ -157,14 +193,22 @@ class Stratified(Splitter):
             description="Algorithm to use for determining histogram bin edges,"
             " see numpy.histogram for possible options, or use default 'fd'",
         ),
-    ] = "fd"
+    ] = "fd_merge"
 
     def get_sklearn_splitter(self, n_splits: int) -> SklearnSplitter:
+        if self.leave_out is not None:
+            train_size = (1 - self.fraction) - self.leave_out
+            assert (
+                train_size > 0.0
+            ), f"not possible to leave out {self.leave_out}, since no train remains given {self.fraction} test fraction"
+        else:
+            train_size = None
         return HistogramStratifiedShuffleSplit(
             n_splits=n_splits,
             test_fraction=self.fraction,
             bins=self.bins,
             random_state=self.seed,
+            train_size=train_size,
         )
 
 
@@ -292,6 +336,7 @@ class HistogramStratifiedShuffleSplit(SklearnSplitter):
     n_splits: int = 10
     bins: str = "fd_merge"
     random_state: Optional[int] = 42
+    train_size: float = 0.0
 
     def get_n_splits(self, X=None, y=None, groups=None):
         return self.n_splits
@@ -308,7 +353,7 @@ class HistogramStratifiedShuffleSplit(SklearnSplitter):
         sss = StratifiedShuffleSplit(
             n_splits=self.n_splits,
             test_size=self.test_fraction,
-            train_size=None,
+            train_size=self.train_size,
             random_state=self.random_state,
         )
         return sss.split(X, y_sss, groups)
@@ -334,7 +379,7 @@ class Predefined(GroupingSplitter):
     """
 
     column_name: Annotated[
-        Optional[str],
+        str,
         schema(
             title="Column Name",
             description="Name of the column with labels for splits. Use `-1` to denote datapoints for the train set",

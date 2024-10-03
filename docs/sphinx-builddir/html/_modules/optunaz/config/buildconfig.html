@@ -83,7 +83,9 @@
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sklearn</span>
 <span class="kn">import</span> <span class="nn">sklearn.cross_decomposition</span>
 <span class="kn">import</span> <span class="nn">sklearn.ensemble</span>
@@ -92,7 +94,7 @@
 <span class="kn">import</span> <span class="nn">sklearn.svm</span>
 <span class="kn">import</span> <span class="nn">xgboost</span>
 <span class="kn">from</span> <span class="nn">apischema</span> <span class="kn">import</span> <span class="n">schema</span>
-<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">RegressorMixin</span>
 
 <span class="kn">import</span> <span class="nn">optunaz</span>
 <span class="kn">from</span> <span class="nn">optunaz</span> <span class="kn">import</span> <span class="n">algorithms</span>
@@ -571,6 +573,95 @@
         <span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="CustomClassificationModel"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomClassificationModel">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CustomClassificationModel</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomClassificationModel.CustomClassificationModelParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">CustomClassificationModelParameters</span><span class="p">:</span>
+        <span class="n">preexisting_model</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">refit_model</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CustomClassificationModel.CustomClassificationEstimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator">[docs]</a>    <span class="k">class</span> <span class="nc">CustomClassificationEstimator</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preexisting_model</span><span class="p">,</span> <span class="n">refit_model</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">preexisting_model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">refit_model</span> <span class="o">=</span> <span class="n">refit_model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<div class="viewcode-block" id="CustomClassificationModel.CustomClassificationEstimator.fit"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.fit">[docs]</a>        <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">refit_model</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preexisting_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="CustomClassificationModel.CustomClassificationEstimator.predict"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.predict">[docs]</a>        <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preexisting_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CustomClassificationModel.CustomClassificationEstimator.predict_proba"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.predict_proba">[docs]</a>        <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preexisting_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;CustomClassificationModel&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">CustomClassificationModelParameters</span>
+
+<div class="viewcode-block" id="CustomClassificationModel.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomClassificationModel.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+            <span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fid</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">optunaz.model_writer</span> <span class="kn">import</span> <span class="n">QSARtunaModel</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="n">QSARtunaModel</span><span class="p">):</span>
+            <span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">preexisting_model</span><span class="o">.</span><span class="n">predictor</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CustomClassificationEstimator</span><span class="p">):</span>
+            <span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">preexisting_model</span><span class="o">.</span><span class="n">preexisting_model</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;predict_proba&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]:</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span>
+                <span class="n">preexisting_model</span><span class="p">,</span> <span class="n">p</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;an estimator with &#39;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">&#39; method must be supplied to CustomClassificationModel&quot;</span>
+        <span class="n">estimator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CustomClassificationEstimator</span><span class="p">(</span>
+            <span class="n">preexisting_model</span><span class="o">=</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="n">refit_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">refit_model</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">estimator</span></div></div>
+
+
+<div class="viewcode-block" id="CustomRegressionModel"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomRegressionModel">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CustomRegressionModel</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomRegressionModel.CustomRegressionModelParameters"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">CustomRegressionModelParameters</span><span class="p">:</span>
+        <span class="n">preexisting_model</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">refit_model</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">schema</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CustomRegressionModel.CustomRegressionEstimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator">[docs]</a>    <span class="k">class</span> <span class="nc">CustomRegressionEstimator</span><span class="p">(</span><span class="n">RegressorMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preexisting_model</span><span class="p">,</span> <span class="n">refit_model</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">preexisting_model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">refit_model</span> <span class="o">=</span> <span class="n">refit_model</span>
+
+<div class="viewcode-block" id="CustomRegressionModel.CustomRegressionEstimator.fit"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.fit">[docs]</a>        <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">refit_model</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preexisting_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="CustomRegressionModel.CustomRegressionEstimator.predict"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.predict">[docs]</a>        <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preexisting_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div></div>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;CustomRegressionModel&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">CustomRegressionModelParameters</span>
+
+<div class="viewcode-block" id="CustomRegressionModel.estimator"><a class="viewcode-back" href="../../../optunaz.config.html#optunaz.config.buildconfig.CustomRegressionModel.estimator">[docs]</a>    <span class="k">def</span> <span class="nf">estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+            <span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fid</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">optunaz.model_writer</span> <span class="kn">import</span> <span class="n">QSARtunaModel</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="n">QSARtunaModel</span><span class="p">):</span>
+            <span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">preexisting_model</span><span class="o">.</span><span class="n">predictor</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CustomRegressionEstimator</span><span class="p">):</span>
+            <span class="n">preexisting_model</span> <span class="o">=</span> <span class="n">preexisting_model</span><span class="o">.</span><span class="n">preexisting_model</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span>
+            <span class="n">preexisting_model</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;an estimator with &#39;predict&#39; method must be supplied to CustomRegressionModel&quot;</span>
+        <span class="n">estimator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CustomRegressionEstimator</span><span class="p">(</span>
+            <span class="n">preexisting_model</span><span class="o">=</span><span class="n">preexisting_model</span><span class="p">,</span> <span class="n">refit_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">refit_model</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">estimator</span></div></div>
+
+
 <span class="n">AnyUncalibratedClassifier</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">AdaBoostClassifier</span><span class="p">,</span>
     <span class="n">KNeighborsClassifier</span><span class="p">,</span>
@@ -582,6 +673,7 @@
     <span class="n">ChemPropRegressorPretrained</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptClassifier</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
+    <span class="n">CustomClassificationModel</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -624,6 +716,7 @@
     <span class="n">ChemPropRegressor</span><span class="p">,</span>
     <span class="n">ChemPropHyperoptRegressor</span><span class="p">,</span>
     <span class="n">ChemPropRegressorPretrained</span><span class="p">,</span>
+    <span class="n">CustomRegressionModel</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">MapieCompatible</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
@@ -635,6 +728,7 @@
     <span class="n">SVR</span><span class="p">,</span>
     <span class="n">XGBRegressor</span><span class="p">,</span>
     <span class="n">PRFClassifier</span><span class="p">,</span>
+    <span class="n">CustomRegressionModel</span><span class="p">,</span>
 <span class="p">]</span>
 
 

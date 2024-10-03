@@ -42,6 +42,7 @@ class Predictor(abc.ABC):
         """For Classification algorithms, returns algorithmic posterior of a prediction.
 
         This method is optional, and is not marked with @abstractmethod.
+        This method is optional, and is not marked with @abstractmethod.
         """
         ...
 

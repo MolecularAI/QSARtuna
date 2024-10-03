@@ -130,7 +130,8 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="optunaz.config.build_from_opt.encode_name">
 <span class="sig-prename descclassname"><span class="pre">optunaz.config.build_from_opt.</span></span><span class="sig-name descname"><span class="pre">encode_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">CEname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hash=&lt;built-in</span> <span class="pre">function</span> <span class="pre">hash&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/build_from_opt.html#encode_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.build_from_opt.encode_name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Encode the parameter names with a hash to enable multi-parameter optimisation</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="optunaz.config.build_from_opt.suggest_alg_params">
@@ -1063,12 +1064,203 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.buildconfig.</span></span><span class="sig-name descname"><span class="pre">CustomClassificationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'CustomClassificationModel'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters" title="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters"><span class="pre">CustomClassificationModelParameters</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomClassificationModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.config.buildconfig.Algorithm" title="optunaz.config.buildconfig.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CustomClassificationModelParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preexisting_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refit_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomClassificationModel.CustomClassificationModelParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters.preexisting_model">
+<span class="sig-name descname"><span class="pre">preexisting_model</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters.preexisting_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters.refit_model">
+<span class="sig-name descname"><span class="pre">refit_model</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationModelParameters.refit_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CustomClassificationEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preexisting_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refit_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomClassificationModel.CustomClassificationEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomClassificationModel.CustomClassificationEstimator.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.fit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomClassificationModel.CustomClassificationEstimator.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.predict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomClassificationModel.CustomClassificationEstimator.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.predict_proba" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.CustomClassificationEstimator.set_score_request" title="Permalink to this definition"></a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<em>str</em><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>object</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomClassificationModel.estimator">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomClassificationModel.estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomClassificationModel.estimator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.buildconfig.</span></span><span class="sig-name descname"><span class="pre">CustomRegressionModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'CustomRegressionModel'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters" title="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters"><span class="pre">CustomRegressionModelParameters</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomRegressionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.config.buildconfig.Algorithm" title="optunaz.config.buildconfig.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CustomRegressionModelParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preexisting_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refit_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomRegressionModel.CustomRegressionModelParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters.preexisting_model">
+<span class="sig-name descname"><span class="pre">preexisting_model</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters.preexisting_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters.refit_model">
+<span class="sig-name descname"><span class="pre">refit_model</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionModelParameters.refit_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CustomRegressionEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preexisting_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refit_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomRegressionModel.CustomRegressionEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RegressorMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomRegressionModel.CustomRegressionEstimator.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.fit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomRegressionModel.CustomRegressionEstimator.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.predict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.CustomRegressionEstimator.set_score_request" title="Permalink to this definition"></a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<em>str</em><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>object</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optunaz.config.buildconfig.CustomRegressionModel.estimator">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CustomRegressionModel.estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CustomRegressionModel.estimator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.buildconfig.CalibratedClassifierCVWithVA">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.buildconfig.</span></span><span class="sig-name descname"><span class="pre">CalibratedClassifierCVWithVA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'CalibratedClassifierCVWithVA'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters" title="optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters"><span class="pre">CalibratedClassifierCVParameters</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CalibratedClassifierCVWithVA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CalibratedClassifierCVWithVA" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#optunaz.config.buildconfig.Algorithm" title="optunaz.config.buildconfig.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CalibratedClassifierCVParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_folds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optunaz.config.buildconfig.AdaBoostClassifier" title="optunaz.config.buildconfig.AdaBoostClassifier"><span class="pre">AdaBoostClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.KNeighborsClassifier" title="optunaz.config.buildconfig.KNeighborsClassifier"><span class="pre">KNeighborsClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.LogisticRegression" title="optunaz.config.buildconfig.LogisticRegression"><span class="pre">LogisticRegression</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.RandomForestClassifier" title="optunaz.config.buildconfig.RandomForestClassifier"><span class="pre">RandomForestClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.SVC" title="optunaz.config.buildconfig.SVC"><span class="pre">SVC</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropClassifier" title="optunaz.config.buildconfig.ChemPropClassifier"><span class="pre">ChemPropClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropRegressor" title="optunaz.config.buildconfig.ChemPropRegressor"><span class="pre">ChemPropRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropRegressorPretrained" title="optunaz.config.buildconfig.ChemPropRegressorPretrained"><span class="pre">ChemPropRegressorPretrained</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropHyperoptClassifier" title="optunaz.config.buildconfig.ChemPropHyperoptClassifier"><span class="pre">ChemPropHyperoptClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropHyperoptRegressor" title="optunaz.config.buildconfig.ChemPropHyperoptRegressor"><span class="pre">ChemPropHyperoptRegressor</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CalibratedClassifierCVParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_folds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optunaz.config.buildconfig.AdaBoostClassifier" title="optunaz.config.buildconfig.AdaBoostClassifier"><span class="pre">AdaBoostClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.KNeighborsClassifier" title="optunaz.config.buildconfig.KNeighborsClassifier"><span class="pre">KNeighborsClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.LogisticRegression" title="optunaz.config.buildconfig.LogisticRegression"><span class="pre">LogisticRegression</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.RandomForestClassifier" title="optunaz.config.buildconfig.RandomForestClassifier"><span class="pre">RandomForestClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.SVC" title="optunaz.config.buildconfig.SVC"><span class="pre">SVC</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropClassifier" title="optunaz.config.buildconfig.ChemPropClassifier"><span class="pre">ChemPropClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropRegressor" title="optunaz.config.buildconfig.ChemPropRegressor"><span class="pre">ChemPropRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropRegressorPretrained" title="optunaz.config.buildconfig.ChemPropRegressorPretrained"><span class="pre">ChemPropRegressorPretrained</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropHyperoptClassifier" title="optunaz.config.buildconfig.ChemPropHyperoptClassifier"><span class="pre">ChemPropHyperoptClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.ChemPropHyperoptRegressor" title="optunaz.config.buildconfig.ChemPropHyperoptRegressor"><span class="pre">ChemPropHyperoptRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.CustomClassificationModel" title="optunaz.config.buildconfig.CustomClassificationModel"><span class="pre">CustomClassificationModel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.config.buildconfig.CalibratedClassifierCVWithVA.CalibratedClassifierCVParameters.n_folds">
@@ -1115,7 +1307,7 @@
 <dd><p>Bases: <a class="reference internal" href="#optunaz.config.buildconfig.Algorithm" title="optunaz.config.buildconfig.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.buildconfig.Mapie.MapieParameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MapieParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapie_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optunaz.config.buildconfig.Lasso" title="optunaz.config.buildconfig.Lasso"><span class="pre">Lasso</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.PLSRegression" title="optunaz.config.buildconfig.PLSRegression"><span class="pre">PLSRegression</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.RandomForestRegressor" title="optunaz.config.buildconfig.RandomForestRegressor"><span class="pre">RandomForestRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.KNeighborsRegressor" title="optunaz.config.buildconfig.KNeighborsRegressor"><span class="pre">KNeighborsRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.Ridge" title="optunaz.config.buildconfig.Ridge"><span class="pre">Ridge</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.SVR" title="optunaz.config.buildconfig.SVR"><span class="pre">SVR</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.XGBRegressor" title="optunaz.config.buildconfig.XGBRegressor"><span class="pre">XGBRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.PRFClassifier" title="optunaz.config.buildconfig.PRFClassifier"><span class="pre">PRFClassifier</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#Mapie.MapieParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.Mapie.MapieParameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MapieParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapie_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optunaz.config.buildconfig.Lasso" title="optunaz.config.buildconfig.Lasso"><span class="pre">Lasso</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.PLSRegression" title="optunaz.config.buildconfig.PLSRegression"><span class="pre">PLSRegression</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.RandomForestRegressor" title="optunaz.config.buildconfig.RandomForestRegressor"><span class="pre">RandomForestRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.KNeighborsRegressor" title="optunaz.config.buildconfig.KNeighborsRegressor"><span class="pre">KNeighborsRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.Ridge" title="optunaz.config.buildconfig.Ridge"><span class="pre">Ridge</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.SVR" title="optunaz.config.buildconfig.SVR"><span class="pre">SVR</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.XGBRegressor" title="optunaz.config.buildconfig.XGBRegressor"><span class="pre">XGBRegressor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.PRFClassifier" title="optunaz.config.buildconfig.PRFClassifier"><span class="pre">PRFClassifier</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optunaz.config.buildconfig.CustomRegressionModel" title="optunaz.config.buildconfig.CustomRegressionModel"><span class="pre">CustomRegressionModel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/buildconfig.html#Mapie.MapieParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.buildconfig.Mapie.MapieParameters" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.config.buildconfig.Mapie.MapieParameters.mapie_alpha">
@@ -3616,6 +3808,88 @@ by using sensible defaults from the authors; to do this run ChemProp with Num_It
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomClassificationModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.optconfig.</span></span><span class="sig-name descname"><span class="pre">CustomClassificationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CustomClassificationModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CustomClassificationModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.config.optconfig.Algorithm" title="optunaz.config.optconfig.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
+<p>Classifier  from a preexisting pkl model</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomClassificationModel.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preexisting_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refit_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CustomClassificationModel.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CustomClassificationModel.Parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>preexisting_model</strong> (<em>str</em>) – Path to a preexisting pkl model - title: Preexisting Model</p></li>
+<li><p><strong>refit_model</strong> (<em>int</em>) – Whether fit should be called during the trial of the custom model - minimum: 0, maximum: 1, title: Refit Model</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomClassificationModel.Parameters.preexisting_model">
+<span class="sig-name descname"><span class="pre">preexisting_model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.config.optconfig.CustomClassificationModel.Parameters.preexisting_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomClassificationModel.Parameters.refit_model">
+<span class="sig-name descname"><span class="pre">refit_model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#optunaz.config.optconfig.CustomClassificationModel.Parameters.refit_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomClassificationModel.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.config.optconfig.CustomClassificationModel.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomClassificationModel.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.config.optconfig.CustomClassificationModel.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomRegressionModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.optconfig.</span></span><span class="sig-name descname"><span class="pre">CustomRegressionModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CustomRegressionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CustomRegressionModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optunaz.config.optconfig.Algorithm" title="optunaz.config.optconfig.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
+<p>Classifier  from a preexisting pkl model</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomRegressionModel.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preexisting_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refit_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CustomRegressionModel.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CustomRegressionModel.Parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>preexisting_model</strong> (<em>str</em>) – Path to a preexisting pkl model - title: Preexisting Model</p></li>
+<li><p><strong>refit_model</strong> (<em>int</em>) – Whether fit should be called during the trial of the custom model - minimum: 0, maximum: 1, title: Refit Model</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomRegressionModel.Parameters.preexisting_model">
+<span class="sig-name descname"><span class="pre">preexisting_model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optunaz.config.optconfig.CustomRegressionModel.Parameters.preexisting_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomRegressionModel.Parameters.refit_model">
+<span class="sig-name descname"><span class="pre">refit_model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#optunaz.config.optconfig.CustomRegressionModel.Parameters.refit_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomRegressionModel.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#optunaz.config.optconfig.CustomRegressionModel.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optunaz.config.optconfig.CustomRegressionModel.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#optunaz.config.optconfig.CustomRegressionModel.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.optconfig.CalibratedClassifierCVEnsemble">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">optunaz.config.optconfig.</span></span><span class="sig-name descname"><span class="pre">CalibratedClassifierCVEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CalibratedClassifierCVEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CalibratedClassifierCVEnsemble" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
@@ -3668,7 +3942,7 @@ then used for calibration. For prediction, the base estimator, trained using all
 offers uncertainty prediction based on p0 vs. p1 discordance.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">estimator=typing.Union[optunaz.config.optconfig.AdaBoostClassifier,</span> <span class="pre">optunaz.config.optconfig.KNeighborsClassifier,</span> <span class="pre">optunaz.config.optconfig.LogisticRegression,</span> <span class="pre">optunaz.config.optconfig.RandomForestClassifier,</span> <span class="pre">optunaz.config.optconfig.SVC,</span> <span class="pre">optunaz.config.optconfig.ChemPropClassifier,</span> <span class="pre">optunaz.config.optconfig.ChemPropHyperoptClassifier],</span> <span class="pre">ensemble=&lt;CalibratedClassifierCVEnsemble.TRUE:</span> <span class="pre">'True'&gt;,</span> <span class="pre">method=&lt;CalibratedClassifierCVMethod.ISOTONIC:</span> <span class="pre">'isotonic'&gt;,</span> <span class="pre">n_folds=2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CalibratedClassifierCVWithVA.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">estimator=typing.Union[optunaz.config.optconfig.AdaBoostClassifier,</span> <span class="pre">optunaz.config.optconfig.KNeighborsClassifier,</span> <span class="pre">optunaz.config.optconfig.LogisticRegression,</span> <span class="pre">optunaz.config.optconfig.RandomForestClassifier,</span> <span class="pre">optunaz.config.optconfig.SVC,</span> <span class="pre">optunaz.config.optconfig.ChemPropClassifier,</span> <span class="pre">optunaz.config.optconfig.ChemPropHyperoptClassifier,</span> <span class="pre">optunaz.config.optconfig.CustomClassificationModel],</span> <span class="pre">ensemble=&lt;CalibratedClassifierCVEnsemble.TRUE:</span> <span class="pre">'True'&gt;,</span> <span class="pre">method=&lt;CalibratedClassifierCVMethod.ISOTONIC:</span> <span class="pre">'isotonic'&gt;,</span> <span class="pre">n_folds=2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optunaz/config/optconfig.html#CalibratedClassifierCVWithVA.Parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3683,7 +3957,7 @@ offers uncertainty prediction based on p0 vs. p1 discordance.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters.estimator">
 <span class="sig-name descname"><span class="pre">estimator</span></span><a class="headerlink" href="#optunaz.config.optconfig.CalibratedClassifierCVWithVA.Parameters.estimator" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#optunaz.config.optconfig.AdaBoostClassifier" title="optunaz.config.optconfig.AdaBoostClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdaBoostClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.KNeighborsClassifier" title="optunaz.config.optconfig.KNeighborsClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">KNeighborsClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.LogisticRegression" title="optunaz.config.optconfig.LogisticRegression"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogisticRegression</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.RandomForestClassifier" title="optunaz.config.optconfig.RandomForestClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomForestClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.SVC" title="optunaz.config.optconfig.SVC"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVC</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.ChemPropClassifier" title="optunaz.config.optconfig.ChemPropClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChemPropClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.ChemPropHyperoptClassifier" title="optunaz.config.optconfig.ChemPropHyperoptClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChemPropHyperoptClassifier</span></code></a>]</p>
+<dd><p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#optunaz.config.optconfig.AdaBoostClassifier" title="optunaz.config.optconfig.AdaBoostClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdaBoostClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.KNeighborsClassifier" title="optunaz.config.optconfig.KNeighborsClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">KNeighborsClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.LogisticRegression" title="optunaz.config.optconfig.LogisticRegression"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogisticRegression</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.RandomForestClassifier" title="optunaz.config.optconfig.RandomForestClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomForestClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.SVC" title="optunaz.config.optconfig.SVC"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVC</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.ChemPropClassifier" title="optunaz.config.optconfig.ChemPropClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChemPropClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.ChemPropHyperoptClassifier" title="optunaz.config.optconfig.ChemPropHyperoptClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChemPropHyperoptClassifier</span></code></a>, <a class="reference internal" href="#optunaz.config.optconfig.CustomClassificationModel" title="optunaz.config.optconfig.CustomClassificationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomClassificationModel</span></code></a>]</p>
 </dd></dl>
 
 <dl class="py attribute">

@@ -5,6 +5,8 @@ class ConfigurationEnum:
     # all that are general keywords
     GENERAL_DISABLED = "disabled"
     GENERAL_PARAMETERS = "parameters"
+    GENERAL_NAME = "name"
+    GENERAL_ALGORITHM_NAME = "algorithm_name"
 
     # all that has to do with the actual task
     # ---------
@@ -105,6 +107,7 @@ class ConfigurationEnum:
     # all that has to do with algorithms, general keywords
     # ---------
     ALGORITHMS = "algorithms"
+    ALGORITHMS_ESTIMATOR = "estimator"
     ALGORITHMS_LOW = "low"
     ALGORITHMS_HIGH = "high"
     ALGORITHMS_Q = "q"
@@ -210,9 +213,16 @@ class ConfigurationEnum:
     ALGORITHMS_CALIBRATEDCLASSIFIERCV_N_FOLDS = "n_folds"
     ALGORITHMS_CALIBRATEDCLASSIFIERCV_PARAMS = "calibrated_params"
 
+    # algorithm: CustomModels
+    ALGORITHMS_CUSTOMREGRESSIONMODEL = "CustomRegressionModel"
+    ALGORITHMS_CUSTOMCLASSIFIERMODEL = "CustomClassifierModel"
+    ALGORITHMS_CUSTOM_FILE = "preexisting_model"
+    ALGORITHMS_CUSTOM_REFIT_MODEL = "refit_model"
+
     # algorithm: Mapie specific
     ALGORITHMS_MAPIE = "Mapie"
     ALGORITHMS_MAPIE_ALPHA = "mapie_alpha"
+    ALGORITHMS_MAPIE_ESTIMATOR = "estimator"
 
     # try to find the internal value and return
     def __getattr__(self, name):

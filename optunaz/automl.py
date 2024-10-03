@@ -8,6 +8,7 @@ import glob
 import pandas as pd
 import time
 import logging
+import logging.config
 import argparse
 from datetime import datetime, timedelta
 import dataclasses
@@ -545,7 +546,13 @@ class ModelDispatcher:
             elif any(
                 [
                     err in slurm_log
-                    for err in ["DUE TO MEMORY", "Bus error", "Unable to allocate"]
+                    for err in [
+                        "DUE TO MEMORY",
+                        "Bus error",
+                        "Unable to allocate",
+                        "oom_kill",
+                        "OOM Killed",
+                    ]
                 ]
             ):
                 logging.debug(f"{self.slurm_name} memory was reached")
@@ -559,6 +566,9 @@ class ModelDispatcher:
                 raise SlurmJobSkip
             elif "Adjust any of the aforementioned parameters" in slurm_log:
                 logging.debug(f"{self.slurm_name} had splitting error")
+                raise SlurmJobSkip
+            elif "qptuna.predict.UncertaintyError" in slurm_log:
+                logging.debug(f"{self.slurm_name} does not support uncertainty estimation")
                 raise SlurmJobSkip
         except FileNotFoundError:
             raise SlurmNoLog
@@ -912,7 +922,6 @@ def main():
     parser.add_argument('-v', '--verbose', action='count', default=0)
 
     # SLURM global variables
-    requiredNamed.add_argument('--slurm-job-prefix', type=str, required=True)
     parser.add_argument('--slurm-req-cores', type=int, default=12)
     parser.add_argument('--slurm-req-mem', type=int, default=None) # By default, None = dynamic mem resource allocation
     requiredNamed.add_argument('--slurm-req-partition', type=str, required=True)
@@ -920,6 +929,7 @@ def main():
     requiredNamed.add_argument('--slurm-al-smiles-csv-column', type=str, required=True)
 
     # dispatcher variables
+    requiredNamed.add_argument('--slurm-job-prefix', type=str, required=True)
     parser.add_argument('--slurm-failure-cores-increment', type=int, default=4)
     parser.add_argument('--slurm-failure-mem-increment', type=int, default=20)
     parser.add_argument('--slurm-failure-mins-increment', type=int, default=720)

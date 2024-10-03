@@ -1,4 +1,3 @@
-import requests
 import numpy as np
 import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
@@ -8,17 +7,16 @@ from sklearn.feature_selection import RFE
 from sklearn.svm import SVR, SVC
 
 
-def process_side_info(si, y=None):
+def process_side_info(si, y=None, rfe=False):
     """Perform variance threshold and co-correlated feature selection filtering.
     If si is regression then feature scaling and mad filtering is performed"""
-    sel = VarianceThreshold(threshold=(0.8 * (1 - 0.8)))
-    si = sel.fit_transform(si)
+    mod = None
+    si = VarianceThreshold().fit_transform(si)
+    si = pd.DataFrame(si)
     try:
-        mod = unique_labels(si)
-        si = pd.DataFrame(si)
+        mod = unique_labels(si.fillna(0))
     except ValueError:
-        mod = None
-        scaler = MinMaxScaler()
+        scaler = MinMaxScaler(feature_range=(y.min(), y.max()))
         scaler.fit(si)
         si = pd.DataFrame(scaler.transform(si))
         mad = (si - si.mean()).abs().mean()
@@ -30,17 +28,28 @@ def process_side_info(si, y=None):
     ).any()
     un_corr_idx = df_not_correlated.loc[df_not_correlated].index
     si = si[un_corr_idx].to_numpy()
-    if y is not None:
+    if rfe:
         if mod is not None:
-            svm = SVR(kernel="linear")
-        else:
             svm = SVC(kernel="linear")
+        else:
+            svm = SVR(kernel="linear")
         rfe = RFE(estimator=svm, n_features_to_select=int(si.shape[1] * 0.1), step=1)
         rfe = rfe.fit(si, y)
         si = si[:, rfe.support_]
     return si
 
 
-def binarise_side_info(si):
-    means = np.mean(si, axis=0)
-    return np.array(si > means, dtype=np.uint8)
+def binarise_side_info(si, cls=False):
+    si = pd.DataFrame(si)
+    si_nans = si.isna()
+    cat_mask = ~si.apply(lambda s: pd.to_numeric(s, errors="coerce").notnull().all())
+    si.loc[:, cat_mask] = (
+        si.loc[:, cat_mask].astype("category").apply(lambda x: x.cat.codes)
+    )
+    if cls:
+        si = (si > si.mean()).astype(np.uint8)
+        si[si_nans] = np.nan
+        return si.to_numpy()
+    else:
+        si[si_nans] = np.nan
+        return si.astype(float).to_numpy()

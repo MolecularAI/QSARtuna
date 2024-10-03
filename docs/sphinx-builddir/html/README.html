@@ -256,11 +256,11 @@ and optimization is free to pair any specified descriptor with any of the algori
 <p>Create conda environment with Jupyter and Install QSARtuna there:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>purge
 module<span class="w"> </span>load<span class="w"> </span>Miniconda3
-conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>my_env_with_qsartuna<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10.10<span class="w"> </span>jupyter<span class="w"> </span>pip
+conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>my_env_with_qsartuna<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>jupyter<span class="w"> </span>pip<span class="w"> </span><span class="c1"># any python ^3.10</span>
 conda<span class="w"> </span>activate<span class="w"> </span>my_env_with_qsartuna
 module<span class="w"> </span>purge<span class="w">  </span><span class="c1"># Just in case.</span>
 which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Check. Should output path that contains &quot;my_env_with_qsartuna&quot;.</span>
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>https://github.com/MolecularAI/QSARtuna/releases/download/3.1.1/qsartuna-3.1.1.tar.gz
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>https://github.com/MolecularAI/QSARtuna/releases/download/3.1.4/qsartuna-3.1.4.tar.gz
 </pre></div>
 </div>
 <p>Then you can use QSARtuna inside your Notebook:</p>
@@ -325,7 +325,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <h2>Running via CLI<a class="headerlink" href="#running-via-cli" title="Permalink to this heading"></a></h2>
 <p>QSARtuna can be deployed directly from the CLI</p>
 <p>To run commands QSARtuna uses the following syntax:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qsartuna-&lt;optimize<span class="p">|</span>build<span class="p">|</span>predict<span class="p">|</span>schemagen&gt;<span class="w"> </span>&lt;command&gt;
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qsartuna-&lt;optimize<span class="p">|</span>build<span class="p">|</span>predict<span class="p">|</span>schemagen<span class="p">|</span>automl<span class="p">|</span>metadata<span class="p">|</span>convert&gt;<span class="w"> </span>&lt;command&gt;
 </pre></div>
 </div>
 <p>We can run three-step-process from command line with the following command:</p>
@@ -526,10 +526,10 @@ required<span class="w"> </span>named<span class="w"> </span>arguments:
 <span class="w">  </span>--slurm-job-prefix<span class="w"> </span>SLURM_JOB_PREFIX
 </pre></div>
 </div>
-<p>An example of how to run this in SCP would be:</p>
+<p>An example of how to run this would be:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qsartuna-automl<span class="w">  </span>--input-data<span class="w"> </span><span class="s2">&quot;tests/data/automl/*&quot;</span><span class="w">  </span>--email<span class="w"> </span>&lt;email&gt;.com<span class="w">  </span>--user_name<span class="w"> </span>&lt;user_name&gt;<span class="w"> </span><span class="se">\</span>
 <span class="w"> </span>--input-smiles-csv-column<span class="w"> </span>canonical<span class="w">  </span>--input-activity-csv-column<span class="w"> </span>molwt<span class="w"> </span>--input-task-csv-column<span class="w"> </span>one_taskid<span class="w">  </span><span class="se">\</span>
-<span class="w"> </span>--input-initial-template<span class="w"> </span>examples/auto^C/config.initial.template<span class="w">  </span><span class="se">\</span>
+<span class="w"> </span>--input-initial-template<span class="w"> </span>examples/automl/config.initial.template<span class="w">  </span><span class="se">\</span>
 <span class="w"> </span>--input-retrain-template<span class="w"> </span>examples/automl/config.retrain.template<span class="w">  </span><span class="se">\</span>
 <span class="w"> </span>--input-slurm-template<span class="w"> </span>examples/slurm-scripts/automl.template<span class="w">  </span><span class="se">\</span>
 <span class="w"> </span>--n-cores<span class="w"> </span><span class="m">1</span><span class="w"> </span>-vvv<span class="w"> </span>--slurm-al-pool<span class="w"> </span>tests/data/DRD2/subset-50/train.csv<span class="w">  </span><span class="se">\</span>
@@ -661,10 +661,11 @@ required<span class="w"> </span>named<span class="w"> </span>arguments:
 </section>
 <section id="adding-machine-learning-algorithms-to-qsartuna">
 <h2>Adding machine learning algorithms to QSARtuna<a class="headerlink" href="#adding-machine-learning-algorithms-to-qsartuna" title="Permalink to this heading"></a></h2>
+<p>NB: CustomClassificationModel and CustomRegressionModel algorithm options are now available to allow customised algorithms within QSARtuna (see tutorial for details). This new feature is experimental and should be used with caution</p>
 <p>1.) (Optional) consider adding .py algorithm code to the <code class="docutils literal notranslate"><span class="pre">optunaz/algorithms/</span></code> directory, so this can be imported later</p>
 <p>2.) Add the algorithm to <code class="docutils literal notranslate"><span class="pre">optunaz.config.optconfig.py</span></code>. For example, create a class among the existing algorithms like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">YourAglrotihm</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">YourAlgorithm</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Your description goes here</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -811,41 +812,78 @@ N.N.B: If required, import your .py script (<code class="docutils literal notran
 </pre></div>
 </div>
 <p>or in a new config:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optimization&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;training_dataset_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tests/data/DRD2/subset-50/train.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;input_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;response_column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;molwt&quot;</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;cross_validation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;maximize&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;n_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;n_startup_trials&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;descriptors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YourNewDescriptor&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;exampleOfAParameter&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;algorithms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YourAlgorithm&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;parameter_int&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;parameter_float&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;low&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;high&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.8</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;fixed_int&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+  &quot;task&quot;: &quot;optimization&quot;,
+  &quot;data&quot;: {
+    &quot;training_dataset_file&quot;: &quot;tests/data/DRD2/subset-50/train.csv&quot;,
+    &quot;input_column&quot;: &quot;canonical&quot;,
+    &quot;response_column&quot;: &quot;molwt&quot;
+  },
+  &quot;settings&quot;: {
+    &quot;mode&quot;: &quot;regression&quot;,
+    &quot;cross_validation&quot;: 5,
+    &quot;direction&quot;: &quot;maximize&quot;,
+    &quot;n_trials&quot;: 100,
+    &quot;n_startup_trials&quot;: 30
+  },
+  &quot;descriptors&quot;: [
+    {
+      &quot;name&quot;: &quot;YourNewDescriptor&quot;,
+      &quot;parameters&quot;: {
+        &quot;exampleOfAParameter&quot;: 3
+      }
+    }
+  ],
+  &quot;algorithms&quot;: [
+    {
+      &quot;name&quot;: &quot;YourAlgorithm&quot;,
+      &quot;parameters&quot;: {
+        &quot;parameter_int&quot;: {&quot;low&quot;: 10, &quot;high&quot;: 50},
+        &quot;parameter_float&quot;: {&quot;low&quot;: 1.2, &quot;high&quot;: 1.8},
+        &quot;fixed_int&quot;: 100
+      }
+    }
+  ]
+}
+
+
+## Converting models to QSARtuna models
+
+QSARtuna has a CLI helper to convert models to QSARtuna models
+        
+We can perform this with the following command:
+
+```shell
+  qsartuna-convert \
+  --input-model-file {project_folder}/sklearn_model.pkl\
+  --input-model-mode regression \
+  --output-model-path {project_folder}/qsartuna.pkl \
 </pre></div>
 </div>
+<p>The convert CLI tool accepts the following command line arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span>
+<span class="n">qsartuna</span><span class="o">-</span><span class="n">convert</span> <span class="o">-</span><span class="n">h</span>
+<span class="n">usage</span><span class="p">:</span> <span class="n">qsartuna</span><span class="o">-</span><span class="n">convert</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">file</span> <span class="n">INPUT_MODEL_FILE</span> <span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">mode</span> <span class="n">INPUT_MODEL_MODE</span> <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">path</span> <span class="n">OUTPUT_MODEL_PATH</span> <span class="p">[</span><span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">json</span><span class="o">-</span><span class="n">descriptor</span><span class="o">-</span><span class="n">file</span> <span class="n">INPUT_JSON_DESCRIPTOR_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">wrap</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">uncertainty</span><span class="p">]</span>
+
+<span class="n">Convert</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">sklearn</span><span class="p">(</span><span class="o">-</span><span class="n">like</span><span class="p">)</span> <span class="n">model</span> <span class="n">into</span> <span class="n">a</span> <span class="n">QSARtuna</span> <span class="n">model</span>
+
+<span class="n">options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+  <span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">json</span><span class="o">-</span><span class="n">descriptor</span><span class="o">-</span><span class="n">file</span> <span class="n">INPUT_JSON_DESCRIPTOR_FILE</span>
+                        <span class="n">Name</span> <span class="n">of</span> <span class="nb">input</span> <span class="n">JSON</span> <span class="n">file</span> <span class="k">with</span> <span class="n">descriptor</span> <span class="n">configuration</span><span class="o">.</span> <span class="n">Defaults</span> <span class="n">to</span> <span class="n">PrecomputedDescriptorFromFile</span>
+  <span class="o">--</span><span class="n">wrap</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">uncertainty</span>
+                        <span class="n">Whether</span> <span class="n">to</span> <span class="n">wrap</span> <span class="n">regression</span> <span class="ow">in</span> <span class="n">MAPIE</span> <span class="ow">or</span> <span class="n">classification</span> <span class="ow">in</span> <span class="n">VennAbers</span> <span class="n">Calibrated</span> <span class="n">Classifiers</span> <span class="k">for</span> <span class="n">uncertainty</span> <span class="n">support</span>
+
+<span class="n">required</span> <span class="n">named</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">file</span> <span class="n">INPUT_MODEL_FILE</span>
+                        <span class="n">Model</span> <span class="n">file</span> <span class="n">name</span><span class="o">.</span>
+  <span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">mode</span> <span class="n">INPUT_MODEL_MODE</span>
+                        <span class="n">Classification</span> <span class="ow">or</span> <span class="n">regression</span> <span class="n">mode</span> <span class="k">for</span> <span class="n">the</span> <span class="n">existing</span> <span class="n">model</span><span class="o">.</span>
+  <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">model</span><span class="o">-</span><span class="n">path</span> <span class="n">OUTPUT_MODEL_PATH</span>
+                        <span class="n">Path</span> <span class="n">where</span> <span class="n">to</span> <span class="n">write</span> <span class="n">the</span> <span class="n">converted</span> <span class="n">model</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Advanced options for the QSARtuna convert CLI tool are covered in the QSARtuna Notebook tutorial</p>
 </section>
 </section>
 
