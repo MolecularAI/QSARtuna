@@ -141,7 +141,7 @@ def ecfp_tanimoto_similarity(
     ]
     nearest_neighbor_similarity[mask] = similarity_matrix.max(axis=axis)
     nearest_neighbor_prediction[mask] = model.predict_from_smiles(
-        nearest_neighbor_smiles
+        nearest_neighbor_smiles[mask]
     )
 
     return (
