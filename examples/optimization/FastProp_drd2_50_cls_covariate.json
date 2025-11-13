@@ -1,0 +1,44 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt_gt_330",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+    "covariate_column": "activity"
+  },
+  "descriptors": [
+    {
+      "name": "Avalon",
+      "parameters": {
+      }
+    }
+  ],
+  "settings": {
+    "n_splits": 5,
+    "n_replicates": 1,
+    "n_trials": 1,
+    "n_startup_trials": 0
+  },
+  "algorithms": [
+    {
+      "name": "FastPropClassifier",
+      "parameters": {
+        "number_epochs": 1,
+        "patience": 0,
+        "hidden_size": {
+          "low": 100,
+          "high": 100
+        },
+        "fnn_layers": {
+          "low": 2,
+          "high": 2
+        },
+        "learning_rate": {
+          "low": 1e-4,
+          "high": 1e-4
+        },
+        "batch_size": [64]
+      }
+    }
+  ]
+}

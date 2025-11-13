@@ -1,0 +1,34 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv"
+  },
+  "descriptors": [
+    {
+      "name": "ECFP",
+      "parameters": {
+      }
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "n_splits": 2,
+    "n_replicates": 1,
+    "direction": "maximize",
+    "n_trials": 1
+  },
+  "algorithms": [
+    {
+      "name": "TabPFNRegressor",
+      "parameters": {
+        "max_time": 30,
+        "random_state": 123,
+        "max_feats": 5,
+        "feature_selection": ["k_best"],
+        "eval_metric": ["mae"]
+      }
+    }
+  ]
+}

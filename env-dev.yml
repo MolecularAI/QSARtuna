@@ -1,0 +1,7 @@
+name: qsartuna
+channels:
+  - https://conda.anaconda.org/conda-forge
+  - defaults
+dependencies:
+  - python>=3.11,<3.13
+  - poetry=1.8.3

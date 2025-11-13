@@ -1,0 +1,32 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv"
+  },
+  "descriptors": [
+    {
+      "name": "SmilesAndSideInfoFromFile",
+      "parameters": {
+        "file": "tests/data/DRD2/subset-50/train_side_info_cls.csv",
+        "input_column": "canonical",
+        "y_aux_column": "ylabels"
+      }
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "n_splits": 2,
+    "direction": "maximize",
+    "n_trials": 1
+  },
+  "algorithms": [
+    {
+      "name": "ChemPropRegressorPretrained",
+      "parameters": {
+        "pretrained_model": "tests/data/DRD2/drd2_cls.pkl"
+      }
+    }
+  ]
+}

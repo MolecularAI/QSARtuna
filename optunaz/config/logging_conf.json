@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "standard": {
+      "format": "%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s"
+    }
+  },
+  "handlers": {
+    "stdout_handler": {
+      "class": "logging.StreamHandler",
+      "stream": "ext://sys.stdout",
+      "level": "INFO",
+      "formatter": "standard"
+    },
+    "stderr_handler": {
+      "class": "logging.StreamHandler",
+      "stream": "ext://sys.stderr",
+      "level": "WARNING",
+      "formatter": "standard"
+    }
+  },
+  "root": {
+    "level": "DEBUG",
+    "handlers": ["stdout_handler", "stderr_handler"]
+  }
+}
