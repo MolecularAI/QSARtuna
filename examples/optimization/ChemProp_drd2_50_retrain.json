@@ -1,0 +1,32 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "canonical",
+    "response_column": "molwt",
+    "training_dataset_file": "tests/data/DRD2/subset-50/train.csv"
+  },
+  "descriptors": [
+    {
+      "name": "SmilesFromFile",
+      "parameters": {
+      }
+    }
+  ],
+  "settings": {
+    "mode": "regression",
+    "n_splits": 2,
+    "n_replicates": 1,
+    "direction": "maximize",
+    "n_trials": 1
+  },
+  "algorithms": [
+    {
+      "name": "ChemPropRegressorPretrained",
+      "parameters": {
+        "pretrained_model": "tests/data/DRD2/drd2_reg.pkl",
+        "epochs": 1,
+        "patience": 0
+      }
+    }
+  ]
+}

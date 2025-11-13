@@ -1,0 +1,33 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "canonical",
+        "response_column": "molwt",
+        "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+        "test_dataset_file": null
+    },
+    "metadata": {
+        "n_splits": 5,
+        "best_trial": null,
+        "best_value": null,
+        "n_trials": 15
+    },
+    "descriptor":
+        { "name": "ECFP_counts",
+            "parameters": {
+                "radius": 4,
+                "useFeatures": true
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "Ridge",
+        "parameters": {
+            "alpha": 1.998469690009066
+        }
+    }
+}

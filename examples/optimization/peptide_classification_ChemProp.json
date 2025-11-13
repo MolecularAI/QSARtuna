@@ -1,0 +1,80 @@
+{
+  "task": "optimization",
+  "data": {
+    "input_column": "Smiles",
+    "response_column": "Class",
+    "training_dataset_file": "tests/data/peptide/toxinpred3/subset-50/train.csv",
+    "test_dataset_file": "tests/data/peptide/toxinpred3/subset-50/test.csv",
+    "covariate_column": "Peptide",
+    "aux_transform": {
+      "name": "ZScales",
+      "parameters": {
+      }
+    }
+  },
+  "descriptors": [
+    {
+      "name": "SmilesFromFile",
+      "parameters": {
+      }
+    }
+  ],
+  "settings": {
+    "mode": "classification",
+    "n_splits": 5,
+    "shuffle": true,
+    "direction": "maximize",
+    "n_trials": 1,
+    "n_startup_trials": 0,
+    "random_seed": 2
+  },
+  "algorithms": [
+    {
+      "name": "ChemPropClassifier",
+      "parameters": {
+        "aggregation_norm": {
+          "low": 100,
+          "high": 100
+        },
+        "batch_size": [64],
+        "ensemble_size": 1,
+        "epochs": 1,
+        "depth": {
+          "low": 2,
+          "high": 6
+        },
+        "trial_dropout": 1,
+        "ffn_hidden_dim": {
+          "low": 300,
+          "high": 2400
+        },
+        "ffn_num_layers": {
+          "low": 1,
+          "high": 3
+        },
+        "final_lr_ratio": {
+          "low": 1e-2,
+          "high": 1e-2
+        },
+        "message_hidden_dim": {
+          "low": 300,
+          "high": 2400
+        },
+        "init_lr_ratio": {
+          "low": 1e-2,
+          "high": 1e-2
+        },
+        "max_lr": {
+          "low": 1e-2,
+          "high": 1e-2
+        },
+        "warmup_epochs_ratio": {
+          "low": 0.1,
+          "high": 0.1
+        },
+        "activation": ["RELU"],
+        "aggregation": ["norm"]
+      }
+    }
+  ]
+}

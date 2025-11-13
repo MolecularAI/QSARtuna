@@ -1,0 +1,272 @@
+{
+  "data": {
+    "input_column": null,
+    "log_transform": false,
+    "split_strategy": {
+      "name": "Stratified",
+      "seed": 1,
+      "fraction": 0.2
+    },
+    "response_column": null,
+    "log_transform_base": "log10",
+    "training_dataset_file": null,
+    "deduplication_strategy": {
+      "name": "KeepAllNoDeduplication"
+    },
+    "log_transform_negative": "False",
+    "save_intermediate_files": true,
+    "log_transform_unit_conversion": null,
+    "intermediate_test_dataset_file": null,
+    "intermediate_training_dataset_file": null,
+    "probabilistic_threshold_representation": false,
+    "probabilistic_threshold_representation_std": 0,
+    "probabilistic_threshold_representation_threshold": 0
+  },
+  "name": null,
+  "task": "optimization",
+  "settings": {
+    "n_jobs": -1,
+    "n_trials": 300,
+    "random_seed": 1,
+    "optuna_storage": null,
+    "split_chemprop": true,
+    "track_to_mlflow": false,
+    "n_splits": 5,
+    "minimise_std_dev": false,
+    "n_startup_trials": 150,
+    "optimization_split_strategy": {
+      "name": "Random",
+      "seed": 1,
+      "fraction": 0.2
+    },
+    "n_chemprop_trials": 1,
+    "tracking_rest_endpoint": null
+  },
+  "algorithms": [
+    {
+      "name": "Lasso",
+      "parameters": {
+        "alpha": {
+          "low": 0,
+          "high": 2
+        }
+      }
+    },
+    {
+      "name": "PLSRegression",
+      "parameters": {
+        "n_components": {
+          "low": 2,
+          "high": 5
+        }
+      }
+    },
+    {
+      "name": "RandomForestRegressor",
+      "parameters": {
+        "max_depth": {
+          "low": 2,
+          "high": 32
+        },
+        "max_features": [
+          "auto"
+        ],
+        "n_estimators": {
+          "low": 10,
+          "high": 250
+        }
+      }
+    },
+    {
+      "name": "Ridge",
+      "parameters": {
+        "alpha": {
+          "low": 1,
+          "high": 200
+        }
+      }
+    },
+    {
+      "name": "SVR",
+      "parameters": {
+        "C": {
+          "low": 1e-10,
+          "high": 100
+        },
+        "gamma": {
+          "low": 0.0001,
+          "high": 100
+        }
+      }
+    },
+    {
+      "name": "XGBRegressor",
+      "parameters": {
+        "max_depth": {
+          "low": 2,
+          "high": 32
+        },
+        "n_estimators": {
+          "low": 10,
+          "high": 250
+        },
+        "learning_rate": {
+          "low": 0.1,
+          "high": 0.1
+        }
+      }
+    },
+    {
+      "name": "ChemPropRegressor",
+      "parameters": {
+        "aggregation_norm": {
+          "low": 100,
+          "high": 100
+        },
+        "batch_size": [64],
+        "ensemble_size": 1,
+        "epochs": 1,
+        "depth": {
+          "low": 2,
+          "high": 6
+        },
+        "trial_dropout": 0,
+        "ffn_hidden_dim": {
+          "low": 300,
+          "high": 2400
+        },
+        "ffn_num_layers": {
+          "low": 1,
+          "high": 3
+        },
+        "final_lr_ratio": {
+          "low": 1e-2,
+          "high": 1e-2
+        },
+        "message_hidden_dim": {
+          "low": 300,
+          "high": 2400
+        },
+        "init_lr_ratio": {
+          "low": 1e-2,
+          "high": 1e-2
+        },
+        "max_lr": {
+          "low": 1e-2,
+          "high": 1e-2
+        },
+        "warmup_epochs_ratio": {
+          "low": 0.1,
+          "high": 0.1
+        },
+        "activation": ["RELU"],
+        "aggregation": ["norm"],
+        "molecule_featurizers": []
+      }
+    }
+  ],
+  "description": "",
+  "descriptors": [
+    {
+      "name": "Avalon",
+      "parameters": {
+        "nBits": 2048
+      }
+    },
+    {
+      "name": "ECFP",
+      "parameters": {
+        "nBits": 2048,
+        "radius": 3
+      }
+    },
+    {
+      "name": "ECFP_counts",
+      "parameters": {
+        "nBits": 2048,
+        "radius": 3,
+        "use_features": true
+      }
+    },
+    {
+      "name": "MACCS_keys"
+    },
+    {
+      "name": "SmilesFromFile"
+    },
+    {
+      "name": "PhyschemDescriptors"
+    },
+    {
+      "name": "CompositeDescriptor",
+      "parameters": {
+        "descriptors": [
+          {
+            "name": "ECFP_counts",
+            "parameters": {
+              "nBits": 2048,
+              "radius": 3,
+              "use_features": true
+            }
+          },
+          {
+            "name": "PhyschemDescriptors"
+          },
+          {
+            "name": "JazzyDescriptors"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CompositeDescriptor",
+      "parameters": {
+        "descriptors": [
+          {
+            "name": "ECFP_counts",
+            "parameters": {
+              "nBits": 2048,
+              "radius": 3,
+              "use_features": true
+            }
+          },
+          {
+            "name": "JazzyDescriptors"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CompositeDescriptor",
+      "parameters": {
+        "descriptors": [
+          {
+            "name": "ECFP_counts",
+            "parameters": {
+              "nBits": 2048,
+              "radius": 3,
+              "use_features": true
+            }
+          },
+          {
+            "name": "PhyschemDescriptors"
+          }
+        ]
+      }
+    }
+  ],
+  "slurmOptions": {
+    "nodes": 1,
+    "ntasks": 1,
+    "timeout": "100:0:0",
+    "memPerCpu": "4G",
+    "partition": "core",
+    "buildMerged": false,
+    "cpusPerTask": 4,
+    "reservation": false,
+    "saveAsSciKit": false,
+    "optimizationJobId": null,
+    "runActiveLearning": false
+  },
+  "response_type": "regression"
+}

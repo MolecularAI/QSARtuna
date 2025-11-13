@@ -1,0 +1,5 @@
+smiles,activity
+CC(C)[C@@]12C[C@@H]1[C@@H](C)C(=O)C2,9
+CC[C@H](O1)CC[C@@]12CCCO2,7
+CC(=O)OCCC(/C)=C\C[C@H](C(C)=C)CCC=C,11
+OC[C@@H](O1)[C@@H](O)[C@H](O)[C@@H]2[C@@H]1c3c(O)c(OC)c(O)cc3C(=O)O2,15

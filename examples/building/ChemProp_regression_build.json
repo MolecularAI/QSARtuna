@@ -1,0 +1,46 @@
+{
+    "task": "building",
+    "data": {
+        "input_column": "canonical",
+        "response_column": "molwt",
+        "training_dataset_file": "tests/data/DRD2/subset-50/train.csv",
+        "test_dataset_file": null
+    },
+    "metadata": {
+        "n_splits": 2,
+        "best_trial": null,
+        "best_value": null,
+        "n_trials": 1
+    },
+    "descriptor":
+        { "name": "SmilesFromFile",
+            "parameters": {
+            }
+        }
+    ,
+    "settings": {
+        "mode": "regression",
+        "direction": "maximize"
+    },
+    "algorithm": {
+        "name": "ChemPropRegressor",
+        "parameters": {
+            "aggregation_norm": 100,
+            "batch_size": 64,
+            "ensemble_size": 1,
+            "epochs": 1,
+            "depth": 2,
+            "dropout": 0.8,
+            "ffn_hidden_dim": 300,
+            "ffn_num_layers": 1,
+            "final_lr_ratio": 1e-2,
+            "message_hidden_dim": 300,
+            "init_lr_ratio": 1e-2,
+            "max_lr": 1e-2,
+            "warmup_epochs_ratio": 0.1,
+            "activation": "RELU",
+            "aggregation": "mean",
+            "molecule_featurizers": null
+        }
+    }
+}
