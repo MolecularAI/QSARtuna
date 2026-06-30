@@ -37,7 +37,7 @@ QSARTUNA is structured around three steps:
     but it has a big benefit that this final model is trained on the all available data.   
 
 
-## JSON-based Command-line interface on AZ SCP
+## JSON-based Command-line interface
 
 Let's look at a trivial example of modelling molecular weight
 using a training set of 50 molecules.
